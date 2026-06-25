@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CBQ Interactive - Grade 1 - Chapter 13: Joining Words (and, but)</title>
+
+<style>
+body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#fbe7c6,#f7f3e9,#f6c28b);
+    overflow-x:hidden;
+}
+
+/* Splash Screen */
+#splash{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    z-index:10;
+}
+
+#splash img{
+    width:200px;
+    animation:zoom 2s ease-in-out;
+}
+
+@keyframes zoom{
+    from{transform:scale(0.6); opacity:0;}
+    to{transform:scale(1); opacity:1;}
+}
+
+/* Game Container */
+#game{
+    display:none;
+    padding:20px;
+    text-align:center;
+}
+
+/* Header (Grade + Chapter) */
+#header{
+    margin-bottom:10px;
+    font-size:20px;
+    font-weight:bold;
+    color:#4b2e16;
+}
+
+/* Score */
+#score{
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+/* Question Box */
+.question-box{
+    background:rgba(75,46,22,0.9);
+    color:#fff;
+    padding:18px;
+    border-radius:18px;
+    max-width:750px;
+    margin:auto;
+    box-shadow:0 0 15px rgba(0,0,0,0.3);
+    font-size:20px;
+}
+
+/* Options */
+.option{
+    display:block;
+    margin:10px auto;
+    padding:12px;
+    width:85%;
+    max-width:520px;
+    background:#fffaf0;
+    border:2px solid #8b5a2b;
+    border-radius:15px;
+    font-size:18px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.option:hover{
+    transform:scale(1.03);
+    background:#ffffff;
+}
+
+/* Correct / Wrong */
+.correct{
+    background:#b6f7b6 !important;
+    border-color:green;
+}
+
+.wrong{
+    background:#f7b6b6 !important;
+    border-color:red;
+}
+
+/* Confetti */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: gold;
+    top: -10px;
+    animation: fall 3s linear forwards;
+}
+
+@keyframes fall{
+    to{
+        transform:translateY(100vh) rotate(360deg);
+        opacity:0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SPLASH with Innovine logo -->
+<div id="splash">
+    <img src="assets/logo.png" alt="Innovine Logo">
+</div>
+
+<!-- GAME -->
+<div id="game">
+    <div id="header">Grade 1 - Chapter 13: Joining Words (and, but)</div>
+    <div id="score">Score: 0</div>
+
+    <div class="question-box" id="question">Loading...</div>
+    <div id="options"></div>
+</div>
+
+<!-- AUDIO -->
+<audio id="correctSound" src="assets/correct.mp3"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3"></audio>
+
+<script>
+// QUESTIONS (shuffled once at start)
+let questions = [
+{
+    q:"A child played football and completed homework after school. Which sentence best tells both actions?",
+    o:[
+        "I played football and completed my homework.",
+        "I played football but completed my homework.",
+        "I played football homework.",
+        "I played football and but completed my homework."
+    ],
+    a:0
+},
+{
+    q:"A child likes mangoes, but there are none left at home. Which sentence is correct?",
+    o:[
+        "I like mangoes and there are none left.",
+        "I like mangoes but there are none left.",
+        "I like mangoes and but there are none left.",
+        "I like mangoes there are none left."
+    ],
+    a:1
+},
+{
+    q:"A child and a sibling are helping to set the table. Which sentence is correct?",
+    o:[
+        "My sibling and I are setting the table.",
+        "My sibling but I are setting the table.",
+        "My sibling and but I are setting the table.",
+        "My sibling I are setting the table."
+    ],
+    a:0
+},
+{
+    q:"A child wanted to play outside, ___ it started raining.",
+    o:[
+        "and",
+        "but",
+        "and but",
+        "with"
+    ],
+    a:1
+},
+{
+    q:"A student carried a lunch box and a water bottle to school. Which sentence is correct?",
+    o:[
+        "I carried a lunch box but a water bottle.",
+        "I carried a lunch box and a water bottle.",
+        "I carried a lunch box water bottle.",
+        "I carried a lunch box and but a water bottle."
+    ],
+    a:1
+},
+{
+    q:"A child practised hard but did not win the race. Which sentence best describes the situation?",
+    o:[
+        "I practised hard but did not win the race.",
+        "I practised hard and did not win the race.",
+        "I practised hard race.",
+        "I practised hard and but did not win."
+    ],
+    a:0
+},
+{
+    q:"Which sentence correctly joins two similar ideas?",
+    o:[
+        "I have a pencil and a ruler.",
+        "I have a pencil but a ruler.",
+        "I have pencil ruler.",
+        "I have and ruler."
+    ],
+    a:0
+},
+{
+    q:"A child received a book and a puzzle as gifts. Which sentence is correct?",
+    o:[
+        "I got a book but a puzzle.",
+        "I got a book and a puzzle.",
+        "I got book puzzle.",
+        "I got and a puzzle."
+    ],
+    a:1
+},
+{
+    q:"A family planned a picnic, ___ the weather became stormy.",
+    o:[
+        "and",
+        "but",
+        "with",
+        "because"
+    ],
+    a:1
+},
+{
+    q:"A student finished drawing and colouring a picture. Which sentence is correct?",
+    o:[
+        "I finished drawing but colouring.",
+        "I finished drawing and colouring.",
+        "I finished drawing colouring.",
+        "I finished drawing and but colouring."
+    ],
+    a:1
+},
+{
+    q:"A child washed the dishes and cleaned the table. Which joining word connects both actions?",
+    o:[
+        "but",
+        "and",
+        "under",
+        "near"
+    ],
+    a:1
+},
+{
+    q:"Which sentence shows a contrast?",
+    o:[
+        "I like milk but I do not like coffee.",
+        "I like milk and juice.",
+        "I drink milk every day.",
+        "Milk is healthy."
+    ],
+    a:0
+},
+{
+    q:"A child wanted to read a storybook but could not find it. Which sentence is correct?",
+    o:[
+        "I wanted to read a storybook but could not find it.",
+        "I wanted to read a storybook and could not find it.",
+        "I wanted storybook find it.",
+        "I wanted and could not find it."
+    ],
+    a:0
+},
+{
+    q:"Two friends sat together and shared crayons. Which sentence is correct?",
+    o:[
+        "They sat together but shared crayons.",
+        "They sat together and shared crayons.",
+        "They sat together crayons.",
+        "They sat together and but shared crayons."
+    ],
+    a:1
+},
+{
+    q:"Why do we use joining words such as and and but?",
+    o:[
+        "To connect ideas and make sentences clearer",
+        "To show colours",
+        "To tell time",
+        "To count objects"
+    ],
+    a:0
+}
+];
+
+let current = 0;
+let score = 0;
+
+// Fisher–Yates shuffle to randomise question order
+function shuffleQuestions(arr){
+    for(let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+}
+
+setTimeout(()=>{
+    document.getElementById("splash").style.display="none";
+    document.getElementById("game").style.display="block";
+    shuffleQuestions(questions);
+    loadQuestion();
+},3000);
+
+function loadQuestion(){
+    if(current >= questions.length){
+        document.getElementById("question").innerHTML = "🎉 Game Completed!";
+        document.getElementById("options").innerHTML = "";
+        document.getElementById("clapSound").play();
+        return;
+    }
+
+    let q = questions[current];
+    document.getElementById("question").innerHTML = q.q.replace(/\n/g,"<br>");
+
+    let optHTML = "";
+    q.o.forEach((opt,i)=>{
+        optHTML += `<div class='option' onclick='checkAnswer(this,${i})'>${opt}</div>`;
+    });
+
+    document.getElementById("options").innerHTML = optHTML;
+}
+
+function checkAnswer(el,i){
+    let q = questions[current];
+
+    if(i === q.a){
+        el.classList.add("correct");
+        document.getElementById("correctSound").play();
+        score++;
+        document.getElementById("score").innerText = "Score: " + score;
+        createConfetti();
+        setTimeout(()=>{ current++; loadQuestion(); },1200);
+    }else{
+        el.classList.add("wrong");
+        document.getElementById("wrongSound").play();
+    }
+}
+
+function createConfetti(){
+    for(let i=0;i<25;i++){
+        let c = document.createElement("div");
+        c.className = "confetti";
+        c.style.left = Math.random()*100 + "vw";
+        c.style.background = ["gold","orange","#fff","#f6c28b"][Math.floor(Math.random()*4)];
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),3000);
+    }
+}
+</script>
+
+</body>
+</html>
