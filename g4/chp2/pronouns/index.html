@@ -1,1 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Grade 4 - Pronouns</title>
+<style>
+:root{
+  --bg1:#fff8fb;
+  --bg2:#f3f9ff;
+  --card:#ffffff;
+  --ink:#1d3149;
+  --muted:#607287;
+  --accent:#7c7cff;
+  --accent2:#ff8fb1;
+  --good:#23b26b;
+  --bad:#ef5b6c;
+  --line:#e8eef7;
+  --shadow:0 18px 40px rgba(44,73,117,.12);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255,255,255,.95) 0 8%, transparent 9%),
+    radial-gradient(circle at 82% 14%, rgba(255,255,255,.8) 0 6%, transparent 7%),
+    linear-gradient(160deg,var(--bg1),var(--bg2));
+  overflow-x:hidden;
+}
+.bg-shapes,.confetti-layer{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.bg-shapes span{
+  position:absolute;
+  border-radius:999px;
+  opacity:.45;
+  animation:floatUp linear infinite;
+}
+.card-wrap{
+  max-width:980px;
+  margin:0 auto;
+  padding:14px;
+}
+.card{
+  min-height:calc(100vh - 28px);
+  background:var(--card);
+  border-radius:26px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.7);
+}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:14px 16px;
+  background:linear-gradient(90deg,#fff7fb,#f7fbff);
+  border-bottom:1px solid var(--line);
+}
+.badge{
+  padding:9px 12px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:800;
+  color:#38506b;
+  background:#f2f6fb;
+}
+.badge.time{background:#fff0f4;color:#bc4860}
+.screen{display:none;padding:18px}
+.screen.active{display:block;animation:fadeIn .25s ease}
+.hero{
+  min-height:calc(100vh - 120px);
+  display:grid;
+  place-items:center;
+  gap:18px;
+  text-align:center;
+  padding:12px 10px 24px;
+}
+.logo-wrap{
+  width:160px;
+  height:160px;
+  border-radius:36px;
+  overflow:hidden;
+  background:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  box-shadow:0 14px 32px rgba(110,121,148,.18);
+}
+.logo-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.instruction{
+  width:min(760px,100%);
+  background:#fcfdff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  text-align:left;
+  line-height:1.55;
+  box-shadow:0 8px 20px rgba(90,116,149,.06);
+}
+.btn{
+  border:none;
+  border-radius:16px;
+  padding:14px 20px;
+  font-weight:800;
+  font-size:16px;
+  color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  cursor:pointer;
+  box-shadow:0 10px 20px rgba(124,124,255,.2);
+}
+.btn.secondary{
+  background:#eef4ff;
+  color:#2d4a91;
+  box-shadow:none;
+}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.quiz-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:14px;
+}
+.pill{
+  padding:9px 12px;
+  border-radius:999px;
+  background:#f4f7fb;
+  color:#31475e;
+  font-size:14px;
+  font-weight:800;
+}
+.pill.time{background:#fff0f4;color:#bc4860}
+.qtitle{
+  font-size:clamp(20px,3.5vw,28px);
+  line-height:1.45;
+  margin:0 0 16px;
+}
+.options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.option{
+  border:2px solid var(--line);
+  background:#fbfdff;
+  color:var(--ink);
+  border-radius:18px;
+  padding:16px 14px;
+  text-align:left;
+  font-size:16px;
+  font-weight:700;
+  min-height:66px;
+  cursor:pointer;
+}
+.option:hover{transform:translateY(-1px);border-color:#c6d7ff}
+.option.correct{border-color:var(--good);background:#eefaf3}
+.option.wrong{border-color:var(--bad);background:#fff1f4}
+.option.dim{opacity:.66}
+.footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.explain{
+  display:none;
+  margin-top:14px;
+  padding:14px;
+  border-radius:16px;
+  background:#f8fbff;
+  border:1px solid var(--line);
+  line-height:1.5;
+}
+.result-box{
+  text-align:center;
+  padding:24px 10px 18px;
+}
+.big{
+  font-size:clamp(34px,6vw,56px);
+  margin:0 0 10px;
+}
+.final-panel{
+  margin-top:16px;
+  background:#f8fbff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  text-align:left;
+  line-height:1.55;
+}
+.cross{
+  position:fixed;
+  left:50%;
+  top:40%;
+  transform:translate(-50%,-50%);
+  font-size:76px;
+  color:var(--bad);
+  opacity:0;
+  transition:opacity .15s ease;
+  z-index:20;
+}
+.cross.show{opacity:.92}
+.confetti-star{
+  position:fixed;
+  left:50%;
+  top:48%;
+  font-size:18px;
+  color:#ffd45c;
+  opacity:0;
+  animation:starPop 1s ease forwards;
+  z-index:20;
+  pointer-events:none;
+}
+@keyframes fadeIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes floatUp{from{transform:translateY(110vh)}to{transform:translateY(-120px)}}
+@keyframes starPop{0%{opacity:1;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-110px) scale(1.25) rotate(40deg)}}
+@media (max-width:700px){
+  .options{grid-template-columns:1fr}
+  .logo-wrap{width:128px;height:128px}
+}
+</style>
+</head>
+<body>
+<div class="bg-shapes" id="bgShapes"></div>
+<div class="confetti-layer" id="confettiLayer"></div>
+<div class="cross" id="crossMark">✕</div>
 
+<div class="card-wrap">
+  <div class="card">
+    <div class="topbar">
+      <div class="badge" id="scoreBadge">Score: 0</div>
+      <div class="badge time" id="timerBadge">Time: 45s</div>
+      <div class="badge" id="qBadge">Question 1/10</div>
+    </div>
+
+    <div class="screen active" id="splashScreen">
+      <div class="hero">
+        <div class="logo-wrap">
+          <img src="assets/logo.png" alt="Innovine logo">
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="instructionScreen">
+      <div class="hero">
+        <div class="instruction">
+          <strong>Instructions for students</strong><br><br>
+          Read each question carefully.<br>
+          Choose the best answer from 4 options.<br>
+          You get one retry if your first answer is wrong.<br>
+          If you miss again, the correct answer and a short explanation will appear.<br>
+          Answer before the timer ends.
+        </div>
+        <button type="button" class="btn" id="startBtn">Start Quiz</button>
+      </div>
+    </div>
+
+    <div class="screen" id="quizScreen">
+      <div class="quiz-head">
+        <div class="pill" id="modePill">Chapter-based MCQ</div>
+        <div class="pill time" id="liveTimer">45s</div>
+      </div>
+      <h2 class="qtitle" id="questionText"></h2>
+      <div class="options" id="optionsBox"></div>
+      <div class="explain" id="explainBox"></div>
+      <div class="footer">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <div class="pill" id="attemptPill">Attempts left: 2</div>
+          <div class="pill">Competency-based</div>
+        </div>
+        <button type="button" class="btn secondary" id="nextBtn" disabled>Next</button>
+      </div>
+    </div>
+
+    <div class="screen" id="finalScreen">
+      <div class="result-box">
+        <h2 class="big">Final Challenge</h2>
+        <p class="sub" style="margin:0 auto;max-width:720px">One mixed review question before your result.</p>
+        <div style="margin-top:16px">
+          <button type="button" class="btn" id="finalStartBtn">Start Final Challenge</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="resultScreen">
+      <div class="result-box">
+        <h2 class="big" id="resultTitle">You finished!</h2>
+        <p class="sub" id="resultText"></p>
+        <div class="final-panel" id="reviewPanel"></div>
+        <div style="margin-top:18px">
+          <button type="button" class="btn" id="restartBtn">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  { q:"During an activity, students were taken to the school heritage wall. It displayed photographs of old school events, names of former principals, and quotes about discipline and honesty. Some words referred to real people and places, while others represented ideas and values that cannot be seen or touched. Which option correctly identifies the abstract nouns used in the heritage wall?", o:["school, wall","principals, events","honesty, discipline","photographs, names"], a:2, e:"Honesty and discipline are abstract nouns because they name ideas and values that cannot be seen or touched." },
+  { q:"The school auditorium was decorated for Annual Day. Chairs were arranged in rows, banners were hung with the name of the school, and students practiced dance performances. The principal appreciated the effort and praised the teamwork shown by everyone. Which option correctly identifies the proper noun from the situation?", o:["Annual Day","school","auditorium","chairs"], a:0, e:"Annual Day is a specific event name, so it is a proper noun." },
+  { q:"During a group project in the school library, students were asked to collect information about different books and authors. They also noted how books are arranged in sections and how each section is named. While writing their report, they noticed that some words referred to specific names, while others referred to general categories of objects or people. Which option correctly identifies the proper noun used in this situation?", o:["books","Harry Potter","library","sections"], a:1, e:"Harry Potter is a specific name of a book, so it is a proper noun." },
+  { q:"In the science lab, students observed different materials such as water, salt, glass jars, and metal spoons. The teacher explained that some substances can be measured or counted easily, while others exist in forms that cannot be counted individually but can only be measured in quantity. Which option correctly identifies an uncountable noun from the situation?", o:["spoons","jars","students","water"], a:3, e:"Water is an uncountable noun because it cannot be counted individually." },
+  { q:"During sports practice, students were divided into teams and participated in relay races, jumping drills, and cheering activities. The teacher noticed that the atmosphere was full of excitement and determination, which helped the students perform better as a team. Which option correctly identifies the abstract nouns in this situation?", o:["excitement, determination","jumping, drills","teams, races","students, teacher"], a:0, e:"Excitement and determination are feelings and qualities, so they are abstract nouns." },
+  { q:"During lunch break, students visited the school canteen. They saw different food items like rice, milk, bananas, juice, and sugar being served. The teacher explained that some food items can be counted as individual pieces, while others are measured as quantities and cannot be counted one by one. Which option correctly identifies only uncountable nouns from this situation?", o:["bananas, rice","milk, sugar","chairs, tables","apples, oranges"], a:1, e:"Milk and sugar cannot be counted individually and are uncountable nouns." },
+  { q:"In the morning assembly, the principal spoke about the importance of honesty, kindness, and discipline. Students were asked to reflect on how these values help them become better individuals in school and in life. Which option correctly identifies the abstract nouns used in the speech?", o:["principal, students","school, assembly","honesty, discipline","life, school"], a:2, e:"Honesty and discipline are abstract nouns representing qualities." },
+  { q:"Students went on a field trip to Delhi. They visited historical monuments, travelled through busy roads, and observed how people live in a large city. The teacher explained that some words refer to specific names of places, while others refer to general objects or locations. Which option correctly identifies the proper noun from the passage?", o:["city","monuments","roads","Delhi"], a:3, e:"Delhi is a specific name of a city, so it is a proper noun." },
+  { q:"During a science activity, students were taken to the school garden. They observed different elements such as soil, flowers, trees, water pipes, and insects. The teacher explained that some nouns refer to things that can be counted individually, while others refer to materials or substances that cannot be counted one by one. Which option correctly identifies only countable nouns from the situation?", o:["soil, water","flowers, trees","water, soil","air, soil"], a:1, e:"Flowers and trees can be counted as individual items, so they are countable nouns." },
+  { q:"At the end of the week, the teacher asked students to reflect on their learning journey. Students shared thoughts about teamwork, confidence, and fear they experienced during presentations. The teacher explained that some nouns describe physical objects, while others describe feelings or states of mind that cannot be seen or touched. Which option correctly identifies only abstract nouns from the situation?", o:["teamwork, confidence","classroom, teacher","students, presentations","week, activity"], a:0, e:"Teamwork and confidence are abstract nouns because they represent feelings and ideas." }
+];
+
+const finalChallenge = { q:"Final challenge: In the sentence “The students showed honesty during the game,” which noun is abstract?", o:["students","honesty","game","The"], a:1, e:"Honesty is an idea or quality, so it is an abstract noun." };
+
+let currentIndex=0, score=0, attemptsLeft=2, locked=false, timeLeft=45, timerId=null, finalMode=false, wrongFirstAttempts=0;
+const el=id=>document.getElementById(id);
+
+function showScreen(name){
+  ["splashScreen","instructionScreen","quizScreen","finalScreen","resultScreen"].forEach(id=>el(id).classList.remove("active"));
+  el(name).classList.add("active");
+}
+function buildBackground(){
+  const colors=["#ffd7e5","#d7f2ff","#fff1bf","#d8ffe8","#e5dcff"];
+  for(let i=0;i<18;i++){
+    const s=document.createElement("span");
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*100+"%";
+    s.style.width=(22+Math.random()*52)+"px";
+    s.style.height=s.style.width;
+    s.style.background=colors[i%colors.length];
+    s.style.animationDuration=(14+Math.random()*16)+"s";
+    s.style.animationDelay=Math.random()*8+"s";
+    s.style.opacity=.35+Math.random()*.25;
+    document.getElementById("bgShapes").appendChild(s);
+  }
+}
+function data(){ return finalMode ? finalChallenge : quizData[currentIndex]; }
+function playAudio(src){
+  const a=new Audio(src);
+  a.preload="auto";
+  a.play().catch(()=>{});
+}
+function startTimer(){
+  clearInterval(timerId);
+  timeLeft=45;
+  el("timerBadge").textContent="Time: "+timeLeft+"s";
+  el("liveTimer").textContent=timeLeft+"s";
+  timerId=setInterval(()=>{
+    timeLeft--;
+    el("timerBadge").textContent="Time: "+timeLeft+"s";
+    el("liveTimer").textContent=timeLeft+"s";
+    if(timeLeft<=0){
+      clearInterval(timerId);
+      handleWrong(true);
+    }
+  },1000);
+}
+function renderQuestion(){
+  locked=false;
+  attemptsLeft=2;
+  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
+  el("qBadge").textContent=finalMode ? "Final challenge" : `Question ${currentIndex+1}/10`;
+  el("questionText").textContent=data().q;
+  el("optionsBox").innerHTML="";
+  el("explainBox").style.display="none";
+  el("nextBtn").disabled=true;
+  el("nextBtn").textContent=finalMode ? "See Result" : "Next";
+  data().o.forEach((opt,idx)=>{
+    const b=document.createElement("button");
+    b.type="button";
+    b.className="option";
+    b.textContent=String.fromCharCode(65+idx)+". "+opt;
+    b.onclick=()=>chooseAnswer(idx,b);
+    el("optionsBox").appendChild(b);
+  });
+  startTimer();
+}
+function showCross(){
+  const c=el("crossMark");
+  c.classList.add("show");
+  setTimeout(()=>c.classList.remove("show"),320);
+}
+function starConfetti(){
+  for(let i=0;i<16;i++){
+    const c=document.createElement("div");
+    c.className="confetti-star";
+    c.textContent="✦";
+    c.style.left=45+Math.random()*10+"%";
+    c.style.top=42+Math.random()*10+"%";
+    c.style.animationDelay=Math.random()*0.18+"s";
+    document.getElementById("confettiLayer").appendChild(c);
+    setTimeout(()=>c.remove(),1050);
+  }
+}
+function revealCorrect(){
+  const d=data();
+  [...document.querySelectorAll(".option")].forEach((btn,idx)=>{
+    btn.disabled=true;
+    if(idx===d.a) btn.classList.add("correct");
+    else btn.classList.add("dim");
+  });
+  el("explainBox").style.display="block";
+  el("explainBox").textContent="Correct answer: "+String.fromCharCode(65+d.a)+". "+d.o[d.a]+" — "+d.e;
+  el("nextBtn").disabled=false;
+}
+function handleWrong(fromTimeout=false){
+  if(!fromTimeout){ showCross(); playAudio("assets/wrong.mp3"); }
+  attemptsLeft--;
+  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
+  if(attemptsLeft>0 && !fromTimeout){
+    wrongFirstAttempts++;
+    el("explainBox").style.display="block";
+    el("explainBox").textContent="Try once more. Read the sentence carefully and choose the pronoun.";
+    return;
+  }
+  clearInterval(timerId);
+  locked=true;
+  revealCorrect();
+}
+function chooseAnswer(i,btn){
+  if(locked) return;
+  const d=data();
+  if(i===d.a){
+    clearInterval(timerId);
+    locked=true;
+    btn.classList.add("correct");
+    score++;
+    el("scoreBadge").textContent="Score: "+score;
+    el("explainBox").style.display="block";
+    el("explainBox").textContent="Correct: "+d.e;
+    el("nextBtn").disabled=false;
+    starConfetti();
+    playAudio("assets/correct.mp3");
+    return;
+  }
+  btn.classList.add("wrong");
+  showCross();
+  handleWrong(false);
+}
+function showResults(){
+  showScreen("resultScreen");
+  el("resultTitle").textContent=score>=9 ? "Excellent work!" : score>=6 ? "Great job!" : "Keep practicing!";
+  el("resultText").textContent=`You scored ${score} out of 10. First-retry uses: ${wrongFirstAttempts}.`;
+  el("reviewPanel").innerHTML="<strong>What this chapter practiced</strong><br>Pronouns in realistic Grade 4 situations, with careful reading and quick thinking.";
+}
+function nextStep(){
+  if(finalMode){
+    showResults();
+    playAudio("assets/freesound_community-claps-44774.mp3");
+    return;
+  }
+  currentIndex++;
+  if(currentIndex<quizData.length) renderQuestion();
+  else showScreen("finalScreen");
+}
+
+el("startBtn").onclick=()=>{
+  showScreen("quizScreen");
+  currentIndex=0;
+  score=0;
+  wrongFirstAttempts=0;
+  finalMode=false;
+  el("scoreBadge").textContent="Score: 0";
+  el("modePill").textContent="Chapter-based MCQ";
+  renderQuestion();
+};
+el("nextBtn").onclick=nextStep;
+el("finalStartBtn").onclick=()=>{
+  finalMode=true;
+  showScreen("quizScreen");
+  el("modePill").textContent="Final challenge";
+  renderQuestion();
+};
+el("restartBtn").onclick=()=>location.reload();
+
+buildBackground();
+setTimeout(()=>showScreen("instructionScreen"),5000);
+</script>
+</body>
+</html>
