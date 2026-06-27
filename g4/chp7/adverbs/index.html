@@ -1,1 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 4: Adverbs Velocity Grid Challenge</title>
+    <style>
+        :root {
+            --pit-dark: #0f1115;
+            --panel-bg: #1a1d24;
+            --race-orange: #ff6b00;
+            --race-green: #00e676;
+            --race-red: #ff1744;
+            --text-light: #f5f6f8;
+            --text-dim: #7e8a9b;
+            --pit-border: #2a2f3a;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Impact', 'Arial Black', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--pit-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Racetrack Stream Decoration Layer */
+        .pit-environment {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            background: radial-gradient(linear, left top, left bottom, from(rgba(26,29,36,0.3)), to(rgba(15,17,21,1)));
+        }
+
+        .exhaust-spark {
+            position: absolute;
+            width: 2px;
+            height: 15px;
+            background: linear-gradient(to top, rgba(255,107,0,0.3), transparent);
+            animation: trackFast 4s linear infinite;
+            bottom: -50px;
+        }
+
+        @keyframes trackFast {
+            0% { transform: translateY(0) scaleY(1); opacity: 0; }
+            20% { opacity: 0.4; }
+            80% { opacity: 0.4; }
+            100% { transform: translateY(-110vh) scaleY(1.5); opacity: 0; }
+        }
+
+        /* Dashboard HUD Interface Control Card */
+        .dashboard-hud {
+            width: 92%;
+            max-width: 680px;
+            background: var(--panel-bg);
+            border: 3px solid var(--pit-border);
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(255, 107, 0, 0.15);
+            padding: 35px;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Screens Management */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Mandatory Logo Title Frame Overlay */
+        #logo-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #ffffff;
+            z-index: 100;
+        }
+        #logo-screen img {
+            max-width: 240px;
+            height: auto;
+            animation: engineRev 1.2s infinite ease-in-out;
+        }
+
+        @keyframes engineRev {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+
+        /* HUD Headers & Gauge Sync Metas */
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px dashed var(--pit-border);
+            padding-bottom: 12px;
+            color: var(--race-orange);
+        }
+
+        .fuel-gauge-container {
+            width: 100%;
+            height: 10px;
+            background: #0b0c0e;
+            border-radius: 2px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid var(--pit-border);
+        }
+
+        .fuel-indicator-level {
+            height: 100%;
+            width: 100%;
+            background: var(--race-green);
+            transition: width 1s linear, background-color 0.5s ease;
+        }
+
+        /* Text Presentation Standard Typography */
+        .pit-scenario-text {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 1.15rem;
+            line-height: 1.55;
+            margin-bottom: 25px;
+            text-align: left;
+            color: var(--text-light);
+        }
+
+        /* Pit Lane Selectors Grid Matrix */
+        .lane-options-stack {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .lane-btn {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #13151a;
+            border: 2px solid var(--pit-border);
+            padding: 16px 20px;
+            border-radius: 4px;
+            text-align: left;
+            font-size: 1rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.15s ease-out;
+            position: relative;
+        }
+
+        .lane-btn:hover:not(:disabled) {
+            border-color: var(--race-orange);
+            background: #1d212a;
+            padding-left: 25px;
+        }
+
+        /* Response Condition Highlights */
+        .lane-btn.correct {
+            background: rgba(0, 230, 118, 0.12) !important;
+            border-color: var(--race-green) !important;
+            color: var(--race-green);
+            font-weight: bold;
+        }
+
+        .lane-btn.wrong {
+            background: rgba(255, 23, 68, 0.12) !important;
+            border-color: var(--race-red) !important;
+            color: var(--race-red);
+        }
+
+        .penalty-cross-marker {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--race-red);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Action Launch Button Layer */
+        .pit-hardware-btn {
+            background: transparent;
+            color: var(--race-orange);
+            border: 2px solid var(--race-orange);
+            padding: 12px 32px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .pit-hardware-btn:hover {
+            background: var(--race-orange);
+            color: var(--pit-dark);
+            box-shadow: 0 0 15px rgba(255, 107, 0, 0.4);
+        }
+
+        /* Technical Commentary Systems */
+        .pit-radio-feedback {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .pit-radio-feedback.visible { display: block; }
+        .pit-radio-feedback.retry { background: rgba(255, 183, 77, 0.12); border: 1px solid #ffb74d; color: #ffa726; }
+        .pit-radio-feedback.explanation { background: #0f1115; border: 1px solid var(--pit-border); color: var(--text-dim); }
+
+        /* Velocity Trail Particle Spark System */
+        .chequered-spark {
+            position: absolute;
+            color: var(--race-orange);
+            font-size: 1.3rem;
+            pointer-events: none;
+            animation: launchParticle 0.55s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            z-index: 99;
+        }
+
+        @keyframes launchParticle {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: translate(var(--px), var(--py)) rotate(180deg) scale(0.3); opacity: 0; }
+        }
+
+        @media(max-width: 480px) {
+            .dashboard-hud { padding: 22px 18px; }
+            .pit-scenario-text { font-size: 1rem; }
+            .lane-btn { padding: 12px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pit-environment" id="pit-canvas"></div>
+
+    <div id="logo-screen">
+        <img src="assets/logo.png" alt="Innovine Logo">
+    </div>
+
+    <div class="dashboard-hud">
+        
+        <div id="intro-screen" class="screen">
+            <h1 style="margin-bottom: 8px; color: var(--text-light); font-size: 1.8rem; letter-spacing: 1px;">🏁 VELOCITY_GRID: ADVERBS</h1>
+            <p style="font-size: 0.95rem; margin-bottom: 12px; color: var(--race-orange);">PITSTOP CHALLENGE - GRADE 4</p>
+            <p style="margin-bottom: 30px; color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
+                Adverbs control the speed, direction, and rhythm of actions. Navigate through 12 velocity checkpoints tracking manner, frequency, time, and place parameters. 
+                Your fuel cell burns out in 45 seconds per stage. You get 1 emergency pitstop retry per checkpoint error.
+            </p>
+            <button class="pit-hardware-btn" onclick="engageIgnition()">Engage Ignition</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="hud-header">
+                <div>LAP: <span id="lap-curr">1</span>/<span id="lap-total">12</span></div>
+                <div>FUEL_EFFICIENCY: <span id="efficiency-track">0</span>%</div>
+            </div>
+            <div class="fuel-gauge-container">
+                <div class="fuel-indicator-level" id="fuel-gauge"></div>
+            </div>
+            <div class="pit-scenario-text" id="scenario-target">...CONNECTING GRID DATA FEED...</div>
+            <div class="lane-options-stack" id="lane-box"></div>
+            <div class="pit-radio-feedback" id="radio-console"></div>
+            <div style="text-align: right; margin-top: 15px;">
+                <button class="pit-hardware-btn" id="next-lap-btn" onclick="advanceLap()" style="display: none;">Next Lap &gt;</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2 style="color: var(--race-orange); margin-bottom: 15px; font-size: 1.6rem;" id="podium-status">CHEQUERED FLAG ARRIVAL</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 20px; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
+                Total Clean Laps: <strong id="podium-score" style="color: var(--race-green);">0</strong> / 12
+            </p>
+            <p id="podium-report" style="margin-bottom: 30px; color: var(--text-dim); line-height: 1.6; font-size: 0.9rem; font-family: -apple-system, BlinkMacSystemFont, sans-serif;"></p>
+            <button class="pit-hardware-btn" onclick="restartIgnition()">Restart Race Run</button>
+        </div>
+
+    </div>
+
+    <audio id="sound-pass" src="assets/correct.mp3" preload="auto"></audio>
+    <audio id="sound-fail" src="assets/wrong.mp3" preload="auto"></audio>
+    <audio id="sound-cheer" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+    <script>
+        // High quality data array containing exactly 12 requested sequentially configured questions
+        const adverbsGrid = [
+            {
+                q: "During the morning assembly, students were instructed to stand in straight lines and maintain silence while the principal was speaking. However, a few students were talking softly among themselves, and the teacher later explained how actions should be done in a disciplined way. Which sentence correctly describes the manner of action?",
+                options: [
+                    "Students stand in the assembly.",
+                    "Students are standing quietly in the assembly.",
+                    "Students stood assembly yesterday.",
+                    "Students will stand assembly."
+                ],
+                correct: 1,
+                explanation: "The word 'quietly' is an adverb of manner. It explains precisely how the action of standing is being performed in a disciplined way."
+            },
+            {
+                q: "In the school playground, some students play football every single day without missing practice, while others play only during special periods or when they feel like it. The coach wants to describe the regularity of practice. Which sentence shows correct frequency?",
+                options: [
+                    "The students always play football after school.",
+                    "The students are playing football now.",
+                    "The students played football yesterday.",
+                    "The students will play football tomorrow."
+                ],
+                correct: 0,
+                explanation: "'Always' is an adverb of frequency. It clearly illustrates the unmissed, consistent routine pattern of the practice schedule."
+            },
+            {
+                q: "During an art class, students were painting at different spots in the classroom—some near the windows, some at the back benches, and some right in front of the teacher’s desk. The teacher asked them to describe where the activities are happening. Which sentence correctly uses an adverb of place?",
+                options: [
+                    "The students painted yesterday.",
+                    "The students painted beautifully.",
+                    "The students paint daily.",
+                    "The students are painting everywhere in the classroom."
+                ],
+                correct: 3,
+                explanation: "'Everywhere' functions perfectly as an adverb of place, defining all the scattered locations across the classroom where painting occurs."
+            },
+            {
+                q: "The class teacher announced a school picnic and explained that the bus would leave early in the morning so that students could enjoy the full day at the destination without rushing. Which sentence correctly uses an adverb of time?",
+                options: [
+                    "The bus will leave early tomorrow morning.",
+                    "The bus leaves beautifully.",
+                    "The bus left slowly yesterday always.",
+                    "The bus is leaving inside."
+                ],
+                correct: 0,
+                explanation: "'Early' and 'tomorrow' are adverbs of time that declare exactly when the timeline event of the bus departure will proceed."
+            },
+            {
+                q: "During the annual sports day, students were running on the track while trying to maintain speed and balance. Some students were running very fast, while others were trying to run carefully without falling. Which sentence correctly describes the manner?",
+                options: [
+                    "Students are run track.",
+                    "Students ran yesterday.",
+                    "Students will run tomorrow.",
+                    "Students are running fast."
+                ],
+                correct: 3,
+                explanation: "The modifier 'fast' acts as an adverb of manner here, defining the specific speed metrics of how the tracking race is actively running."
+            },
+            {
+                q: "The librarian noticed that some students visit the library only during free periods, while a few students visit it regularly every week to read storybooks and reference materials. Which sentence shows correct frequency usage?",
+                options: [
+                    "Some students never visit the library.",
+                    "Some students regularly visit the library every week.",
+                    "Some students are visiting now.",
+                    "Some students visited yesterday."
+                ],
+                correct: 1,
+                explanation: "'Regularly' addresses the strict frequency parameter, mapping out the continuous habitual timeline intervals of library attendance."
+            },
+            {
+                q: "During recess, heavy rain started suddenly, and students who were playing outside ran inside the classrooms, while others stayed near the corridor watching the rain fall. Which sentence correctly shows place?",
+                options: [
+                    "Students are running inside quickly.",
+                    "Students are inside the classroom during rain.",
+                    "Students ran yesterday.",
+                    "Students will run tomorrow."
+                ],
+                correct: 1,
+                explanation: "The term 'inside' serves as an adverb of place, pointing out the destination marker sheltering students away from the rain."
+            },
+            {
+                q: "In a writing activity, students were asked to complete their essays neatly and carefully so that their handwriting and ideas could be clearly understood by everyone. Which sentence correctly uses an adverb of manner?",
+                options: [
+                    "Students will write tomorrow.",
+                    "Students wrote yesterday.",
+                    "Students are writing carefully in class.",
+                    "Students writing book."
+                ],
+                correct: 2,
+                explanation: "The tracking word 'carefully' modifies the act of writing, illustrating the manner and style guidelines given to the class."
+            },
+            {
+                q: "A teacher observes that one student follows a strict routine of waking up early, brushing teeth, and completing homework before school every single day without fail. Which sentence best shows frequency?",
+                options: [
+                    "The student always wakes up early and completes homework.",
+                    "The student is waking up now.",
+                    "The student woke up yesterday.",
+                    "The student will wake up tomorrow."
+                ],
+                correct: 0,
+                explanation: "'Always' signals total uncompromised frequency, capturing the 'every single day without fail' component of the scenario."
+            },
+            {
+                q: "While returning from school, students noticed that cars were moving slowly because of heavy traffic, and the traffic police were guiding vehicles carefully to avoid accidents. Which sentence correctly uses adverb of manner?",
+                options: [
+                    "Cars move slow.",
+                    "Cars will move tomorrow.",
+                    "Cars moved yesterday.",
+                    "Cars are moving slowly on the road."
+                ],
+                correct: 3,
+                explanation: "'Slowly' is an adverb of manner that alters the action of moving, describing the exact steady pacing condition of the cars."
+            },
+            {
+                q: "During class change time, students rushed through the corridor to reach their next classroom, but the teacher reminded them to walk properly without running to avoid accidents. Which sentence is correct?",
+                options: [
+                    "Students are walking carefully in the corridor.",
+                    "Students walked yesterday corridor.",
+                    "Students will walk tomorrow.",
+                    "Students are walk fast always."
+                ],
+                correct: 0,
+                explanation: "'Carefully' perfectly shows the manner of walking asked by the teacher to preserve structural student safety protocols."
+            },
+            {
+                q: "During football practice, the coach observed that one team was consistently performing well because they practiced regularly, passed the ball accurately, and followed instructions carefully throughout the session. Which sentence best combines correct adverb usage?",
+                options: [
+                    "The team will playing tomorrow.",
+                    "The team play yesterday good.",
+                    "The team always practices regularly and plays carefully.",
+                    "The team is play fast."
+                ],
+                correct: 2,
+                explanation: "This solution pairs frequency ('always', 'regularly') with proper manner modifiers ('carefully') to reflect all properties of the practice session."
+            }
+        ];
+
+        let currentLapIdx = 0;
+        let pointsEarned = 0;
+        let fuelInterval;
+        let fuelRemaining = 45; // Grade 4 mandate
+        let pitstopAttempts = 0;
+
+        // Visual Spark Generation Elements
+        function generateFuelSparks() {
+            const canvasContainer = document.getElementById('pit-canvas');
+            for (let i = 0; i < 15; i++) {
+                const spark = document.createElement('span');
+                spark.classList.add('exhaust-spark');
+                spark.style.left = `${Math.random() * 100}%`;
+                spark.style.animationDelay = `${Math.random() * 5}s`;
+                spark.style.animationDuration = `${Math.random() * 4 + 5}s`;
+                canvasContainer.appendChild(spark);
+            }
+        }
+
+        // On Load Configuration
+        window.addEventListener('DOMContentLoaded', () => {
+            generateFuelSparks();
+            setTimeout(() => {
+                const brandSplash = document.getElementById('logo-screen');
+                brandSplash.style.transition = 'opacity 0.4s steps(4, end)';
+                brandSplash.style.opacity = 0;
+                setTimeout(() => {
+                    brandSplash.style.display = 'none';
+                    toggleHUDView('intro-screen');
+                }, 400);
+            }, 5000); // Strict branding timing metric
+        });
+
+        function toggleHUDView(viewId) {
+            document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function engageIgnition() {
+            currentLapIdx = 0;
+            pointsEarned = 0;
+            toggleHUDView('quiz-screen');
+            loadRaceLap();
+        }
+
+        function loadRaceLap() {
+            pitstopAttempts = 0;
+            const activeData = adverbsGrid[currentLapIdx];
+            
+            document.getElementById('lap-curr').innerText = currentLapIdx + 1;
+            document.getElementById('lap-total').innerText = adverbsGrid.length;
+            document.getElementById('efficiency-track').innerText = Math.round((pointsEarned / adverbsGrid.length) * 100);
+            document.getElementById('scenario-target').innerText = activeData.q;
+            document.getElementById('next-lap-btn').style.display = 'none';
+            
+            const consoleBox = document.getElementById('radio-console');
+            consoleBox.className = 'pit-radio-feedback';
+            consoleBox.innerText = '';
+
+            const optionsStack = document.getElementById('lane-box');
+            optionsStack.innerHTML = '';
+
+            activeData.options.forEach((optStr, optIdx) => {
+                const laneBtn = document.createElement('button');
+                laneBtn.classList.add('lane-btn');
+                laneBtn.innerText = optStr;
+                laneBtn.onclick = () => monitorTelemetry(optIdx, laneBtn);
+                optionsStack.appendChild(laneBtn);
+            });
+
+            burnFuelGauge();
+        }
+
+        function burnFuelGauge() {
+            clearInterval(fuelInterval);
+            fuelRemaining = 45;
+            const indicator = document.getElementById('fuel-gauge');
+            indicator.style.width = '100%';
+            indicator.style.backgroundColor = 'var(--race-green)';
+
+            fuelInterval = setInterval(() => {
+                fuelRemaining--;
+                let percentRemaining = (fuelRemaining / 45) * 100;
+                indicator.style.width = `${percentRemaining}%`;
+
+                if (fuelRemaining <= 15) {
+                    indicator.style.backgroundColor = 'var(--race-red)';
+                }
+
+                if (fuelRemaining <= 0) {
+                    clearInterval(fuelInterval);
+                    triggerFuelDepletion();
+                }
+            }, 1000);
+        }
+
+        function triggerFuelDepletion() {
+            freezeControls();
+            const activeData = adverbsGrid[currentLapIdx];
+            const consoleBox = document.getElementById('radio-console');
+            
+            try { document.getElementById('sound-fail').play(); } catch(e){}
+
+            consoleBox.className = "pit-radio-feedback explanation";
+            consoleBox.innerText = `FUEL DEPLETED: Pit wall connection error. Correct track vector: "${activeData.options[activeData.correct]}". ${activeData.explanation}`;
+            consoleBox.classList.add('visible');
+
+            forceCorrectHighlight();
+            document.getElementById('next-lap-btn').style.display = 'inline-block';
+        }
+
+        function monitorTelemetry(selectedTrack, elementRef) {
+            const activeData = adverbsGrid[currentLapIdx];
+            const consoleBox = document.getElementById('radio-console');
+
+            if (selectedTrack === activeData.correct) {
+                // Correct Vector Option Chosen
+                clearInterval(fuelInterval);
+                freezeControls();
+                elementRef.classList.add('correct');
+                scatterFlags(elementRef);
+                
+                try { document.getElementById('sound-pass').play(); } catch(e){}
+
+                pointsEarned++;
+                document.getElementById('efficiency-track').innerText = Math.round((pointsEarned / adverbsGrid.length) * 100);
+
+                consoleBox.className = "pit-radio-feedback explanation";
+                consoleBox.innerText = "TELEMETRY CLEAN: " + activeData.explanation;
+                consoleBox.classList.add('visible');
+                document.getElementById('next-lap-btn').style.display = 'inline-block';
+
+            } else {
+                // Incorrect Track Selection
+                pitstopAttempts++;
+                try { document.getElementById('sound-fail').play(); } catch(e){}
+                
+                const penaltyFlag = document.createElement('span');
+                penaltyFlag.classList.add('penalty-cross-marker');
+                penaltyFlag.innerHTML = '&#10006;';
+                elementRef.appendChild(penaltyFlag);
+                elementRef.classList.add('wrong');
+                elementRef.disabled = true;
+
+                if (pitstopAttempts === 1) {
+                    // Allowed Strike One Retry Mechanic
+                    consoleBox.className = "pit-radio-feedback retry";
+                    consoleBox.innerText = "PIT LANE WARNING: Steering error. Modifier does not match scenario parameters. Adjust line and try another choice node!";
+                    consoleBox.classList.add('visible');
+                } else {
+                    // Strike Two Lockout Enforcement
+                    clearInterval(fuelInterval);
+                    freezeControls();
+                    forceCorrectHighlight();
+
+                    consoleBox.className = "pit-radio-feedback explanation";
+                    consoleBox.innerText = `GRID LOCKOUT: True course set to: "${activeData.options[activeData.correct]}". ${activeData.explanation}`;
+                    consoleBox.classList.add('visible');
+                    document.getElementById('next-lap-btn').style.display = 'inline-block';
+                }
+            }
+        }
+
+        function forceCorrectHighlight() {
+            const activeData = adverbsGrid[currentLapIdx];
+            document.getElementById('lane-box').children[activeData.correct].classList.add('correct');
+        }
+
+        function freezeControls() {
+            document.querySelectorAll('.lane-btn').forEach(btn => btn.disabled = true);
+        }
+
+        function scatterFlags(anchorElement) {
+            const bounds = anchorElement.getBoundingClientRect();
+            const ground = document.body;
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('span');
+                particle.classList.add('chequered-spark');
+                particle.innerHTML = '✦';
+                particle.style.left = `${bounds.left + (bounds.width / 2)}px`;
+                particle.style.top = `${bounds.top + (bounds.height / 2)}px`;
+                
+                const angleRad = Math.random() * Math.PI * 2;
+                const radiusLen = Math.random() * 80 + 40;
+                particle.style.setProperty('--px', `${Math.cos(angleRad) * radiusLen}px`);
+                particle.style.setProperty('--py', `${Math.sin(angleRad) * radiusLen}px`);
+
+                ground.appendChild(particle);
+                setTimeout(() => particle.remove(), 550);
+            }
+        }
+
+        function advanceLap() {
+            currentLapIdx++;
+            if (currentLapIdx < adverbsGrid.length) {
+                loadRaceLap();
+            } else {
+                evaluatePodiumArrival();
+            }
+        }
+
+        function evaluatePodiumArrival() {
+            clearInterval(fuelInterval);
+            toggleHUDView('result-screen');
+            document.getElementById('podium-score').innerText = pointsEarned;
+            
+            const evaluationLog = document.getElementById('podium-report');
+            const statusLabel = document.getElementById('podium-status');
+            
+            if (pointsEarned >= 11) {
+                try { document.getElementById('sound-cheer').play(); } catch(e){}
+                statusLabel.innerText = "🏆 P1 PODIUM FINISH!";
+                statusLabel.style.color = "var(--race-green)";
+                evaluationLog.innerText = "Flawless racing lines! You masterfully pinpointed manner, place, and frequency modifiers perfectly across every sector.";
+            } else if (pointsEarned >= 8) {
+                statusLabel.innerText = "🏁 RACE COMPLETE: TOP 5";
+                statusLabel.style.color = "var(--race-orange)";
+                evaluationLog.innerText = "Strong race run. Your speed tracking relative to adverbs is highly consistent. Tweak your manner vs frequency telemetry markers for a perfect win next time.";
+            } else {
+                statusLabel.innerText = "🔧 RETRACTED TO GARAGE";
+                statusLabel.style.color = "var(--race-red)";
+                evaluationLog.innerText = "Mechanical issues encountered on track. Differentiating between where (place), how (manner), and how often (frequency) needs tuning. Re-align and retry.";
+            }
+        }
+
+        function restartIgnition() {
+            engageIgnition();
+        }
+    </script>
+</body>
+</html>
