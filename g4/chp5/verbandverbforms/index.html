@@ -1,1 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 4: Verbs & Verb Forms Challenge</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #16a085;
+            --accent-color: #e74c3c;
+            --bg-gradient: linear-gradient(135deg, #eef2f3 0%, #8e9eab 100%);
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Streams */
+        .ambient-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .streamer {
+            position: absolute;
+            display: block;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float Up 12s linear infinite;
+            bottom: -50px;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-105vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Container & Cards */
+        .container {
+            width: 90%;
+            max-width: 650px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 30px;
+            z-index: 10;
+            position: relative;
+            text-align: center;
+        }
+
+        /* Screens */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Logo Branding Screen */
+        #logo-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #ffffff;
+            z-index: 100;
+        }
+        #logo-screen img {
+            max-width: 250px;
+            height: auto;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Header & Trackers */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-bottom: 2px solid #f1f2f6;
+            padding-bottom: 10px;
+        }
+
+        .timer-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--secondary-color);
+            transition: width 1s linear;
+        }
+
+        /* Question & Options */
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            padding: 14px 20px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        /* Interaction States */
+        .option-btn.correct {
+            background: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
+        }
+
+        .option-btn.wrong {
+            background: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24;
+        }
+
+        /* Action Buttons */
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+
+        .btn:hover { background: #3b5984; }
+
+        /* Feedback Layer */
+        .feedback-box {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .feedback-box.visible { display: block; }
+        .feedback-box.retry { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .feedback-box.explanation { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+
+        /* Visual Indicator Overlays */
+        .cross-indicator {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Confetti Star Animations */
+        .star-confetti {
+            position: absolute;
+            color: #f1c40f;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: explode 0.6s ease-out forwards;
+            z-index: 99;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0.5); opacity: 0; }
+        }
+
+        /* Responsive */
+        @media(max-width: 480px) {
+            .container { padding: 15px; }
+            .question-text { font-size: 1.05rem; }
+            .option-btn { padding: 12px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-animation" id="ambient-bg"></div>
+
+    <div id="logo-screen">
+        <img src="assets/logo.png" alt="Innovine Logo">
+    </div>
+
+    <div class="container">
+        
+        <div id="intro-screen" class="screen">
+            <h1 style="margin-bottom: 15px; color: var(--primary-color);">Verbs & Verb Forms</h1>
+            <p style="font-size: 1.1rem; margin-bottom: 8px; font-weight: 600;">Grade 4 Grammar Challenge</p>
+            <p style="margin-bottom: 25px; color: #7f8c8d; font-size: 0.95rem;">
+                Test your alignment of verbs across real-world situations! You have 45 seconds per question. 
+                You get one retry if you make a mistake.
+            </p>
+            <button class="btn" onclick="startGame()">Start Challenge</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <div>Question: <span id="q-current">1</span>/<span id="q-total">10</span></div>
+                <div>Score: <span id="score-track">0</span></div>
+            </div>
+            <div class="timer-bar-container">
+                <div class="timer-bar" id="t-bar"></div>
+            </div>
+            <div class="question-text" id="q-text">Loading question content...</div>
+            <div class="options-grid" id="options-box"></div>
+            <div class="feedback-box" id="feedback-box"></div>
+            <div style="text-align: right; margin-top: 15px;">
+                <button class="btn" id="next-btn" onclick="nextQuestion()" style="display: none;">Continue</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2 style="color: var(--primary-color); margin-bottom: 15px;" id="result-title">Challenge Complete!</h2>
+            <p style="font-size: 1.3rem; margin-bottom: 20px;">Your Final Score: <strong id="final-score">0</strong> / 10</p>
+            <p id="result-feedback" style="margin-bottom: 25px; color: #555; line-height: 1.4;"></p>
+            <button class="btn" onclick="restartGame()">Try Challenge Again</button>
+        </div>
+
+    </div>
+
+    <audio id="snd-correct" src="assets/correct.mp3" preload="auto"></audio>
+    <audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+    <audio id="snd-cheer" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+    <script>
+        // Competency-based progressively difficult question bank
+        const questions = [
+            {
+                q: "During the morning English lesson, the teacher asked students to describe what they did over the weekend, but one student repeatedly made mistakes like saying “I go to picnic yesterday with my family,” which confused the sentence meaning, so the teacher explained that verbs must change according to time to show whether an action happened in the past, present, or future. Which sentence correctly expresses the same idea in proper past tense?",
+                options: [
+                    "I go to picnic yesterday with my family.",
+                    "I gone to picnic yesterday with my family.",
+                    "I went to picnic yesterday with my family.",
+                    "I going to picnic yesterday with my family."
+                ],
+                correct: 2,
+                explanation: "The verb 'go' is irregular. Its past tense form is 'went'. Options like 'gone' require an auxiliary verb, and 'going' indicates an ongoing action."
+            },
+            {
+                q: "While observing the school garden during science period, students noticed different actions happening like watering, planting, and trimming, and the teacher asked them to describe ongoing actions using correct verb forms so that their sentences clearly show what is happening at the moment of speaking. Which sentence correctly describes an action happening now?",
+                options: [
+                    "She waters the plants now.",
+                    "She is watering the plants now.",
+                    "She watered the plants now.",
+                    "She watering the plants now."
+                ],
+                correct: 1,
+                explanation: "To show an action currently happening in the present continuous tense, use the helping verb 'is/are' combined with the '-ing' form of the verb ('is watering')."
+            },
+            {
+                q: "During sports day practice, students were training for races, long jump, and relay, and the coach kept reminding them that actions happening regularly must be written in simple present tense, while actions happening at this moment must use continuous tense. Which sentence correctly shows a regular action?",
+                options: [
+                    "He is running every morning now.",
+                    "He run every morning.",
+                    "He running every morning.",
+                    "He runs every morning."
+                ],
+                correct: 3,
+                explanation: "For routine, recurring habits with singular subjects ('He'), we append '-s' or '-es' to the base verb in the simple present tense ('runs')."
+            },
+            {
+                q: "In the school library, students were quietly reading different storybooks, and the librarian asked them to describe what they were doing at that exact moment using correct continuous verb forms to show actions happening right now. Which sentence is correct?",
+                options: [
+                    "She is reading a book quietly.",
+                    "She read a book quietly now.",
+                    "She reads a book now yesterday.",
+                    "She reading a book quietly now."
+                ],
+                correct: 0,
+                explanation: "'She is reading' perfectly joins the singular helping verb 'is' with the present participle to frame an active present continuous event."
+            },
+            {
+                q: "During morning assembly, the principal reminded students about discipline and asked them to reflect on their daily habits, especially actions they perform regularly every day in school and at home, and how verbs help describe those repeated actions. Which sentence is correct?",
+                options: [
+                    "We goes to school daily.",
+                    "We going to school daily.",
+                    "We go to school daily.",
+                    "We went to school daily now."
+                ],
+                correct: 2,
+                explanation: "With the plural pronoun subject 'We', the base form of the verb 'go' is standard for routine or repeated present actions."
+            },
+            {
+                q: "On the playground, students were actively playing football, cricket, and skipping, and the teacher asked them to describe what their classmates were doing at that exact moment using correct present continuous tense structures. Which sentence is correct?",
+                options: [
+                    "He play football now.",
+                    "He is playing football now.",
+                    "He played football now.",
+                    "He plays football now yesterday."
+                ],
+                correct: 1,
+                explanation: "'He is playing football now' follows standard subject-verb parameters tracking present continuous real-time execution."
+            },
+            {
+                q: "After checking homework notebooks, the teacher noticed that many students made errors while writing sentences about completed actions from the previous day, especially confusing present and past tense verb forms. Which sentence is correct?",
+                options: [
+                    "She writes a letter yesterday.",
+                    "She wrote a letter yesterday.",
+                    "She writing a letter yesterday.",
+                    "She write a letter yesterday."
+                ],
+                correct: 1,
+                explanation: "The indicator word 'yesterday' shows the action is in the past. 'Wrote' is the correct past tense form of the irregular verb 'write'."
+            },
+            {
+                q: "After returning from a school trip to a zoo and museum, students were asked to write about their experience, including what they saw, what they did, and how they felt during the entire journey using correct past tense verbs. Which sentence is correct?",
+                options: [
+                    "We sees many animals at zoo yesterday.",
+                    "We see many animals at the zoo yesterday.",
+                    "We seeing many animals yesterday.",
+                    "We saw many animals at the zoo yesterday."
+                ],
+                correct: 3,
+                explanation: "'Saw' is the correct simple past tense iteration of 'see', indicating an event completed entirely in the past."
+            },
+            {
+                q: "Students were asked to describe their daily routine in detail, including activities like waking up, brushing teeth, eating breakfast, and going to school, and the teacher explained that such repeated actions require simple present tense verbs. Which sentence is correct?",
+                options: [
+                    "I eat breakfast every morning.",
+                    "I eats breakfast every morning.",
+                    "I eating breakfast every morning.",
+                    "I ate breakfast every morning now."
+                ],
+                correct: 0,
+                explanation: "For simple present tense sentences starting with the pronoun 'I', we use the root form of the verb ('eat') to signify a recurring habit."
+            },
+            {
+                q: "During grammar class, the teacher explained irregular verbs and showed examples where past tense forms do not follow the usual “-ed” rule, and students practiced identifying correct verb forms used in sentences. Which sentence is correct?",
+                options: [
+                    "He goed to school yesterday.",
+                    "He goes to school yesterday.",
+                    "He went to school yesterday.",
+                    "He going to school yesterday."
+                ],
+                correct: 2,
+                explanation: "'Went' is the standard irregular absolute past form of 'go'. Adding '-ed' to create 'goed' is an incorrect over-regularization rule error."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let timerInterval;
+        let timeRemaining = 45; // Grade 4 rule: 45 seconds per question
+        let attemptsCount = 0; // Tracks retry logic state
+
+        // Dynamic Stream Decoration Generation
+        function buildAmbientBg() {
+            const bg = document.getElementById('ambient-bg');
+            for (let i = 0; i < 15; i++) {
+                const streamer = document.createElement('span');
+                streamer.classList.add('streamer');
+                let size = Math.random() * 30 + 10;
+                streamer.style.width = `${size}px`;
+                streamer.style.height = `${size}px`;
+                streamer.style.left = `${Math.random() * 100}%`;
+                streamer.style.animationDelay = `${Math.random() * 8}s`;
+                streamer.style.animationDuration = `${Math.random() * 6 + 8}s`;
+                bg.appendChild(streamer);
+            }
+        }
+
+        // Handle Mandatory Logo Disappearance
+        window.addEventListener('DOMContentLoaded', () => {
+            buildAmbientBg();
+            setTimeout(() => {
+                const logoScreen = document.getElementById('logo-screen');
+                logoScreen.style.transition = 'opacity 0.5s ease';
+                logoScreen.style.opacity = 0;
+                setTimeout(() => {
+                    logoScreen.style.display = 'none';
+                    switchScreen('intro-screen');
+                }, 500);
+            }, 5000); // Strict 5-second mandatory timer
+        });
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startGame() {
+            currentQuestionIdx = 0;
+            score = 0;
+            switchScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            attemptsCount = 0;
+            const qData = questions[currentQuestionIdx];
+            
+            document.getElementById('q-current').innerText = currentQuestionIdx + 1;
+            document.getElementById('q-total').innerText = questions.length;
+            document.getElementById('score-track').innerText = score;
+            document.getElementById('q-text').innerText = qData.q;
+            document.getElementById('next-btn').style.display = 'none';
+            
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.className = 'feedback-box';
+            feedbackBox.innerText = '';
+
+            const optionsBox = document.getElementById('options-box');
+            optionsBox.innerHTML = '';
+
+            qData.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.classList.add('option-btn');
+                button.innerText = option;
+                button.onclick = () => checkAnswer(index, button);
+                optionsBox.appendChild(button);
+            });
+
+            resetAndStartTimer();
+        }
+
+        function resetAndStartTimer() {
+            clearInterval(timerInterval);
+            timeRemaining = 45;
+            const bar = document.getElementById('t-bar');
+            bar.style.width = '100%';
+            bar.style.background = 'var(--secondary-color)';
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                let percent = (timeRemaining / 45) * 100;
+                bar.style.width = `${percent}%`;
+
+                if (timeRemaining <= 15) {
+                    bar.style.background = 'var(--accent-color)';
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleTimeOut() {
+            disableAllOptions();
+            const qData = questions[currentQuestionIdx];
+            const feedbackBox = document.getElementById('feedback-box');
+            
+            try { document.getElementById('snd-wrong').play(); } catch(e){}
+
+            feedbackBox.className = "feedback-box explanation";
+            feedbackBox.innerText = `Time out! The correct answer was: "${qData.options[qData.correct]}". ${qData.explanation}`;
+            feedbackBox.classList.add('visible');
+
+            highlightCorrectAnswer();
+            document.getElementById('next-btn').style.display = 'inline-block';
+        }
+
+        function checkAnswer(selectedIndex, clickedButton) {
+            const qData = questions[currentQuestionIdx];
+            const feedbackBox = document.getElementById('feedback-box');
+
+            if (selectedIndex === qData.correct) {
+                // Correct Answer
+                clearInterval(timerInterval);
+                disableAllOptions();
+                clickedButton.classList.add('correct');
+                triggerStarConfetti(clickedButton);
+                
+                try { document.getElementById('snd-correct').play(); } catch(e){}
+
+                score++;
+                document.getElementById('score-track').innerText = score;
+
+                feedbackBox.className = "feedback-box explanation";
+                feedbackBox.innerText = "Excellent job! " + qData.explanation;
+                feedbackBox.classList.add('visible');
+                document.getElementById('next-btn').style.display = 'inline-block';
+
+            } else {
+                // Incorrect Answer
+                attemptsCount++;
+                try { document.getElementById('snd-wrong').play(); } catch(e){}
+                
+                // Inject visual subtle cross indicator
+                const cross = document.createElement('span');
+                cross.classList.add('cross-indicator');
+                cross.innerHTML = '&#10006;';
+                clickedButton.appendChild(cross);
+                clickedButton.classList.add('wrong');
+                clickedButton.disabled = true;
+
+                if (attemptsCount === 1) {
+                    // Retry Phase
+                    feedbackBox.className = "feedback-box retry";
+                    feedbackBox.innerText = "That choice is not quite right. Think about the timeline rule and try one more time!";
+                    feedbackBox.classList.add('visible');
+                } else {
+                    // Second failure fallback logic
+                    clearInterval(timerInterval);
+                    disableAllOptions();
+                    highlightCorrectAnswer();
+
+                    feedbackBox.className = "feedback-box explanation";
+                    feedbackBox.innerText = `Not quite. The correct answer is: "${qData.options[qData.correct]}". ${qData.explanation}`;
+                    feedbackBox.classList.add('visible');
+                    document.getElementById('next-btn').style.display = 'inline-block';
+                }
+            }
+        }
+
+        function highlightCorrectAnswer() {
+            const optionsBox = document.getElementById('options-box');
+            const qData = questions[currentQuestionIdx];
+            optionsBox.children[qData.correct].classList.add('correct');
+        }
+
+        function disableAllOptions() {
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(btn => btn.disabled = true);
+        }
+
+        function triggerStarConfetti(element) {
+            const rect = element.getBoundingClientRect();
+            const container = document.body;
+            for (let i = 0; i < 12; i++) {
+                const star = document.createElement('span');
+                star.classList.add('star-confetti');
+                star.innerHTML = '★';
+                star.style.left = `${rect.left + (rect.width / 2)}px`;
+                star.style.top = `${rect.top + (rect.height / 2)}px`;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 80 + 40;
+                star.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+                star.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+
+                container.appendChild(star);
+                setTimeout(() => star.remove(), 600);
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            clearInterval(timerInterval);
+            switchScreen('result-screen');
+            document.getElementById('final-score').innerText = score;
+            
+            const rFeedback = document.getElementById('result-feedback');
+            const rTitle = document.getElementById('result-title');
+            
+            if (score >= 9) {
+                try { document.getElementById('snd-cheer').play(); } catch(e){}
+                rTitle.innerText = "🏆 Master Grammarian!";
+                rFeedback.innerText = "Exceptional performance! You perfectly mastered verb alignment and sentence consistency guidelines under pressure.";
+            } else if (score >= 6) {
+                rTitle.innerText = "👍 Great Job!";
+                rFeedback.innerText = "Solid understanding! You identified correct verb tenses accurately across multiple contexts. Review the few missed rules to push further.";
+            } else {
+                rTitle.innerText = "📚 Keep Practicing!";
+                rFeedback.innerText = "Good attempt! Remembering rules for irregular past verbs and time framing markers takes a bit of deliberate practice. Try again!";
+            }
+        }
+
+        function restartGame() {
+            startGame();
+        }
+    </script>
+</body>
+</html>
