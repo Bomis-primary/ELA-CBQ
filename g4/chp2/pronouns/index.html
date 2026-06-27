@@ -6,17 +6,17 @@
 <title>Grade 4 - Pronouns</title>
 <style>
 :root{
-  --bg1:#fff8fb;
-  --bg2:#f3f9ff;
-  --card:#ffffff;
-  --ink:#1d3149;
-  --muted:#607287;
-  --accent:#7c7cff;
-  --accent2:#ff8fb1;
-  --good:#23b26b;
-  --bad:#ef5b6c;
-  --line:#e8eef7;
-  --shadow:0 18px 40px rgba(44,73,117,.12);
+  --bg1:#0f2d1f;
+  --bg2:#1d4d2f;
+  --card:#fffdf4;
+  --ink:#203127;
+  --muted:#5e6d61;
+  --accent:#3ca65c;
+  --accent2:#f0b429;
+  --good:#1fa15a;
+  --bad:#e35a5a;
+  --line:#e7dfc7;
+  --shadow:0 18px 40px rgba(19,52,31,.24);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -25,25 +25,36 @@ body{
   font-family:Arial,Helvetica,sans-serif;
   color:var(--ink);
   background:
-    radial-gradient(circle at 12% 18%, rgba(255,255,255,.95) 0 8%, transparent 9%),
-    radial-gradient(circle at 82% 14%, rgba(255,255,255,.8) 0 6%, transparent 7%),
+    radial-gradient(circle at 15% 20%, rgba(255,255,255,.10) 0 8%, transparent 9%),
+    radial-gradient(circle at 78% 18%, rgba(255,255,255,.10) 0 7%, transparent 8%),
     linear-gradient(160deg,var(--bg1),var(--bg2));
   overflow-x:hidden;
 }
-.bg-shapes,.confetti-layer{
+.bg-leaves,.fireflies,.confetti-layer{
   position:fixed;
   inset:0;
   pointer-events:none;
   overflow:hidden;
 }
-.bg-shapes span{
+.bg-leaves span{
   position:absolute;
-  border-radius:999px;
-  opacity:.45;
-  animation:floatUp linear infinite;
+  border-radius:50% 0 50% 0;
+  background:rgba(82,168,93,.22);
+  transform:rotate(20deg);
+  animation:drift linear infinite;
+}
+.fireflies span{
+  position:absolute;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#fff59b;
+  box-shadow:0 0 14px rgba(255,245,155,.8);
+  opacity:.55;
+  animation:fly linear infinite;
 }
 .card-wrap{
-  max-width:980px;
+  max-width:1040px;
   margin:0 auto;
   padding:14px;
 }
@@ -53,7 +64,6 @@ body{
   border-radius:26px;
   overflow:hidden;
   box-shadow:var(--shadow);
-  border:1px solid rgba(255,255,255,.7);
 }
 .topbar{
   display:flex;
@@ -62,7 +72,7 @@ body{
   gap:10px;
   flex-wrap:wrap;
   padding:14px 16px;
-  background:linear-gradient(90deg,#fff7fb,#f7fbff);
+  background:linear-gradient(90deg,#fffaf1,#f3fff3);
   border-bottom:1px solid var(--line);
 }
 .badge{
@@ -70,10 +80,10 @@ body{
   border-radius:999px;
   font-size:14px;
   font-weight:800;
-  color:#38506b;
-  background:#f2f6fb;
+  color:#33503b;
+  background:#eff7ea;
 }
-.badge.time{background:#fff0f4;color:#bc4860}
+.badge.time{background:#fff1d8;color:#9c6b10}
 .screen{display:none;padding:18px}
 .screen.active{display:block;animation:fadeIn .25s ease}
 .hero{
@@ -93,7 +103,7 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  box-shadow:0 14px 32px rgba(110,121,148,.18);
+  box-shadow:0 14px 32px rgba(20,44,25,.18);
 }
 .logo-wrap img{
   width:100%;
@@ -102,13 +112,13 @@ body{
 }
 .instruction{
   width:min(760px,100%);
-  background:#fcfdff;
+  background:#fffef7;
   border:1px solid var(--line);
   border-radius:18px;
   padding:16px;
   text-align:left;
   line-height:1.55;
-  box-shadow:0 8px 20px rgba(90,116,149,.06);
+  box-shadow:0 8px 20px rgba(34,54,30,.08);
 }
 .btn{
   border:none;
@@ -117,13 +127,13 @@ body{
   font-weight:800;
   font-size:16px;
   color:#fff;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  background:linear-gradient(135deg,var(--accent),#2f7f44);
   cursor:pointer;
-  box-shadow:0 10px 20px rgba(124,124,255,.2);
+  box-shadow:0 10px 20px rgba(58,144,84,.22);
 }
 .btn.secondary{
-  background:#eef4ff;
-  color:#2d4a91;
+  background:#f3f0df;
+  color:#61562b;
   box-shadow:none;
 }
 .btn:disabled{opacity:.5;cursor:not-allowed}
@@ -138,12 +148,12 @@ body{
 .pill{
   padding:9px 12px;
   border-radius:999px;
-  background:#f4f7fb;
-  color:#31475e;
+  background:#edf7e8;
+  color:#35513c;
   font-size:14px;
   font-weight:800;
 }
-.pill.time{background:#fff0f4;color:#bc4860}
+.pill.time{background:#fff1d8;color:#9c6b10}
 .qtitle{
   font-size:clamp(20px,3.5vw,28px);
   line-height:1.45;
@@ -156,7 +166,7 @@ body{
 }
 .option{
   border:2px solid var(--line);
-  background:#fbfdff;
+  background:#fffdf6;
   color:var(--ink);
   border-radius:18px;
   padding:16px 14px;
@@ -166,9 +176,9 @@ body{
   min-height:66px;
   cursor:pointer;
 }
-.option:hover{transform:translateY(-1px);border-color:#c6d7ff}
+.option:hover{transform:translateY(-1px);border-color:#b8d8b9}
 .option.correct{border-color:var(--good);background:#eefaf3}
-.option.wrong{border-color:var(--bad);background:#fff1f4}
+.option.wrong{border-color:var(--bad);background:#fff2f2}
 .option.dim{opacity:.66}
 .footer{
   display:flex;
@@ -183,7 +193,7 @@ body{
   margin-top:14px;
   padding:14px;
   border-radius:16px;
-  background:#f8fbff;
+  background:#fbfff7;
   border:1px solid var(--line);
   line-height:1.5;
 }
@@ -197,7 +207,7 @@ body{
 }
 .final-panel{
   margin-top:16px;
-  background:#f8fbff;
+  background:#fbfff7;
   border:1px solid var(--line);
   border-radius:18px;
   padding:14px;
@@ -227,9 +237,32 @@ body{
   z-index:20;
   pointer-events:none;
 }
+table.quiz-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  font-size:15px;
+}
+.quiz-table th,.quiz-table td{
+  border:1px solid #d8e4d4;
+  padding:10px;
+  vertical-align:top;
+}
+.quiz-table th{
+  background:#eef8e8;
+  text-align:left;
+}
 @keyframes fadeIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes floatUp{from{transform:translateY(110vh)}to{transform:translateY(-120px)}}
 @keyframes starPop{0%{opacity:1;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-110px) scale(1.25) rotate(40deg)}}
+@keyframes drift{
+  0%{transform:translateY(110vh) rotate(20deg)}
+  100%{transform:translateY(-120px) rotate(20deg)}
+}
+@keyframes fly{
+  0%{transform:translateY(110vh) translateX(0);opacity:.1}
+  50%{opacity:.8}
+  100%{transform:translateY(-120px) translateX(60px);opacity:.1}
+}
 @media (max-width:700px){
   .options{grid-template-columns:1fr}
   .logo-wrap{width:128px;height:128px}
@@ -237,7 +270,8 @@ body{
 </style>
 </head>
 <body>
-<div class="bg-shapes" id="bgShapes"></div>
+<div class="bg-leaves" id="bgLeaves"></div>
+<div class="fireflies" id="fireflies"></div>
 <div class="confetti-layer" id="confettiLayer"></div>
 <div class="cross" id="crossMark">✕</div>
 
@@ -273,16 +307,17 @@ body{
 
     <div class="screen" id="quizScreen">
       <div class="quiz-head">
-        <div class="pill" id="modePill">Chapter-based MCQ</div>
+        <div class="pill" id="modePill">Jungle Grammar Quiz</div>
         <div class="pill time" id="liveTimer">45s</div>
       </div>
       <h2 class="qtitle" id="questionText"></h2>
+      <div id="questionExtra"></div>
       <div class="options" id="optionsBox"></div>
       <div class="explain" id="explainBox"></div>
       <div class="footer">
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
           <div class="pill" id="attemptPill">Attempts left: 2</div>
-          <div class="pill">Competency-based</div>
+          <div class="pill">Pronouns practice</div>
         </div>
         <button type="button" class="btn secondary" id="nextBtn" disabled>Next</button>
       </div>
@@ -313,137 +348,190 @@ body{
 
 <script>
 const quizData = [
-  { q:"During an activity, students were taken to the school heritage wall. It displayed photographs of old school events, names of former principals, and quotes about discipline and honesty. Some words referred to real people and places, while others represented ideas and values that cannot be seen or touched. Which option correctly identifies the abstract nouns used in the heritage wall?", o:["school, wall","principals, events","honesty, discipline","photographs, names"], a:2, e:"Honesty and discipline are abstract nouns because they name ideas and values that cannot be seen or touched." },
-  { q:"The school auditorium was decorated for Annual Day. Chairs were arranged in rows, banners were hung with the name of the school, and students practiced dance performances. The principal appreciated the effort and praised the teamwork shown by everyone. Which option correctly identifies the proper noun from the situation?", o:["Annual Day","school","auditorium","chairs"], a:0, e:"Annual Day is a specific event name, so it is a proper noun." },
-  { q:"During a group project in the school library, students were asked to collect information about different books and authors. They also noted how books are arranged in sections and how each section is named. While writing their report, they noticed that some words referred to specific names, while others referred to general categories of objects or people. Which option correctly identifies the proper noun used in this situation?", o:["books","Harry Potter","library","sections"], a:1, e:"Harry Potter is a specific name of a book, so it is a proper noun." },
-  { q:"In the science lab, students observed different materials such as water, salt, glass jars, and metal spoons. The teacher explained that some substances can be measured or counted easily, while others exist in forms that cannot be counted individually but can only be measured in quantity. Which option correctly identifies an uncountable noun from the situation?", o:["spoons","jars","students","water"], a:3, e:"Water is an uncountable noun because it cannot be counted individually." },
-  { q:"During sports practice, students were divided into teams and participated in relay races, jumping drills, and cheering activities. The teacher noticed that the atmosphere was full of excitement and determination, which helped the students perform better as a team. Which option correctly identifies the abstract nouns in this situation?", o:["excitement, determination","jumping, drills","teams, races","students, teacher"], a:0, e:"Excitement and determination are feelings and qualities, so they are abstract nouns." },
-  { q:"During lunch break, students visited the school canteen. They saw different food items like rice, milk, bananas, juice, and sugar being served. The teacher explained that some food items can be counted as individual pieces, while others are measured as quantities and cannot be counted one by one. Which option correctly identifies only uncountable nouns from this situation?", o:["bananas, rice","milk, sugar","chairs, tables","apples, oranges"], a:1, e:"Milk and sugar cannot be counted individually and are uncountable nouns." },
-  { q:"In the morning assembly, the principal spoke about the importance of honesty, kindness, and discipline. Students were asked to reflect on how these values help them become better individuals in school and in life. Which option correctly identifies the abstract nouns used in the speech?", o:["principal, students","school, assembly","honesty, discipline","life, school"], a:2, e:"Honesty and discipline are abstract nouns representing qualities." },
-  { q:"Students went on a field trip to Delhi. They visited historical monuments, travelled through busy roads, and observed how people live in a large city. The teacher explained that some words refer to specific names of places, while others refer to general objects or locations. Which option correctly identifies the proper noun from the passage?", o:["city","monuments","roads","Delhi"], a:3, e:"Delhi is a specific name of a city, so it is a proper noun." },
-  { q:"During a science activity, students were taken to the school garden. They observed different elements such as soil, flowers, trees, water pipes, and insects. The teacher explained that some nouns refer to things that can be counted individually, while others refer to materials or substances that cannot be counted one by one. Which option correctly identifies only countable nouns from the situation?", o:["soil, water","flowers, trees","water, soil","air, soil"], a:1, e:"Flowers and trees can be counted as individual items, so they are countable nouns." },
-  { q:"At the end of the week, the teacher asked students to reflect on their learning journey. Students shared thoughts about teamwork, confidence, and fear they experienced during presentations. The teacher explained that some nouns describe physical objects, while others describe feelings or states of mind that cannot be seen or touched. Which option correctly identifies only abstract nouns from the situation?", o:["teamwork, confidence","classroom, teacher","students, presentations","week, activity"], a:0, e:"Teamwork and confidence are abstract nouns because they represent feelings and ideas." }
+  { q:"On a bright afternoon during school recess, Reena was playing with her classmates in the playground and kept repeating her own name while speaking to her friends, which made her sentences sound repetitive and unnatural, so the teacher stepped in and explained that pronouns should be used to replace repeated nouns for smoother communication. Which option correctly rewrites the situation using pronouns?", o:["Reena is playing with her friends and she is enjoying herself in the playground.","Reena is playing Reena with Reena friends.","She is playing she friends in playground.","Reena play Reena is happy Reena."], a:0, e:"She replaces the repeated noun Reena and makes the sentence smoother and clearer." },
+  { q:"During an English speaking activity in the classroom, one student repeatedly said sentences like “Him is my friend and me likes he very much,” while describing his classmate, and the teacher corrected the student by explaining that subject and object pronouns must be used correctly to form meaningful and grammatically accurate sentences. Which corrected sentence is grammatically accurate?", o:["I is friend and him like I.","Him is my friend and me like he very much.","He is my friend and me likes him very much.","He is my friend and I like him very much."], a:3, e:"I is the correct subject pronoun with like, and him is the correct object pronoun." },
+  { q:"In the school library, students were exploring different books placed on tables and shelves, and the teacher pointed at nearby books and distant reference materials while explaining how words like this, that, these, and those are used to indicate proximity and number in a clear and meaningful way. Which sentence uses demonstrative pronouns correctly?", o:["These are the books on the table near me.","This are books on shelf far.","Those is a book near me.","That are books here."], a:0, e:"These is used correctly for nearby plural books." },
+  { q:"While travelling back home in the school bus after a field trip, students were talking about their belongings like notebooks, water bottles, and lunch boxes, and the teacher noticed that many students were using incorrect forms such as “This is my” instead of proper possessive pronouns that clearly show ownership. Which sentence is correct?", o:["This water bottle is my.","This water bottle is mine.","This water bottle is me.","This water bottle is I."], a:1, e:"Mine shows ownership correctly." },
+  { q:"During physical education class on the sports ground, the coach observed Rohan running very fast and told other students to describe his actions without repeating his name again and again so that the sentences sound more natural and fluent. Which option correctly replaces repeated nouns with pronouns?", o:["She is running fast and she trains daily.","Him is running fast and him trains daily.","He is running very fast and he trains daily.","It is running fast and it trains daily."], a:2, e:"He is the correct subject pronoun for Rohan." },
+  { q:"In the morning assembly, the principal delivered a speech where he repeatedly mentioned “students must respect teachers and students must follow rules,” and later the English teacher explained that such repetition can be avoided by using appropriate pronouns to make sentences more fluent and natural. Which corrected version is best?", o:["It must respect teachers.","He must respect teachers always.","They must respect teachers and follow rules.","She must respect teachers and rules."], a:2, e:"They replaces the repeated noun students and keeps the sentence correct." },
+  { q:"After returning from a city field trip to Delhi, students wrote reports where they kept repeating “Delhi is big, Delhi is crowded, Delhi is historic,” and the teacher asked them to rewrite the paragraph using suitable pronouns to avoid repetition and improve readability. Which rewrite is correct?", o:["They is big and crowded.","He is big, he is crowded.","She is big, she is historic.","It is big, it is crowded, it is historic."], a:3, e:"It is the suitable pronoun for the city Delhi." },
+  { q:"In a group discussion activity, students were sharing their experiences, but one student said, “Me and her are working on the project together,” which the teacher corrected by explaining proper subject pronoun usage for formal and correct sentence formation. Which correction is appropriate?", o:["Me and her is working project.","She and I are working on the project together.","I and her are working project.","Her and me works together."], a:1, e:"She and I uses correct subject pronouns." },
+  { q:"Students analyzed sentences written on the board and categorized pronouns based on their type during an English grammar activity. Sentence: “This is my book.” Student Classification: Demonstrative Pronoun. Sentence: “He is my friend.” Student Classification: Subject Pronoun. Sentence: “That is your bag.” Student Classification: Possessive Pronoun. Sentence: “They are playing.” Student Classification: Object Pronoun. Which correction is needed?", o:["“That is your bag” is incorrectly classified as possessive pronoun","“They are playing” should be object pronoun instead of subject pronoun","“This is my book” should be object pronoun","“He is my friend” should be demonstrative pronoun"], a:1, e:"They are playing uses a subject pronoun, not an object pronoun." },
+  { q:"After completing a collaborative class project, students were asked to write reflective sentences, and one student wrote “We completed the project and we are proud of us,” which the teacher later explained needs correction in object pronoun usage to make the sentence grammatically accurate. Which is the correct sentence?", o:["We are proud of ourselves.","We are proud of us.","Us are proud of we.","We proud of us is happy."], a:0, e:"Ourselves is the correct reflexive pronoun here." }
 ];
 
-const finalChallenge = { q:"Final challenge: In the sentence “The students showed honesty during the game,” which noun is abstract?", o:["students","honesty","game","The"], a:1, e:"Honesty is an idea or quality, so it is an abstract noun." };
+const finalChallenge = {
+  q: "Final challenge: Choose the best pronoun sentence.",
+  extra: [
+    {
+      type: "sentence",
+      text: "Riya and Anu finished the work by _____."
+    }
+  ],
+  o: ["themself","themselves","theyself","ourselves"],
+  a: 1,
+  e: "The correct reflexive pronoun for plural people is themselves."
+};
 
-let currentIndex=0, score=0, attemptsLeft=2, locked=false, timeLeft=45, timerId=null, finalMode=false, wrongFirstAttempts=0;
-const el=id=>document.getElementById(id);
+let currentIndex = 0, score = 0, attemptsLeft = 2, locked = false, timeLeft = 45, timerId = null, finalMode = false, wrongFirstAttempts = 0;
+const el = id => document.getElementById(id);
 
-function showScreen(name){
-  ["splashScreen","instructionScreen","quizScreen","finalScreen","resultScreen"].forEach(id=>el(id).classList.remove("active"));
-  el(name).classList.add("active");
-}
-function buildBackground(){
-  const colors=["#ffd7e5","#d7f2ff","#fff1bf","#d8ffe8","#e5dcff"];
-  for(let i=0;i<18;i++){
+function buildBackground() {
+  const leafPositions = [
+    [5,5],[12,18],[88,8],[82,20],[3,70],[10,86],[90,72],[78,88],[25,4],[62,6],[30,90],[66,92]
+  ];
+  leafPositions.forEach((p,i)=>{
     const s=document.createElement("span");
-    s.style.left=Math.random()*100+"%";
-    s.style.top=Math.random()*100+"%";
-    s.style.width=(22+Math.random()*52)+"px";
-    s.style.height=s.style.width;
-    s.style.background=colors[i%colors.length];
-    s.style.animationDuration=(14+Math.random()*16)+"s";
-    s.style.animationDelay=Math.random()*8+"s";
-    s.style.opacity=.35+Math.random()*.25;
-    document.getElementById("bgShapes").appendChild(s);
+    s.style.left=p[0]+"%";
+    s.style.top=p[1]+"%";
+    s.style.width=(80+Math.random()*60)+"px";
+    s.style.height=(24+Math.random()*24)+"px";
+    s.style.opacity=.18;
+    s.style.animationDuration=(28+Math.random()*20)+"s";
+    s.style.animationDelay=(i*1.4)+"s";
+    document.getElementById("bgLeaves").appendChild(s);
+  });
+  for(let i=0;i<18;i++){
+    const f=document.createElement("span");
+    f.style.left=Math.random()*100+"%";
+    f.style.top=(Math.random()*100)+"%";
+    f.style.animationDuration=(14+Math.random()*10)+"s";
+    f.style.animationDelay=(Math.random()*8)+"s";
+    document.getElementById("fireflies").appendChild(f);
   }
 }
-function data(){ return finalMode ? finalChallenge : quizData[currentIndex]; }
-function playAudio(src){
-  const a=new Audio(src);
-  a.preload="auto";
-  a.play().catch(()=>{});
+
+function showScreen(name) {
+  ["splashScreen","instructionScreen","quizScreen","finalScreen","resultScreen"].forEach(id => el(id).classList.remove("active"));
+  el(name).classList.add("active");
 }
-function startTimer(){
+
+function data() { return finalMode ? finalChallenge : quizData[currentIndex]; }
+
+function playAudio(src) {
+  const audio = new Audio(src);
+  audio.preload = "auto";
+  audio.play().catch(() => {});
+}
+
+function startTimer() {
   clearInterval(timerId);
-  timeLeft=45;
-  el("timerBadge").textContent="Time: "+timeLeft+"s";
-  el("liveTimer").textContent=timeLeft+"s";
-  timerId=setInterval(()=>{
+  timeLeft = 45;
+  el("timerBadge").textContent = "Time: " + timeLeft + "s";
+  el("liveTimer").textContent = timeLeft + "s";
+  timerId = setInterval(() => {
     timeLeft--;
-    el("timerBadge").textContent="Time: "+timeLeft+"s";
-    el("liveTimer").textContent=timeLeft+"s";
-    if(timeLeft<=0){
+    el("timerBadge").textContent = "Time: " + timeLeft + "s";
+    el("liveTimer").textContent = timeLeft + "s";
+    if (timeLeft <= 0) {
       clearInterval(timerId);
       handleWrong(true);
     }
-  },1000);
+  }, 1000);
 }
-function renderQuestion(){
-  locked=false;
-  attemptsLeft=2;
-  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
-  el("qBadge").textContent=finalMode ? "Final challenge" : `Question ${currentIndex+1}/10`;
-  el("questionText").textContent=data().q;
-  el("optionsBox").innerHTML="";
-  el("explainBox").style.display="none";
-  el("nextBtn").disabled=true;
-  el("nextBtn").textContent=finalMode ? "See Result" : "Next";
-  data().o.forEach((opt,idx)=>{
-    const b=document.createElement("button");
-    b.type="button";
-    b.className="option";
-    b.textContent=String.fromCharCode(65+idx)+". "+opt;
-    b.onclick=()=>chooseAnswer(idx,b);
-    el("optionsBox").appendChild(b);
+
+function renderQuestion() {
+  locked = false;
+  attemptsLeft = 2;
+  el("attemptPill").textContent = "Attempts left: " + attemptsLeft;
+  el("qBadge").textContent = finalMode ? "Final challenge" : `Question ${currentIndex + 1}/10`;
+  el("questionText").textContent = data().q;
+  el("questionExtra").innerHTML = "";
+  if (finalMode && data().extra) {
+    el("questionExtra").innerHTML = `<div class="instruction" style="margin:0 0 14px;background:#fbfff4"><strong>${data().extra[0].text}</strong></div>`;
+  }
+  el("optionsBox").innerHTML = "";
+  el("explainBox").style.display = "none";
+  el("nextBtn").disabled = true;
+  el("nextBtn").textContent = finalMode ? "See Result" : "Next";
+  data().o.forEach((opt, idx) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "option";
+    btn.textContent = String.fromCharCode(65 + idx) + ". " + opt;
+    btn.onclick = () => chooseAnswer(idx, btn);
+    el("optionsBox").appendChild(btn);
   });
   startTimer();
 }
-function showCross(){
-  const c=el("crossMark");
-  c.classList.add("show");
-  setTimeout(()=>c.classList.remove("show"),320);
+
+function renderTableQuestion() {
+  const html = `
+  <table class="quiz-table">
+    <thead>
+      <tr><th>Sentence</th><th>Student Classification</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>This is my book.</td><td>Demonstrative Pronoun</td></tr>
+      <tr><td>He is my friend.</td><td>Subject Pronoun</td></tr>
+      <tr><td>That is your bag.</td><td>Possessive Pronoun</td></tr>
+      <tr><td>They are playing.</td><td>Object Pronoun</td></tr>
+    </tbody>
+  </table>`;
+  el("questionExtra").innerHTML = html;
 }
-function starConfetti(){
-  for(let i=0;i<16;i++){
-    const c=document.createElement("div");
-    c.className="confetti-star";
-    c.textContent="✦";
-    c.style.left=45+Math.random()*10+"%";
-    c.style.top=42+Math.random()*10+"%";
-    c.style.animationDelay=Math.random()*0.18+"s";
+
+function showCross() {
+  const cross = el("crossMark");
+  cross.classList.add("show");
+  setTimeout(() => cross.classList.remove("show"), 320);
+}
+
+function starConfetti() {
+  for (let i = 0; i < 16; i++) {
+    const c = document.createElement("div");
+    c.className = "confetti-star";
+    c.textContent = "✦";
+    c.style.left = 45 + Math.random() * 10 + "%";
+    c.style.top = 42 + Math.random() * 10 + "%";
+    c.style.animationDelay = Math.random() * 0.18 + "s";
     document.getElementById("confettiLayer").appendChild(c);
-    setTimeout(()=>c.remove(),1050);
+    setTimeout(() => c.remove(), 1050);
   }
 }
-function revealCorrect(){
-  const d=data();
-  [...document.querySelectorAll(".option")].forEach((btn,idx)=>{
-    btn.disabled=true;
-    if(idx===d.a) btn.classList.add("correct");
+
+function revealCorrect() {
+  const d = data();
+  [...document.querySelectorAll(".option")].forEach((btn, idx) => {
+    btn.disabled = true;
+    if (idx === d.a) btn.classList.add("correct");
     else btn.classList.add("dim");
   });
-  el("explainBox").style.display="block";
-  el("explainBox").textContent="Correct answer: "+String.fromCharCode(65+d.a)+". "+d.o[d.a]+" — "+d.e;
-  el("nextBtn").disabled=false;
+  el("explainBox").style.display = "block";
+  el("explainBox").textContent = "Correct answer: " + String.fromCharCode(65 + d.a) + ". " + d.o[d.a] + " — " + d.e;
+  el("nextBtn").disabled = false;
 }
-function handleWrong(fromTimeout=false){
-  if(!fromTimeout){ showCross(); playAudio("assets/wrong.mp3"); }
+
+function handleWrong(fromTimeout = false) {
+  if (!fromTimeout) {
+    showCross();
+    playAudio("assets/wrong.mp3");
+  }
   attemptsLeft--;
-  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
-  if(attemptsLeft>0 && !fromTimeout){
+  el("attemptPill").textContent = "Attempts left: " + attemptsLeft;
+  if (attemptsLeft > 0 && !fromTimeout) {
     wrongFirstAttempts++;
-    el("explainBox").style.display="block";
-    el("explainBox").textContent="Try once more. Read the sentence carefully and choose the pronoun.";
+    el("explainBox").style.display = "block";
+    el("explainBox").textContent = "Try once more. Read the sentence carefully and choose the pronoun.";
     return;
   }
   clearInterval(timerId);
-  locked=true;
+  locked = true;
   revealCorrect();
 }
-function chooseAnswer(i,btn){
-  if(locked) return;
-  const d=data();
-  if(i===d.a){
+
+function chooseAnswer(i, btn) {
+  if (locked) return;
+  const d = data();
+  if (i === d.a) {
     clearInterval(timerId);
-    locked=true;
+    locked = true;
     btn.classList.add("correct");
     score++;
-    el("scoreBadge").textContent="Score: "+score;
-    el("explainBox").style.display="block";
-    el("explainBox").textContent="Correct: "+d.e;
-    el("nextBtn").disabled=false;
+    el("scoreBadge").textContent = "Score: " + score;
+    el("explainBox").style.display = "block";
+    el("explainBox").textContent = "Correct: " + d.e;
+    el("nextBtn").disabled = false;
     starConfetti();
     playAudio("assets/correct.mp3");
     return;
@@ -452,44 +540,46 @@ function chooseAnswer(i,btn){
   showCross();
   handleWrong(false);
 }
-function showResults(){
+
+function showResults() {
   showScreen("resultScreen");
-  el("resultTitle").textContent=score>=9 ? "Excellent work!" : score>=6 ? "Great job!" : "Keep practicing!";
-  el("resultText").textContent=`You scored ${score} out of 10. First-retry uses: ${wrongFirstAttempts}.`;
-  el("reviewPanel").innerHTML="<strong>What this chapter practiced</strong><br>Pronouns in realistic Grade 4 situations, with careful reading and quick thinking.";
+  el("resultTitle").textContent = score >= 9 ? "Excellent work!" : score >= 6 ? "Great job!" : "Keep practicing!";
+  el("resultText").textContent = `You scored ${score} out of 10. First-retry uses: ${wrongFirstAttempts}.`;
+  el("reviewPanel").innerHTML = "<strong>What this chapter practiced</strong><br>Pronouns in realistic Grade 4 situations, with correct usage of subject, object, possessive, demonstrative, and reflexive pronouns.";
 }
-function nextStep(){
-  if(finalMode){
+
+function nextStep() {
+  if (finalMode) {
     showResults();
     playAudio("assets/freesound_community-claps-44774.mp3");
     return;
   }
   currentIndex++;
-  if(currentIndex<quizData.length) renderQuestion();
+  if (currentIndex < quizData.length) renderQuestion();
   else showScreen("finalScreen");
 }
 
-el("startBtn").onclick=()=>{
+el("startBtn").onclick = () => {
   showScreen("quizScreen");
-  currentIndex=0;
-  score=0;
-  wrongFirstAttempts=0;
-  finalMode=false;
-  el("scoreBadge").textContent="Score: 0";
-  el("modePill").textContent="Chapter-based MCQ";
+  currentIndex = 0;
+  score = 0;
+  wrongFirstAttempts = 0;
+  finalMode = false;
+  el("scoreBadge").textContent = "Score: 0";
+  el("modePill").textContent = "Jungle Grammar Quiz";
   renderQuestion();
 };
-el("nextBtn").onclick=nextStep;
-el("finalStartBtn").onclick=()=>{
-  finalMode=true;
+el("nextBtn").onclick = nextStep;
+el("finalStartBtn").onclick = () => {
+  finalMode = true;
   showScreen("quizScreen");
-  el("modePill").textContent="Final challenge";
+  el("modePill").textContent = "Final challenge";
   renderQuestion();
 };
-el("restartBtn").onclick=()=>location.reload();
+el("restartBtn").onclick = () => location.reload();
 
 buildBackground();
-setTimeout(()=>showScreen("instructionScreen"),5000);
+setTimeout(() => showScreen("instructionScreen"), 5000);
 </script>
 </body>
 </html>
