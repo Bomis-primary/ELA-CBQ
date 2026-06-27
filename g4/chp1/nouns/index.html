@@ -6,11 +6,11 @@
 <title>Grade 4 - Nouns</title>
 <style>
 :root{
-  --bg1:#f6fbff;
+  --bg1:#f7fbff;
   --bg2:#edf6ff;
   --card:#ffffff;
-  --ink:#19324b;
-  --muted:#607489;
+  --ink:#17324d;
+  --muted:#5e7288;
   --accent:#4f7cff;
   --accent2:#7358ff;
   --good:#24b36b;
@@ -95,9 +95,9 @@ body{
   padding:14px 10px 24px;
 }
 .logo-wrap{
-  width:140px;
-  height:140px;
-  border-radius:30px;
+  width:150px;
+  height:150px;
+  border-radius:34px;
   overflow:hidden;
   background:#fff;
   box-shadow:var(--shadow);
@@ -112,7 +112,7 @@ body{
   display:block;
 }
 .title{
-  font-size:clamp(30px,5vw,48px);
+  font-size:clamp(28px,5vw,44px);
   line-height:1.1;
   margin:0;
 }
@@ -123,21 +123,15 @@ body{
   font-size:16px;
   margin:0;
 }
-.meta-grid{
-  width:100%;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-.info{
+.instruction{
   background:#f8fbff;
   border:1px solid var(--line);
   border-radius:16px;
-  padding:14px;
+  padding:16px;
+  width:min(760px,100%);
   text-align:left;
-  line-height:1.45;
+  line-height:1.5;
 }
-.info strong{display:block;margin-bottom:6px}
 .btn{
   border:none;
   border-radius:16px;
@@ -275,16 +269,14 @@ body{
   box-shadow:var(--shadow);
 }
 .modal-card p{color:var(--muted);margin-top:8px}
-.brand{font-size:13px;color:#64778b;margin-top:2px}
 @keyframes fadeIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes floatUp{from{transform:translateY(110vh)}to{transform:translateY(-120px)}}
 @keyframes driftUp{from{transform:translateY(115vh)}to{transform:translateY(-160px)}}
 @keyframes starPop{0%{opacity:1;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-110px) scale(1.25) rotate(40deg)}}
 @media (max-width:700px){
   .options{grid-template-columns:1fr}
-  .meta-grid{grid-template-columns:1fr}
   .title{font-size:30px}
-  .logo-wrap{width:120px;height:120px}
+  .logo-wrap{width:126px;height:126px}
 }
 </style>
 </head>
@@ -307,16 +299,20 @@ body{
         <div class="logo-wrap">
           <img src="assets/logo.png" alt="Innovine logo">
         </div>
-        <div>
-          <h1 class="title">Nouns</h1>
-          <p class="sub">Grade 4 chapter-based MCQ interactive. Read each situation carefully, choose the best answer, use one retry if needed, and complete the final challenge to see your result.</p>
-        </div>
-        <div class="meta-grid">
-          <div class="info"><strong>What to expect</strong>Competency-based questions from the full topic, with gradually increasing difficulty and clear feedback after every attempt.</div>
-          <div class="info"><strong>Timer</strong>45 seconds per question for Grade 4 and above.</div>
+      </div>
+    </div>
+
+    <div class="screen" id="instructionsScreen">
+      <div class="hero">
+        <div class="instruction">
+          <strong>Instructions for students</strong><br><br>
+          Read each question carefully.<br>
+          Choose the best answer from 4 options.<br>
+          You get one retry if your first answer is wrong.<br>
+          If you miss again, the correct answer and a short explanation will appear.<br>
+          Answer before the timer ends.
         </div>
         <button type="button" class="btn" id="startBtn">Start Quiz</button>
-        <div class="brand">Innovine</div>
       </div>
     </div>
 
@@ -365,8 +361,6 @@ body{
     <div class="logo-wrap" style="margin:0 auto 12px">
       <img src="assets/logo.png" alt="Innovine logo">
     </div>
-    <h3 style="margin:0">Innovine</h3>
-    <p>Brand splash for the first 5 seconds</p>
   </div>
 </div>
 
@@ -392,14 +386,7 @@ const finalChallenge = {
 };
 
 const timerPerQuestion = 45;
-let currentIndex = 0;
-let score = 0;
-let attemptsLeft = 2;
-let locked = false;
-let timeLeft = timerPerQuestion;
-let timerId = null;
-let finalMode = false;
-let wrongFirstAttempts = 0;
+let currentIndex = 0, score = 0, attemptsLeft = 2, locked = false, timeLeft = timerPerQuestion, timerId = null, finalMode = false, wrongFirstAttempts = 0;
 const el = id => document.getElementById(id);
 
 function buildBackground() {
@@ -421,13 +408,11 @@ function buildBackground() {
 }
 
 function showScreen(name) {
-  ["introScreen", "quizScreen", "finalScreen", "resultScreen"].forEach(id => el(id).classList.remove("active"));
+  ["introScreen", "instructionsScreen", "quizScreen", "finalScreen", "resultScreen"].forEach(id => el(id).classList.remove("active"));
   el(name).classList.add("active");
 }
 
-function data() {
-  return finalMode ? finalChallenge : quizData[currentIndex];
-}
+function data() { return finalMode ? finalChallenge : quizData[currentIndex]; }
 
 function playAudio(src) {
   const audio = new Audio(src);
@@ -493,8 +478,7 @@ function showCross() {
 
 function revealCorrect() {
   const d = data();
-  const buttons = [...document.querySelectorAll(".option")];
-  buttons.forEach((btn, idx) => {
+  [...document.querySelectorAll(".option")].forEach((btn, idx) => {
     btn.disabled = true;
     if (idx === d.a) btn.classList.add("correct");
     else btn.classList.add("dim");
@@ -504,15 +488,7 @@ function revealCorrect() {
   el("nextBtn").disabled = false;
 }
 
-function markWrongOption(button) {
-  button.classList.add("wrong");
-  button.classList.add("shake");
-  setTimeout(() => button.classList.remove("shake"), 250);
-}
-
 function handleWrong(fromTimeout = false) {
-  const buttons = [...document.querySelectorAll(".option")];
-  if (!buttons.length) return;
   if (!fromTimeout) {
     showCross();
     playAudio("assets/wrong.mp3");
@@ -525,20 +501,16 @@ function handleWrong(fromTimeout = false) {
     el("explainBox").textContent = "Try once more. Read the situation carefully and think about the noun type.";
     return;
   }
-  stopTimer();
+  clearInterval(timerId);
   locked = true;
   revealCorrect();
-}
-
-function stopTimer() {
-  clearInterval(timerId);
 }
 
 function chooseAnswer(choiceIndex, button) {
   if (locked) return;
   const d = data();
   if (choiceIndex === d.a) {
-    stopTimer();
+    clearInterval(timerId);
     locked = true;
     button.classList.add("correct");
     score++;
@@ -551,7 +523,8 @@ function chooseAnswer(choiceIndex, button) {
     if (finalMode) el("nextBtn").textContent = "See Result";
     return;
   }
-  markWrongOption(button);
+  button.classList.add("wrong");
+  showCross();
   handleWrong(false);
 }
 
@@ -567,12 +540,17 @@ function nextStep() {
 }
 
 function startQuiz() {
-  finalMode = false;
   currentIndex = 0;
   score = 0;
   wrongFirstAttempts = 0;
+  finalMode = false;
   el("scoreBadge").textContent = "Score: 0";
+  showScreen("instructionsScreen");
+}
+
+function beginQuestions() {
   showScreen("quizScreen");
+  finalMode = false;
   el("modePill").textContent = "Chapter-based MCQ";
   renderQuestion();
 }
@@ -591,15 +569,13 @@ function showResults() {
   el("reviewPanel").innerHTML = "<strong>What this chapter practiced</strong><br>Abstract nouns, proper nouns, countable nouns, and uncountable nouns in realistic Grade 4 situations.";
 }
 
-el("startBtn").onclick = startQuiz;
+el("startBtn").onclick = beginQuestions;
 el("nextBtn").onclick = nextStep;
 el("finalStartBtn").onclick = startFinalChallenge;
 el("restartBtn").onclick = () => location.reload();
 
 buildBackground();
-setTimeout(() => {
-  el("logoModal").style.display = "none";
-}, 5000);
+setTimeout(() => { el("logoModal").style.display = "none"; }, 5000);
 </script>
 </body>
 </html>
