@@ -1,1 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Grade 4 - Adjectives</title>
+<style>
+:root{
+  --bg1:#06261b;
+  --bg2:#0e4b33;
+  --card:#fffaf0;
+  --ink:#1f2f27;
+  --muted:#5f6e64;
+  --accent:#25b36f;
+  --accent2:#ffcc45;
+  --accent3:#ff7aa6;
+  --good:#1ea85d;
+  --bad:#e85d5d;
+  --line:#e9dfc5;
+  --shadow:0 18px 42px rgba(7,34,23,.28);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 14% 18%, rgba(255,255,255,.10) 0 9%, transparent 10%),
+    radial-gradient(circle at 78% 14%, rgba(255,255,255,.08) 0 8%, transparent 9%),
+    linear-gradient(160deg,var(--bg1),var(--bg2));
+  overflow-x:hidden;
+}
+.bg-layers,.glows,.confetti-layer{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+.bg-layers span{
+  position:absolute;
+  border-radius:50% 0 50% 0;
+  background:rgba(83,183,107,.22);
+  transform:rotate(18deg);
+  animation:drift linear infinite;
+}
+.glows span{
+  position:absolute;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ffe77a;
+  box-shadow:0 0 16px rgba(255,231,122,.9);
+  opacity:.55;
+  animation:fly linear infinite;
+}
+.card-wrap{
+  max-width:1080px;
+  margin:0 auto;
+  padding:14px;
+}
+.card{
+  min-height:calc(100vh - 28px);
+  background:var(--card);
+  border-radius:28px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.45);
+}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:14px 16px;
+  background:linear-gradient(90deg,#fff7e7,#f0fff2);
+  border-bottom:1px solid var(--line);
+}
+.badge{
+  padding:9px 12px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:800;
+  color:#33513e;
+  background:#edf7e8;
+}
+.badge.time{background:#fff2ce;color:#9a6d12}
+.screen{display:none;padding:18px}
+.screen.active{display:block;animation:fadeIn .25s ease}
+.hero{
+  min-height:calc(100vh - 120px);
+  display:grid;
+  place-items:center;
+  gap:18px;
+  text-align:center;
+  padding:12px 10px 24px;
+}
+.logo-wrap{
+  width:170px;
+  height:170px;
+  border-radius:38px;
+  overflow:hidden;
+  background:#fff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  box-shadow:0 14px 32px rgba(20,44,25,.18);
+}
+.logo-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+.instruction{
+  width:min(780px,100%);
+  background:#fffef7;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  text-align:left;
+  line-height:1.55;
+  box-shadow:0 8px 20px rgba(34,54,30,.08);
+}
+.btn{
+  border:none;
+  border-radius:16px;
+  padding:14px 20px;
+  font-weight:800;
+  font-size:16px;
+  color:#fff;
+  background:linear-gradient(135deg,var(--accent),#16834b);
+  cursor:pointer;
+  box-shadow:0 10px 20px rgba(37,179,111,.20);
+}
+.btn.secondary{
+  background:#f4efdc;
+  color:#725c1c;
+  box-shadow:none;
+}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.quiz-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:14px;
+}
+.pill{
+  padding:9px 12px;
+  border-radius:999px;
+  background:#edf7e8;
+  color:#35513c;
+  font-size:14px;
+  font-weight:800;
+}
+.pill.time{background:#fff2ce;color:#9a6d12}
+.qtitle{
+  font-size:clamp(20px,3.5vw,28px);
+  line-height:1.45;
+  margin:0 0 16px;
+}
+.options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.option{
+  border:2px solid var(--line);
+  background:#fffdf6;
+  color:var(--ink);
+  border-radius:18px;
+  padding:16px 14px;
+  text-align:left;
+  font-size:16px;
+  font-weight:700;
+  min-height:66px;
+  cursor:pointer;
+}
+.option:hover{transform:translateY(-1px);border-color:#b8d8b9}
+.option.correct{border-color:var(--good);background:#eefaf3}
+.option.wrong{border-color:var(--bad);background:#fff2f2}
+.option.dim{opacity:.66}
+.footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.explain{
+  display:none;
+  margin-top:14px;
+  padding:14px;
+  border-radius:16px;
+  background:#fbfff7;
+  border:1px solid var(--line);
+  line-height:1.5;
+}
+.result-box{
+  text-align:center;
+  padding:24px 10px 18px;
+}
+.big{
+  font-size:clamp(34px,6vw,56px);
+  margin:0 0 10px;
+}
+.final-panel{
+  margin-top:16px;
+  background:#fbfff7;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  text-align:left;
+  line-height:1.55;
+}
+.cross{
+  position:fixed;
+  left:50%;
+  top:40%;
+  transform:translate(-50%,-50%);
+  font-size:76px;
+  color:var(--bad);
+  opacity:0;
+  transition:opacity .15s ease;
+  z-index:20;
+}
+.cross.show{opacity:.92}
+.confetti-star{
+  position:fixed;
+  left:50%;
+  top:48%;
+  font-size:18px;
+  color:#ffd45c;
+  opacity:0;
+  animation:starPop 1s ease forwards;
+  z-index:20;
+  pointer-events:none;
+}
+table.quiz-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  font-size:15px;
+}
+.quiz-table th,.quiz-table td{
+  border:1px solid #d8e4d4;
+  padding:10px;
+  vertical-align:top;
+}
+.quiz-table th{
+  background:#eef8e8;
+  text-align:left;
+}
+@keyframes fadeIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes starPop{0%{opacity:1;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-110px) scale(1.25) rotate(40deg)}}
+@keyframes drift{
+  0%{transform:translateY(110vh) rotate(18deg)}
+  100%{transform:translateY(-120px) rotate(18deg)}
+}
+@keyframes fly{
+  0%{transform:translateY(110vh) translateX(0);opacity:.1}
+  50%{opacity:.8}
+  100%{transform:translateY(-120px) translateX(60px);opacity:.1}
+}
+@media (max-width:700px){
+  .options{grid-template-columns:1fr}
+  .logo-wrap{width:132px;height:132px}
+}
+</style>
+</head>
+<body>
+<div class="bg-layers" id="bgLayers"></div>
+<div class="glows" id="glows"></div>
+<div class="confetti-layer" id="confettiLayer"></div>
+<div class="cross" id="crossMark">✕</div>
 
+<div class="card-wrap">
+  <div class="card">
+    <div class="topbar">
+      <div class="badge" id="scoreBadge">Score: 0</div>
+      <div class="badge time" id="timerBadge">Time: 45s</div>
+      <div class="badge" id="qBadge">Question 1/12</div>
+    </div>
+
+    <div class="screen active" id="splashScreen">
+      <div class="hero">
+        <div class="logo-wrap">
+          <img src="assets/logo.png" alt="Innovine logo">
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="instructionScreen">
+      <div class="hero">
+        <div class="instruction">
+          <strong>Instructions for students</strong><br><br>
+          Read each question carefully.<br>
+          Choose the best answer from 4 options.<br>
+          You get one retry if your first answer is wrong.<br>
+          If you miss again, the correct answer and a short explanation will appear.<br>
+          Answer before the timer ends.
+        </div>
+        <button type="button" class="btn" id="startBtn">Start Quiz</button>
+      </div>
+    </div>
+
+    <div class="screen" id="quizScreen">
+      <div class="quiz-head">
+        <div class="pill" id="modePill">Wild Neon Rainforest</div>
+        <div class="pill time" id="liveTimer">45s</div>
+      </div>
+      <h2 class="qtitle" id="questionText"></h2>
+      <div class="options" id="optionsBox"></div>
+      <div class="explain" id="explainBox"></div>
+      <div class="footer">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <div class="pill" id="attemptPill">Attempts left: 2</div>
+          <div class="pill">Adjectives practice</div>
+        </div>
+        <button type="button" class="btn secondary" id="nextBtn" disabled>Next</button>
+      </div>
+    </div>
+
+    <div class="screen" id="finalScreen">
+      <div class="result-box">
+        <h2 class="big">Final Challenge</h2>
+        <p class="sub" style="margin:0 auto;max-width:720px">One mixed review question before your result.</p>
+        <div style="margin-top:16px">
+          <button type="button" class="btn" id="finalStartBtn">Start Final Challenge</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="resultScreen">
+      <div class="result-box">
+        <h2 class="big" id="resultTitle">You finished!</h2>
+        <p class="sub" id="resultText"></p>
+        <div class="final-panel" id="reviewPanel"></div>
+        <div style="margin-top:18px">
+          <button type="button" class="btn" id="restartBtn">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const quizData = [
+  { q:"On a bright morning, students walked through the school garden where they observed flowers of different colors, tall trees, and small insects moving around the plants, and the teacher asked them to describe what they saw using suitable words that give more detail about size, color, and quality. Which option correctly uses adjectives?", o:["The garden has colorful flowers and tall trees.","Garden flowers trees color tall.","Flowers garden tall color trees.","Tall flowers garden trees color."], a:0, e:"Colorful and tall are adjectives because they describe the flowers and trees." },
+  { q:"In the classroom, the teacher placed different objects such as notebooks, pencils, erasers, and bags on the table and asked students to describe each object clearly using words that provide additional information instead of just naming them. Which sentence correctly uses adjectives?", o:["Table bag red wooden.","Bag red table wooden is.","The red bag is on the wooden table.","Red table bag is wooden."], a:2, e:"Red and wooden are adjectives that describe the bag and the table." },
+  { q:"During a library reading session, students were exploring different shelves filled with storybooks, science books, and reference materials, and the librarian explained that adjectives help us describe nouns more clearly by adding details such as size, appearance, or quality instead of just naming the objects. Which option correctly uses adjectives?", o:["Interesting shelf books these are.","Books interesting shelf these top.","Shelf books interesting these.","These interesting books are on the top shelf."], a:3, e:"Interesting and top are adjectives that describe the books and shelf." },
+  { q:"In the school canteen, students were served different food items such as fresh fruits, warm milk, and delicious rice, and the teacher asked them to describe what they saw and ate using words that give extra information about taste, quantity, and quality. Which sentence correctly uses adjectives?", o:["I ate some fresh fruits and delicious rice.","Fruits rice fresh some I ate.","Fresh rice fruits I some ate.","I ate rice fruits some fresh."], a:0, e:"Fresh and delicious are adjectives describing the food." },
+  { q:"During physical education class, students were playing on a smooth grassy ground under the bright sun, and the coach encouraged them to describe the environment and their actions using suitable descriptive words that explain how things look and feel. Which sentence correctly uses adjectives?", o:["Students energetic ground smooth grassy.","The energetic students played on the smooth grassy ground.","Ground grassy smooth students energetic.","Smooth students grassy energetic ground."], a:1, e:"Energetic, smooth, and grassy are adjectives that describe the students and ground." },
+  { q:"In the morning assembly, the principal appreciated the students for their disciplined behavior, neat uniforms, and excellent academic performance, and he encouraged them to continue showing such qualities in both their studies and daily activities throughout the school year. Which option correctly uses adjectives?", o:["The disciplined students wore neat uniforms.","Students disciplined uniforms neat.","Uniforms neat disciplined students.","Neat students disciplined uniforms."], a:0, e:"Disciplined and neat are adjectives that describe the students and uniforms." },
+  { q:"During a city field trip, students travelled through busy roads and observed tall buildings, crowded markets, and beautiful parks, and they were asked to describe their experience using appropriate words that explain how the city looks and feels. Which sentence is correct?", o:["City tall crowded buildings markets.","The city has tall buildings and crowded markets.","Tall city markets crowded buildings.","Markets buildings city tall crowded."], a:1, e:"Tall and crowded are adjectives describing the buildings and markets." },
+  { q:"In the art room, students were engaged in creating paintings using bright colors, large sheets, and creative ideas, and the teacher asked them to describe their artwork using suitable adjectives that explain size, color, and quality in detail. Which option correctly uses adjectives?", o:["Painting she colorful beautiful.","She made a beautiful colorful painting.","Beautiful painting color she.","Colorful she painting beautiful."], a:1, e:"Beautiful and colorful are adjectives describing the painting." },
+  { q:"On the playground, students were playing different games under the warm sun, and the teacher observed how they described the environment using words that explained the condition of the ground, the energy of the children, and the overall atmosphere of the place. Which sentence correctly uses adjectives?", o:["The happy children played on the hot playground.","Children happy playground hot.","Hot children playground happy.","Playground children hot happy."], a:0, e:"Happy and hot are adjectives describing the children and playground." },
+  { q:"During the preparation for the school exhibition, students decorated their stalls with creative models, colorful charts, and attractive posters to make their presentations more appealing and engaging for the visitors who came to see their work. Which option correctly uses adjectives?", o:["The creative students made colorful charts.","Students creative charts colorful.","Charts students colorful creative.","Colorful students creative charts."], a:0, e:"Creative and colorful are adjectives that describe the students and charts." },
+  { q:"During a nature walk outside the school, students observed green trees, small birds, and clear flowing water streams, and they were asked to describe the natural surroundings using appropriate adjectives that explain how things look in nature. Which sentence correctly uses adjectives?", o:["Clear birds small water stream.","Birds small water clear flew.","The small birds flew near the clear water stream.","Water birds clear small flew."], a:2, e:"Small and clear are adjectives that describe the birds and water stream." },
+  { q:"At the end of the week, students reflected on their learning journey and described their classroom as a clean, bright, and peaceful place where they felt comfortable, focused, and happy while studying and working together. Which sentence correctly uses adjectives?", o:["The bright and peaceful classroom is clean.","Classroom bright peaceful clean.","Clean classroom peaceful bright.","Peaceful clean bright classroom study."], a:0, e:"Bright, peaceful, and clean are adjectives describing the classroom." }
+];
+
+const finalChallenge = { q:"Final challenge: Which sentence uses adjectives correctly?", o:["The sleepy kitten sat on the soft mat.","Kitten soft sleepy mat the sat.","Soft kitten mat sleepy the.","The sat kitten soft mat sleepy."], a:0, e:"Sleepy and soft are adjectives describing the kitten and mat." };
+
+let currentIndex=0, score=0, attemptsLeft=2, locked=false, timeLeft=45, timerId=null, finalMode=false, wrongFirstAttempts=0;
+const el=id=>document.getElementById(id);
+
+function showScreen(name){
+  ["splashScreen","instructionScreen","quizScreen","finalScreen","resultScreen"].forEach(id=>el(id).classList.remove("active"));
+  el(name).classList.add("active");
+}
+function buildBackground(){
+  for(let i=0;i<14;i++){
+    const s=document.createElement("span");
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*100+"%";
+    s.style.width=(70+Math.random()*80)+"px";
+    s.style.height=(22+Math.random()*18)+"px";
+    s.style.opacity=.18;
+    s.style.animationDuration=(26+Math.random()*20)+"s";
+    s.style.animationDelay=(i*1.5)+"s";
+    document.getElementById("bgLayers").appendChild(s);
+  }
+  for(let i=0;i<18;i++){
+    const g=document.createElement("span");
+    g.style.left=Math.random()*100+"%";
+    g.style.top=Math.random()*100+"%";
+    g.style.animationDuration=(14+Math.random()*10)+"s";
+    g.style.animationDelay=(Math.random()*8)+"s";
+    document.getElementById("glows").appendChild(g);
+  }
+}
+function data(){ return finalMode ? finalChallenge : quizData[currentIndex]; }
+function playAudio(src){
+  const audio=new Audio(src);
+  audio.preload="auto";
+  audio.play().catch(()=>{});
+}
+function startTimer(){
+  clearInterval(timerId);
+  timeLeft=45;
+  el("timerBadge").textContent="Time: "+timeLeft+"s";
+  el("liveTimer").textContent=timeLeft+"s";
+  timerId=setInterval(()=>{
+    timeLeft--;
+    el("timerBadge").textContent="Time: "+timeLeft+"s";
+    el("liveTimer").textContent=timeLeft+"s";
+    if(timeLeft<=0){
+      clearInterval(timerId);
+      handleWrong(true);
+    }
+  },1000);
+}
+function renderQuestion(){
+  locked=false;
+  attemptsLeft=2;
+  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
+  el("qBadge").textContent=finalMode ? "Final challenge" : `Question ${currentIndex+1}/12`;
+  el("questionText").textContent=data().q;
+  el("optionsBox").innerHTML="";
+  el("explainBox").style.display="none";
+  el("nextBtn").disabled=true;
+  el("nextBtn").textContent=finalMode ? "See Result" : "Next";
+  data().o.forEach((opt,idx)=>{
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="option";
+    btn.textContent=String.fromCharCode(65+idx)+". "+opt;
+    btn.onclick=()=>chooseAnswer(idx,btn);
+    el("optionsBox").appendChild(btn);
+  });
+  startTimer();
+}
+function showCross(){
+  const c=el("crossMark");
+  c.classList.add("show");
+  setTimeout(()=>c.classList.remove("show"),320);
+}
+function starConfetti(){
+  for(let i=0;i<16;i++){
+    const c=document.createElement("div");
+    c.className="confetti-star";
+    c.textContent="✦";
+    c.style.left=45+Math.random()*10+"%";
+    c.style.top=42+Math.random()*10+"%";
+    c.style.animationDelay=Math.random()*0.18+"s";
+    document.getElementById("confettiLayer").appendChild(c);
+    setTimeout(()=>c.remove(),1050);
+  }
+}
+function revealCorrect(){
+  const d=data();
+  [...document.querySelectorAll(".option")].forEach((btn,idx)=>{
+    btn.disabled=true;
+    if(idx===d.a) btn.classList.add("correct");
+    else btn.classList.add("dim");
+  });
+  el("explainBox").style.display="block";
+  el("explainBox").textContent="Correct answer: "+String.fromCharCode(65+d.a)+". "+d.o[d.a]+" — "+d.e;
+  el("nextBtn").disabled=false;
+}
+function handleWrong(fromTimeout=false){
+  if(!fromTimeout){
+    showCross();
+    playAudio("assets/wrong.mp3");
+  }
+  attemptsLeft--;
+  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
+  if(attemptsLeft>0 && !fromTimeout){
+    wrongFirstAttempts++;
+    el("explainBox").style.display="block";
+    el("explainBox").textContent="Try once more. Read the sentence carefully and choose the adjective sentence.";
+    return;
+  }
+  clearInterval(timerId);
+  locked=true;
+  revealCorrect();
+}
+function chooseAnswer(i,btn){
+  if(locked) return;
+  const d=data();
+  if(i===d.a){
+    clearInterval(timerId);
+    locked=true;
+    btn.classList.add("correct");
+    score++;
+    el("scoreBadge").textContent="Score: "+score;
+    el("explainBox").style.display="block";
+    el("explainBox").textContent="Correct: "+d.e;
+    el("nextBtn").disabled=false;
+    starConfetti();
+    playAudio("assets/correct.mp3");
+    return;
+  }
+  btn.classList.add("wrong");
+  showCross();
+  handleWrong(false);
+}
+function showResults(){
+  showScreen("resultScreen");
+  el("resultTitle").textContent=score>=11 ? "Amazing!" : score>=8 ? "Excellent!" : "Great effort!";
+  el("resultText").textContent=`You scored ${score} out of 12. First-retry uses: ${wrongFirstAttempts}.`;
+  el("reviewPanel").innerHTML="<strong>What this chapter practiced</strong><br>Using adjectives to describe size, color, quality, mood, and appearance in real Grade 4 situations.";
+}
+function nextStep(){
+  if(finalMode){
+    showResults();
+    playAudio("assets/freesound_community-claps-44774.mp3");
+    return;
+  }
+  currentIndex++;
+  if(currentIndex<quizData.length) renderQuestion();
+  else showScreen("finalScreen");
+}
+el("startBtn").onclick=()=>{
+  showScreen("quizScreen");
+  currentIndex=0;
+  score=0;
+  wrongFirstAttempts=0;
+  finalMode=false;
+  el("scoreBadge").textContent="Score: 0";
+  el("modePill").textContent="Wild Neon Rainforest";
+  renderQuestion();
+};
+el("nextBtn").onclick=nextStep;
+el("finalStartBtn").onclick=()=>{
+  finalMode=true;
+  showScreen("quizScreen");
+  el("modePill").textContent="Final challenge";
+  renderQuestion();
+};
+el("restartBtn").onclick=()=>location.reload();
+buildBackground();
+setTimeout(()=>showScreen("instructionScreen"),5000);
+</script>
+</body>
+</html>
