@@ -1,1 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 4: The Continuous Tense Mainframe Challenge</title>
+    <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --card-bg: #141d2f;
+            --cyber-cyan: #00f0ff;
+            --cyber-green: #39ff14;
+            --cyber-red: #ff3838;
+            --text-light: #e2e8f0;
+            --text-dim: #94a3b8;
+            --border-glow: #1e293b;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace, system-ui;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Sci-Fi Matrix Stream Animation */
+        .cyber-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(20,29,47,0.4) 0%, rgba(10,14,23,1) 100%);
+        }
+
+        .code-stream {
+            position: absolute;
+            color: rgba(57, 255, 20, 0.12);
+            font-size: 0.85rem;
+            white-space: nowrap;
+            animation: matrixFall 10s linear infinite;
+            top: -100px;
+        }
+
+        @keyframes matrixFall {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(105vh); opacity: 0; }
+        }
+
+        /* UI Panel Container */
+        .mainframe-card {
+            width: 90%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border: 2px solid #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+            padding: 35px;
+            z-index: 10;
+            position: relative;
+        }
+
+        /* Screen States */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Mandatory Logo Intro Screen */
+        #logo-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #ffffff;
+            z-index: 100;
+        }
+        #logo-screen img {
+            max-width: 240px;
+            height: auto;
+            animation: terminalPulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes terminalPulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.03); opacity: 1; }
+        }
+
+        /* System Headers & Trackers */
+        .system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 12px;
+            color: var(--cyber-cyan);
+            letter-spacing: 1px;
+        }
+
+        .sync-cycle-bar {
+            width: 100%;
+            height: 6px;
+            background: #0f172a;
+            border-radius: 3px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+
+        .sync-progress {
+            height: 100%;
+            width: 100%;
+            background: var(--cyber-cyan);
+            transition: width 1s linear, background-color 0.5s ease;
+        }
+
+        /* Text Presentation */
+        .prompt-text {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: left;
+            color: var(--text-light);
+        }
+
+        /* Cybernetic Grid Matrix Buttons */
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .node-btn {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 16px 20px;
+            border-radius: 6px;
+            text-align: left;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s linear;
+            position: relative;
+        }
+
+        .node-btn:hover:not(:disabled) {
+            border-color: var(--cyber-cyan);
+            background: #1e293b;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+
+        /* Feedback Node Injection Configurations */
+        .node-btn.correct {
+            background: rgba(57, 255, 20, 0.1) !important;
+            border-color: var(--cyber-green) !important;
+            color: var(--cyber-green);
+            box-shadow: 0 0 12px rgba(57, 255, 20, 0.2);
+        }
+
+        .node-btn.wrong {
+            background: rgba(255, 56, 56, 0.1) !important;
+            border-color: var(--cyber-red) !important;
+            color: var(--cyber-red);
+        }
+
+        .access-denied-cross {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--cyber-red);
+            font-weight: bold;
+        }
+
+        /* Action Hardware Buttons */
+        .terminal-btn {
+            background: transparent;
+            color: var(--cyber-cyan);
+            border: 1px solid var(--cyber-cyan);
+            padding: 12px 30px;
+            font-size: 0.95rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        .terminal-btn:hover {
+            background: var(--cyber-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--cyber-cyan);
+        }
+
+        /* System Rationale Boxes */
+        .system-feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            text-align: left;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .system-feedback.visible { display: block; }
+        .system-feedback.retry { background: rgba(245, 158, 11, 0.1); border: 1px solid #f59e0b; color: #fbbf24; }
+        .system-feedback.explanation { background: rgba(30, 41, 59, 0.8); border: 1px solid #475569; color: var(--text-dim); }
+
+        /* Dynamic Glow Sparks */
+        .cyber-spark {
+            position: absolute;
+            color: var(--cyber-green);
+            font-size: 1.2rem;
+            pointer-events: none;
+            animation: sparkOut 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            z-index: 99;
+        }
+
+        @keyframes sparkOut {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--mx), var(--my)) scale(0.4); opacity: 0; }
+        }
+
+        @media(max-width: 480px) {
+            .mainframe-card { padding: 20px; }
+            .prompt-text { font-size: 1rem; }
+            .node-btn { padding: 12px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-grid" id="matrix-canvas"></div>
+
+    <div id="logo-screen">
+        <img src="assets/logo.png" alt="Innovine Logo">
+    </div>
+
+    <div class="mainframe-card">
+        
+        <div id="intro-screen" class="screen">
+            <h1 style="margin-bottom: 12px; color: var(--cyber-cyan); font-size: 1.7rem; letter-spacing: 1px;">&gt;_CYBER_GRID_DECODER</h1>
+            <p style="font-size: 1rem; margin-bottom: 10px; color: var(--cyber-green);">CHAPTER 6: THE CONTINUOUS TENSE</p>
+            <p style="margin-bottom: 30px; color: var(--text-dim); font-size: 0.9rem; line-height: 1.5;">
+                Welcome operative. Your mission is to synchronize actions across standard timelines (Present, Past, & Future Continuous Matrix layouts). 
+                Each cycle permits exactly 45 seconds. System overrides offer 1 retry variant per module block.
+            </p>
+            <button class="terminal-btn" onclick="initializeDecoder()">Initialize Decoder</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="system-header">
+                <div>SYS_REF: <span id="sys-curr">1</span>/<span id="sys-total">10</span></div>
+                <div>SYNC_INTEGRITY: <span id="integrity-track">0</span>%</div>
+            </div>
+            <div class="sync-cycle-bar">
+                <div class="sync-progress" id="sync-indicator"></div>
+            </div>
+            <div class="prompt-text" id="prompt-area">...LOADING ENCRYPTED MATRIX CONTEXT...</div>
+            <div class="matrix-grid" id="node-box"></div>
+            <div class="system-feedback" id="console-feedback"></div>
+            <div style="text-align: right; margin-top: 15px;">
+                <button class="terminal-btn" id="override-btn" onclick="nextModule()" style="display: none;">Next Sync</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2 style="color: var(--cyber-cyan); margin-bottom: 15px;" id="sys-status">SYS_STATUS: COMPLETE</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">Final Sync Rate: <strong id="matrix-score" style="color: var(--cyber-green);">0</strong> / 10</p>
+            <p id="system-report" style="margin-bottom: 30px; color: var(--text-dim); line-height: 1.6; font-size: 0.9rem;"></p>
+            <button class="terminal-btn" onclick="rebootSystem()">Reboot Terminal System</button>
+        </div>
+
+    </div>
+
+    <audio id="audio-success" src="assets/correct.mp3" preload="auto"></audio>
+    <audio id="audio-failure" src="assets/wrong.mp3" preload="auto"></audio>
+    <audio id="audio-complete" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+    <script>
+        // High quality data array structured with increasing difficulty layout parameters
+        const quizMatrix = [
+            {
+                q: "During the morning break, a group of students is walking through the school corridor while talking loudly about their activities. The teacher notices that one student is describing an ongoing action but is not using the correct continuous form of the verb, making the sentence sound incomplete and unclear. Which sentence correctly describes an action happening right now?",
+                options: [
+                    "The students walk in the corridor quietly.",
+                    "The students will walk in the corridor.",
+                    "The students walked in the corridor.",
+                    "The students are walking in the corridor."
+                ],
+                correct: 3,
+                explanation: "To show an ongoing present action with a plural subject ('The students'), use the helper verb 'are' combined with the '-ing' action verb ('are walking')."
+            },
+            {
+                q: "In the school playground yesterday afternoon, children were involved in different games when suddenly it started raining lightly. The teacher later asked them to describe what they were doing at that exact moment before the rain began. Which sentence correctly shows the ongoing action in the past?",
+                options: [
+                    "The children are playing football in the ground.",
+                    "The children played football in the ground.",
+                    "The children were playing football in the ground.",
+                    "The children will play football in the ground."
+                ],
+                correct: 2,
+                explanation: "Past continuous tense records actions that were already in progress at a past time mark. The plural subject 'children' pairs correctly with 'were playing'."
+            },
+            {
+                q: "In a classroom discussion about future events, the teacher asks students to describe what they will be doing during the school annual function next week. Students must use the correct structure to show an action that will be ongoing in the future. Which sentence is correct?",
+                options: [
+                    "I will be performing on stage during the function.",
+                    "I perform on stage during the function.",
+                    "I performed on stage during the function.",
+                    "I am performing on stage yesterday."
+                ],
+                correct: 0,
+                explanation: "Future continuous actions specify dynamic progress later in time. The uniform combination formula uses 'will be' + the present participle verb variant ('will be performing')."
+            },
+            {
+                q: "A student is describing a traffic scene where a police officer is currently checking vehicles on the road. The sentence must clearly show that the action is happening at this moment and is still in progress. Choose the correct sentence.",
+                options: [
+                    "The police officer checks the vehicles.",
+                    "The police officer is checking the vehicles.",
+                    "The police officer checked the vehicles.",
+                    "The police officer will check the vehicles."
+                ],
+                correct: 1,
+                explanation: "The singular present continuous setup frames real-time monitoring events accurately via the formula tracking anchor sequence: 'is checking'."
+            },
+            {
+                q: "Yesterday evening, Riya was sitting at her study table for a long time while completing her homework when her friend called her. The teacher asks which sentence best describes what Riya was doing at that time. Which is correct?",
+                options: [
+                    "Riya was doing her homework when her friend called.",
+                    "Riya is doing her homework when her friend calls.",
+                    "Riya did her homework when her friend called.",
+                    "Riya will do her homework when her friend calls."
+                ],
+                correct: 0,
+                explanation: "This displays a background continuous action ('was doing') interrupted by a short, simple past background event node ('called')."
+            },
+            {
+                q: "At the airport, a family is planning their travel for next week. The father explains what each member will be doing while the plane is flying to another country. Choose the correct sentence.",
+                options: [
+                    "We fly to London tomorrow.",
+                    "We were flying to London tomorrow.",
+                    "We will be flying to London tomorrow.",
+                    "We are fly to London tomorrow."
+                ],
+                correct: 2,
+                explanation: "The timeframe marker 'tomorrow' matched against dynamic ongoing actions demands future continuous tracking indicators ('will be flying')."
+            },
+            {
+                q: "Outside the classroom window, students observe dark clouds forming and rain starting slowly. The teacher asks them to describe what is happening outside at this exact moment. Which sentence is correct?",
+                options: [
+                    "It rains heavily outside.",
+                    "It will rain outside.",
+                    "It rained outside.",
+                    "It is raining outside."
+                ],
+                correct: 3,
+                explanation: "'It is raining outside' accurately registers a real-time natural process observed directly in the ongoing present moment."
+            },
+            {
+                q: "While the librarian was arranging books in the library, some students were quietly reading and others were searching for storybooks. The teacher asks which sentence correctly shows the background activity in the past. Choose the correct sentence.",
+                options: [
+                    "Students read books quietly in the library.",
+                    "Students were reading books quietly in the library.",
+                    "Students are reading books quietly in the library.",
+                    "Students will read books in the library."
+                ],
+                correct: 1,
+                explanation: "Plural past continuous parameters verify active background scenes simultaneously developing in standard past logs using 'were reading'."
+            },
+            {
+                q: "The coach informs the students about tomorrow’s practice session and explains what the team will be doing at different times during training. Which sentence is correct?",
+                options: [
+                    "The team will be practicing drills tomorrow.",
+                    "The team practiced drills tomorrow.",
+                    "The team is practicing drills tomorrow.",
+                    "The team practices drills yesterday."
+                ],
+                correct: 0,
+                explanation: "'Will be practicing' correctly outlines the planned ongoing training sequence scheduled across tomorrow's parameters."
+            },
+            {
+                q: "In a hospital waiting room, a child notices that the nurse is moving between patients, checking their reports and taking notes continuously without stopping. The teacher asks which sentence best captures this ongoing action in the present moment. Choose the correct sentence.",
+                options: [
+                    "The nurse checks reports for patients.",
+                    "The nurse was checking reports for patients.",
+                    "The nurse is checking reports for patients.",
+                    "The nurse will check reports for patients."
+                ],
+                correct: 2,
+                explanation: "The ongoing present reality of a single healthcare operative is properly represented through the singular present continuous format ('is checking')."
+            }
+        ];
+
+        let moduleIndex = 0;
+        let coreIntegrityScore = 0;
+        let timelineInterval;
+        let systemClock = 45; // Grade 4 structural metric
+        let moduleAttempts = 0;
+
+        // Optimized Digital Stream Generator Matrix Logic
+        function compileCyberStreams() {
+            const canvas = document.getElementById('matrix-canvas');
+            const technicalBits = ["0101", "1100", "SYNC", "CONN", "RUN", "CONT_TENSE", "SYS_10", "A_1_B_0"];
+            for (let i = 0; i < 18; i++) {
+                const bitNode = document.createElement('span');
+                bitNode.classList.add('code-stream');
+                bitNode.innerText = technicalBits[Math.floor(Math.random() * technicalBits.length)];
+                bitNode.style.left = `${Math.random() * 100}%`;
+                bitNode.style.animationDelay = `${Math.random() * 6}s`;
+                bitNode.style.animationDuration = `${Math.random() * 5 + 7}s`;
+                canvas.appendChild(bitNode);
+            }
+        }
+
+        // Initialize Mandatory Brand Overlay Timing
+        window.addEventListener('DOMContentLoaded', () => {
+            compileCyberStreams();
+            setTimeout(() => {
+                const brandOverlay = document.getElementById('logo-screen');
+                brandOverlay.style.transition = 'opacity 0.4s ease';
+                brandOverlay.style.opacity = 0;
+                setTimeout(() => {
+                    brandOverlay.style.display = 'none';
+                    switchTerminalView('intro-screen');
+                }, 400);
+            }, 5000); // Strict 5-second branding parameter
+        });
+
+        function switchTerminalView(targetId) {
+            document.querySelectorAll('.screen').forEach(view => view.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+        }
+
+        function initializeDecoder() {
+            moduleIndex = 0;
+            coreIntegrityScore = 0;
+            switchTerminalView('quiz-screen');
+            loadSystemModule();
+        }
+
+        function loadSystemModule() {
+            moduleAttempts = 0;
+            const targetData = quizMatrix[moduleIndex];
+            
+            document.getElementById('sys-curr').innerText = moduleIndex + 1;
+            document.getElementById('sys-total').innerText = quizMatrix.length;
+            document.getElementById('integrity-track').innerText = Math.round((coreIntegrityScore / quizMatrix.length) * 100);
+            document.getElementById('prompt-area').innerText = targetData.q;
+            document.getElementById('override-btn').style.display = 'none';
+            
+            const systemConsole = document.getElementById('console-feedback');
+            systemConsole.className = 'system-feedback';
+            systemConsole.innerText = '';
+
+            const interfacesBox = document.getElementById('node-box');
+            interfacesBox.innerHTML = '';
+
+            targetData.options.forEach((optionStr, indexIdx) => {
+                const networkNode = document.createElement('button');
+                networkNode.classList.add('node-btn');
+                networkNode.innerText = optionStr;
+                networkNode.onclick = () => challengeDecryption(indexIdx, networkNode);
+                interfacesBox.appendChild(networkNode);
+            });
+
+            syncSystemClock();
+        }
+
+        function syncSystemClock() {
+            clearInterval(timelineInterval);
+            systemClock = 45;
+            const indicator = document.getElementById('sync-indicator');
+            indicator.style.width = '100%';
+            indicator.style.backgroundColor = 'var(--cyber-cyan)';
+
+            timelineInterval = setInterval(() => {
+                systemClock--;
+                let scalarPercent = (systemClock / 45) * 100;
+                indicator.style.width = `${scalarPercent}%`;
+
+                if (systemClock <= 15) {
+                    indicator.style.backgroundColor = 'var(--cyber-red)';
+                }
+
+                if (systemClock <= 0) {
+                    clearInterval(timelineInterval);
+                    triggerTimeoutProtocol();
+                }
+            }, 1000);
+        }
+
+        function triggerTimeoutProtocol() {
+            lockInterfacingNodes();
+            const targetData = quizMatrix[moduleIndex];
+            const consoleBox = document.getElementById('console-feedback');
+            
+            try { document.getElementById('audio-failure').play(); } catch(err){}
+
+            consoleBox.className = "system-feedback explanation";
+            consoleBox.innerText = `TIMEOUT: Link Synchronizer fell offline. True structure value: "${targetData.options[targetData.correct]}". ${targetData.explanation}`;
+            consoleBox.classList.add('visible');
+
+            exposeTruePath();
+            document.getElementById('override-btn').style.display = 'inline-block';
+        }
+
+        function challengeDecryption(chosenIdx, targetedNode) {
+            const targetData = quizMatrix[moduleIndex];
+            const consoleBox = document.getElementById('console-feedback');
+
+            if (chosenIdx === targetData.correct) {
+                // Success Scenario Matrix
+                clearInterval(timelineInterval);
+                lockInterfacingNodes();
+                targetedNode.classList.add('correct');
+                emitCyberSparks(targetedNode);
+                
+                try { document.getElementById('audio-success').play(); } catch(err){}
+
+                coreIntegrityScore++;
+                document.getElementById('integrity-track').innerText = Math.round((coreIntegrityScore / quizMatrix.length) * 100);
+
+                consoleBox.className = "system-feedback explanation";
+                consoleBox.innerText = "ACCESS GRANTED: " + targetData.explanation;
+                consoleBox.classList.add('visible');
+                document.getElementById('override-btn').style.display = 'inline-block';
+
+            } else {
+                // Failure Pathway Intervention
+                moduleAttempts++;
+                try { document.getElementById('audio-failure').play(); } catch(err){}
+                
+                const denialCross = document.createElement('span');
+                denialCross.classList.add('access-denied-cross');
+                denialCross.innerHTML = '&#10006;';
+                targetedNode.appendChild(denialCross);
+                targetedNode.classList.add('wrong');
+                targetedNode.disabled = true;
+
+                if (moduleAttempts === 1) {
+                    // One Retry System Allocation Layer
+                    consoleBox.className = "system-feedback retry";
+                    consoleBox.innerText = "WARNING: Data mismatch detected. Tense alignment error. Recalibrating... Try one alternative option node.";
+                    consoleBox.classList.add('visible');
+                } else {
+                    // Strike 2 Enforcement Protocol
+                    clearInterval(timelineInterval);
+                    lockInterfacingNodes();
+                    exposeTruePath();
+
+                    consoleBox.className = "system-feedback explanation";
+                    consoleBox.innerText = `ACCESS LOCKED: True target array reads: "${targetData.options[targetData.correct]}". ${targetData.explanation}`;
+                    consoleBox.classList.add('visible');
+                    document.getElementById('override-btn').style.display = 'inline-block';
+                }
+            }
+        }
+
+        function exposeTruePath() {
+            const targetData = quizMatrix[moduleIndex];
+            document.getElementById('node-box').children[targetData.correct].classList.add('correct');
+        }
+
+        function lockInterfacingNodes() {
+            document.querySelectorAll('.node-btn').forEach(node => node.disabled = true);
+        }
+
+        function emitCyberSparks(elementContainer) {
+            const physicalCoordinates = elementContainer.getBoundingClientRect();
+            const environment = document.body;
+            for (let i = 0; i < 14; i++) {
+                const spark = document.createElement('span');
+                spark.classList.add('cyber-spark');
+                spark.innerHTML = '✦';
+                spark.style.left = `${physicalCoordinates.left + (physicalCoordinates.width / 2)}px`;
+                spark.style.top = `${physicalCoordinates.top + (physicalCoordinates.height / 2)}px`;
+                
+                const vectorAngle = Math.random() * Math.PI * 2;
+                const polarRadius = Math.random() * 90 + 40;
+                spark.style.setProperty('--mx', `${Math.cos(vectorAngle) * polarRadius}px`);
+                spark.style.setProperty('--my', `${Math.sin(vectorAngle) * polarRadius}px`);
+
+                environment.appendChild(spark);
+                setTimeout(() => spark.remove(), 600);
+            }
+        }
+
+        function nextModule() {
+            moduleIndex++;
+            if (moduleIndex < quizMatrix.length) {
+                loadSystemModule();
+            } else {
+                presentFinalOutput();
+            }
+        }
+
+        function presentFinalOutput() {
+            clearInterval(timelineInterval);
+            switchTerminalView('result-screen');
+            document.getElementById('matrix-score').innerText = coreIntegrityScore;
+            
+            const systemLog = document.getElementById('system-report');
+            const statusIndicator = document.getElementById('sys-status');
+            
+            if (coreIntegrityScore >= 9) {
+                try { document.getElementById('audio-complete').play(); } catch(err){}
+                statusIndicator.innerText = "SYS_STATUS: OPERATIONAL_MAX";
+                statusIndicator.style.color = "var(--cyber-green)";
+                systemLog.innerText = "Excellent performance, operative! You parsed all background, current, and future event tracks flawlessly. Your mainframe alignment synchronization is safe.";
+            } else if (coreIntegrityScore >= 6) {
+                statusIndicator.innerText = "SYS_STATUS: DEGRADED_STABLE";
+                statusIndicator.style.color = "var(--cyber-cyan)";
+                systemLog.innerText = "Good diagnostic run. You possess an optimal framework baseline for continuous aspect variations. Correcting structural errors will secure systemic perfection.";
+            } else {
+                statusIndicator.innerText = "SYS_STATUS: BUFFER_OVERFLOW";
+                statusIndicator.style.color = "var(--cyber-red)";
+                systemLog.innerText = "Matrix parsing errors encountered. Continuous time markers require careful calibration to track auxiliary matching correctly. Re-run structural diagnostics.";
+            }
+        }
+
+        function rebootSystem() {
+            initializeDecoder();
+        }
+    </script>
+</body>
+</html>
