@@ -95,8 +95,8 @@ body{
   padding:14px 10px 24px;
 }
 .logo-wrap{
-  width:150px;
-  height:150px;
+  width:160px;
+  height:160px;
   border-radius:34px;
   overflow:hidden;
   background:#fff;
@@ -110,18 +110,6 @@ body{
   height:100%;
   object-fit:contain;
   display:block;
-}
-.title{
-  font-size:clamp(28px,5vw,44px);
-  line-height:1.1;
-  margin:0;
-}
-.sub{
-  max-width:760px;
-  color:var(--muted);
-  line-height:1.55;
-  font-size:16px;
-  margin:0;
 }
 .instruction{
   background:#f8fbff;
@@ -250,33 +238,13 @@ body{
   z-index:20;
   pointer-events:none;
 }
-.modal{
-  position:fixed;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:rgba(18,28,42,.32);
-  backdrop-filter:blur(2px);
-  z-index:30;
-}
-.modal-card{
-  width:min(420px, calc(100% - 28px));
-  background:#fff;
-  border-radius:22px;
-  padding:18px;
-  text-align:center;
-  box-shadow:var(--shadow);
-}
-.modal-card p{color:var(--muted);margin-top:8px}
 @keyframes fadeIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes floatUp{from{transform:translateY(110vh)}to{transform:translateY(-120px)}}
 @keyframes driftUp{from{transform:translateY(115vh)}to{transform:translateY(-160px)}}
 @keyframes starPop{0%{opacity:1;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-110px) scale(1.25) rotate(40deg)}}
 @media (max-width:700px){
   .options{grid-template-columns:1fr}
-  .title{font-size:30px}
-  .logo-wrap{width:126px;height:126px}
+  .logo-wrap{width:128px;height:128px}
 }
 </style>
 </head>
@@ -294,7 +262,7 @@ body{
       <div class="badge" id="qBadge">Question 1/10</div>
     </div>
 
-    <div class="screen active" id="introScreen">
+    <div class="screen active" id="splashScreen">
       <div class="hero">
         <div class="logo-wrap">
           <img src="assets/logo.png" alt="Innovine logo">
@@ -302,7 +270,7 @@ body{
       </div>
     </div>
 
-    <div class="screen" id="instructionsScreen">
+    <div class="screen" id="instructionScreen">
       <div class="hero">
         <div class="instruction">
           <strong>Instructions for students</strong><br><br>
@@ -356,34 +324,21 @@ body{
   </div>
 </div>
 
-<div class="modal" id="logoModal">
-  <div class="modal-card">
-    <div class="logo-wrap" style="margin:0 auto 12px">
-      <img src="assets/logo.png" alt="Innovine logo">
-    </div>
-  </div>
-</div>
-
 <script>
 const quizData = [
-  { q: "During an activity, students were taken to the school heritage wall. It displayed photographs of old school events, names of former principals, and quotes about discipline and honesty. Some words referred to real people and places, while others represented ideas and values that cannot be seen or touched. Which option correctly identifies the abstract nouns used in the heritage wall?", o: ["school, wall", "principals, events", "honesty, discipline", "photographs, names"], a: 2, e: "Honesty and discipline are abstract nouns because they name ideas and values that cannot be seen or touched." },
-  { q: "The school auditorium was decorated for Annual Day. Chairs were arranged in rows, banners were hung with the name of the school, and students practiced dance performances. The principal appreciated the effort and praised the teamwork shown by everyone. Which option correctly identifies the proper noun from the situation?", o: ["auditorium", "school", "Annual Day", "chairs"], a: 2, e: "Annual Day is a specific event name, so it is a proper noun." },
-  { q: "During a group project in the school library, students were asked to collect information about different books and authors. They also noted how books are arranged in sections and how each section is named. While writing their report, they noticed that some words referred to specific names, while others referred to general categories of objects or people. Which option correctly identifies the proper noun used in this situation?", o: ["books", "Harry Potter", "library", "sections"], a: 1, e: "Harry Potter is a specific name of a book, so it is a proper noun." },
-  { q: "In the science lab, students observed different materials such as water, salt, glass jars, and metal spoons. The teacher explained that some substances can be measured or counted easily, while others exist in forms that cannot be counted individually but can only be measured in quantity. Which option correctly identifies an uncountable noun from the situation?", o: ["spoons", "jars", "students", "water"], a: 3, e: "Water is an uncountable noun because it cannot be counted individually." },
-  { q: "During sports practice, students were divided into teams and participated in relay races, jumping drills, and cheering activities. The teacher noticed that the atmosphere was full of excitement and determination, which helped the students perform better as a team. Which option correctly identifies the abstract nouns in this situation?", o: ["excitement, determination", "jumping, drills", "teams, races", "students, teacher"], a: 0, e: "Excitement and determination are feelings and qualities, so they are abstract nouns." },
-  { q: "During lunch break, students visited the school canteen. They saw different food items like rice, milk, bananas, juice, and sugar being served. The teacher explained that some food items can be counted as individual pieces, while others are measured as quantities and cannot be counted one by one. Which option correctly identifies only uncountable nouns from this situation?", o: ["bananas, rice", "milk, sugar", "chairs, tables", "apples, oranges"], a: 1, e: "Milk and sugar cannot be counted individually and are uncountable nouns." },
-  { q: "In the morning assembly, the principal spoke about the importance of honesty, kindness, and discipline. Students were asked to reflect on how these values help them become better individuals in school and in life. Which option correctly identifies the abstract nouns used in the speech?", o: ["principal, students", "school, assembly", "honesty, discipline", "life, school"], a: 2, e: "Honesty and discipline are abstract nouns representing qualities." },
-  { q: "Students went on a field trip to Delhi. They visited historical monuments, travelled through busy roads, and observed how people live in a large city. The teacher explained that some words refer to specific names of places, while others refer to general objects or locations. Which option correctly identifies the proper noun from the passage?", o: ["city", "monuments", "roads", "Delhi"], a: 3, e: "Delhi is a specific name of a city, so it is a proper noun." },
-  { q: "During a science activity, students were taken to the school garden. They observed different elements such as soil, flowers, trees, water pipes, and insects. The teacher explained that some nouns refer to things that can be counted individually, while others refer to materials or substances that cannot be counted one by one. Which option correctly identifies only countable nouns from the situation?", o: ["soil, water", "flowers, trees", "water, soil", "air, soil"], a: 1, e: "Flowers and trees can be counted as individual items, so they are countable nouns." },
-  { q: "At the end of the week, the teacher asked students to reflect on their learning journey. Students shared thoughts about teamwork, confidence, and fear they experienced during presentations. The teacher explained that some nouns describe physical objects, while others describe feelings or states of mind that cannot be seen or touched. Which option correctly identifies only abstract nouns from the situation?", o: ["teamwork, confidence", "classroom, teacher", "students, presentations", "week, activity"], a: 0, e: "Teamwork and confidence are abstract nouns because they represent feelings and ideas." }
+  { q:"During an activity, students were taken to the school heritage wall. It displayed photographs of old school events, names of former principals, and quotes about discipline and honesty. Some words referred to real people and places, while others represented ideas and values that cannot be seen or touched. Which option correctly identifies the abstract nouns used in the heritage wall?", o:["school, wall","principals, events","honesty, discipline","photographs, names"], a:2, e:"Honesty and discipline are abstract nouns because they name ideas and values that cannot be seen or touched." },
+  { q:"The school auditorium was decorated for Annual Day. Chairs were arranged in rows, banners were hung with the name of the school, and students practiced dance performances. The principal appreciated the effort and praised the teamwork shown by everyone. Which option correctly identifies the proper noun from the situation?", o:["auditorium","school","Annual Day","chairs"], a:2, e:"Annual Day is a specific event name, so it is a proper noun." },
+  { q:"During a group project in the school library, students were asked to collect information about different books and authors. They also noted how books are arranged in sections and how each section is named. While writing their report, they noticed that some words referred to specific names, while others referred to general categories of objects or people. Which option correctly identifies the proper noun used in this situation?", o:["books","Harry Potter","library","sections"], a:1, e:"Harry Potter is a specific name of a book, so it is a proper noun." },
+  { q:"In the science lab, students observed different materials such as water, salt, glass jars, and metal spoons. The teacher explained that some substances can be measured or counted easily, while others exist in forms that cannot be counted individually but can only be measured in quantity. Which option correctly identifies an uncountable noun from the situation?", o:["spoons","jars","students","water"], a:3, e:"Water is an uncountable noun because it cannot be counted individually." },
+  { q:"During sports practice, students were divided into teams and participated in relay races, jumping drills, and cheering activities. The teacher noticed that the atmosphere was full of excitement and determination, which helped the students perform better as a team. Which option correctly identifies the abstract nouns in this situation?", o:["excitement, determination","jumping, drills","teams, races","students, teacher"], a:0, e:"Excitement and determination are feelings and qualities, so they are abstract nouns." },
+  { q:"During lunch break, students visited the school canteen. They saw different food items like rice, milk, bananas, juice, and sugar being served. The teacher explained that some food items can be counted as individual pieces, while others are measured as quantities and cannot be counted one by one. Which option correctly identifies only uncountable nouns from this situation?", o:["bananas, rice","milk, sugar","chairs, tables","apples, oranges"], a:1, e:"Milk and sugar cannot be counted individually and are uncountable nouns." },
+  { q:"In the morning assembly, the principal spoke about the importance of honesty, kindness, and discipline. Students were asked to reflect on how these values help them become better individuals in school and in life. Which option correctly identifies the abstract nouns used in the speech?", o:["principal, students","school, assembly","honesty, discipline","life, school"], a:2, e:"Honesty and discipline are abstract nouns representing qualities." },
+  { q:"Students went on a field trip to Delhi. They visited historical monuments, travelled through busy roads, and observed how people live in a large city. The teacher explained that some words refer to specific names of places, while others refer to general objects or locations. Which option correctly identifies the proper noun from the passage?", o:["city","monuments","roads","Delhi"], a:3, e:"Delhi is a specific name of a city, so it is a proper noun." },
+  { q:"During a science activity, students were taken to the school garden. They observed different elements such as soil, flowers, trees, water pipes, and insects. The teacher explained that some nouns refer to things that can be counted individually, while others refer to materials or substances that cannot be counted one by one. Which option correctly identifies only countable nouns from the situation?", o:["soil, water","flowers, trees","water, soil","air, soil"], a:1, e:"Flowers and trees can be counted as individual items, so they are countable nouns." },
+  { q:"At the end of the week, the teacher asked students to reflect on their learning journey. Students shared thoughts about teamwork, confidence, and fear they experienced during presentations. The teacher explained that some nouns describe physical objects, while others describe feelings or states of mind that cannot be seen or touched. Which option correctly identifies only abstract nouns from the situation?", o:["teamwork, confidence","classroom, teacher","students, presentations","week, activity"], a:0, e:"Teamwork and confidence are abstract nouns because they represent feelings and ideas." }
 ];
 
-const finalChallenge = {
-  q: "Final challenge: In the sentence “The students showed honesty during the game,” which noun is abstract?",
-  o: ["students", "honesty", "game", "The"],
-  a: 1,
-  e: "Honesty is an idea or quality, so it is an abstract noun."
-};
+const finalChallenge = { q:"Final challenge: In the sentence “The students showed honesty during the game,” which noun is abstract?", o:["students","honesty","game","The"], a:1, e:"Honesty is an idea or quality, so it is an abstract noun." };
 
 const timerPerQuestion = 45;
 let currentIndex = 0, score = 0, attemptsLeft = 2, locked = false, timeLeft = timerPerQuestion, timerId = null, finalMode = false, wrongFirstAttempts = 0;
@@ -408,7 +363,7 @@ function buildBackground() {
 }
 
 function showScreen(name) {
-  ["introScreen", "instructionsScreen", "quizScreen", "finalScreen", "resultScreen"].forEach(id => el(id).classList.remove("active"));
+  ["splashScreen","instructionScreen","quizScreen","finalScreen","resultScreen"].forEach(id => el(id).classList.remove("active"));
   el(name).classList.add("active");
 }
 
@@ -465,7 +420,7 @@ function starConfetti() {
     c.style.left = 45 + Math.random() * 10 + "%";
     c.style.top = 42 + Math.random() * 10 + "%";
     c.style.animationDelay = Math.random() * 0.15 + "s";
-    el("confettiLayer").appendChild(c);
+    document.body.appendChild(c);
     setTimeout(() => c.remove(), 1050);
   }
 }
@@ -539,29 +494,6 @@ function nextStep() {
   else showScreen("finalScreen");
 }
 
-function startQuiz() {
-  currentIndex = 0;
-  score = 0;
-  wrongFirstAttempts = 0;
-  finalMode = false;
-  el("scoreBadge").textContent = "Score: 0";
-  showScreen("instructionsScreen");
-}
-
-function beginQuestions() {
-  showScreen("quizScreen");
-  finalMode = false;
-  el("modePill").textContent = "Chapter-based MCQ";
-  renderQuestion();
-}
-
-function startFinalChallenge() {
-  finalMode = true;
-  showScreen("quizScreen");
-  el("modePill").textContent = "Final challenge";
-  renderQuestion();
-}
-
 function showResults() {
   showScreen("resultScreen");
   el("resultTitle").textContent = score >= 9 ? "Excellent work!" : score >= 6 ? "Great job!" : "Keep practicing!";
@@ -569,13 +501,28 @@ function showResults() {
   el("reviewPanel").innerHTML = "<strong>What this chapter practiced</strong><br>Abstract nouns, proper nouns, countable nouns, and uncountable nouns in realistic Grade 4 situations.";
 }
 
-el("startBtn").onclick = beginQuestions;
+el("startBtn").onclick = () => {
+  showScreen("quizScreen");
+  finalMode = false;
+  currentIndex = 0;
+  score = 0;
+  wrongFirstAttempts = 0;
+  el("scoreBadge").textContent = "Score: 0";
+  el("modePill").textContent = "Chapter-based MCQ";
+  renderQuestion();
+};
 el("nextBtn").onclick = nextStep;
-el("finalStartBtn").onclick = startFinalChallenge;
+el("finalStartBtn").onclick = () => {
+  finalMode = true;
+  showScreen("quizScreen");
+  el("modePill").textContent = "Final challenge";
+  renderQuestion();
+};
 el("restartBtn").onclick = () => location.reload();
 
 buildBackground();
-setTimeout(() => { el("logoModal").style.display = "none"; }, 5000);
+setTimeout(() => showScreen("instructionScreen"), 5000);
+setTimeout(() => { const m = document.getElementById("logoModal"); if(m) m.style.display = "none"; }, 5000);
 </script>
 </body>
 </html>
