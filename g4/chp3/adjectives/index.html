@@ -6,18 +6,18 @@
 <title>Grade 4 - Adjectives</title>
 <style>
 :root{
-  --bg1:#06261b;
-  --bg2:#0e4b33;
-  --card:#fffaf0;
-  --ink:#1f2f27;
-  --muted:#5f6e64;
-  --accent:#25b36f;
-  --accent2:#ffcc45;
-  --accent3:#ff7aa6;
-  --good:#1ea85d;
-  --bad:#e85d5d;
-  --line:#e9dfc5;
-  --shadow:0 18px 42px rgba(7,34,23,.28);
+  --bg1:#032b4b;
+  --bg2:#0b5e8a;
+  --card:#f9fdff;
+  --ink:#173245;
+  --muted:#51697a;
+  --accent:#17a2b8;
+  --accent2:#4fd1c5;
+  --accent3:#ff9f6e;
+  --good:#1fbe77;
+  --bad:#ef6675;
+  --line:#d7e7f2;
+  --shadow:0 18px 42px rgba(0,28,52,.25);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -26,33 +26,29 @@ body{
   font-family:Arial,Helvetica,sans-serif;
   color:var(--ink);
   background:
-    radial-gradient(circle at 14% 18%, rgba(255,255,255,.10) 0 9%, transparent 10%),
-    radial-gradient(circle at 78% 14%, rgba(255,255,255,.08) 0 8%, transparent 9%),
+    radial-gradient(circle at 18% 18%, rgba(255,255,255,.12) 0 8%, transparent 9%),
+    radial-gradient(circle at 82% 14%, rgba(255,255,255,.10) 0 7%, transparent 8%),
     linear-gradient(160deg,var(--bg1),var(--bg2));
   overflow-x:hidden;
 }
-.bg-layers,.glows,.confetti-layer{
+.bubbles,.corals,.confetti-layer{
   position:fixed;
   inset:0;
   pointer-events:none;
   overflow:hidden;
 }
-.bg-layers span{
+.bubbles span{
   position:absolute;
-  border-radius:50% 0 50% 0;
-  background:rgba(83,183,107,.22);
-  transform:rotate(18deg);
-  animation:drift linear infinite;
-}
-.glows span{
-  position:absolute;
-  width:10px;
-  height:10px;
+  border:2px solid rgba(255,255,255,.28);
   border-radius:50%;
-  background:#ffe77a;
-  box-shadow:0 0 16px rgba(255,231,122,.9);
-  opacity:.55;
-  animation:fly linear infinite;
+  animation:rise linear infinite;
+}
+.corals span{
+  position:absolute;
+  background:rgba(255,159,110,.18);
+  border-radius:40% 60% 30% 70%;
+  transform:rotate(15deg);
+  animation:sway ease-in-out infinite;
 }
 .card-wrap{
   max-width:1080px;
@@ -65,7 +61,7 @@ body{
   border-radius:28px;
   overflow:hidden;
   box-shadow:var(--shadow);
-  border:1px solid rgba(255,255,255,.45);
+  border:1px solid rgba(255,255,255,.55);
 }
 .topbar{
   display:flex;
@@ -74,7 +70,7 @@ body{
   gap:10px;
   flex-wrap:wrap;
   padding:14px 16px;
-  background:linear-gradient(90deg,#fff7e7,#f0fff2);
+  background:linear-gradient(90deg,#effaff,#f2fbff);
   border-bottom:1px solid var(--line);
 }
 .badge{
@@ -82,10 +78,10 @@ body{
   border-radius:999px;
   font-size:14px;
   font-weight:800;
-  color:#33513e;
-  background:#edf7e8;
+  color:#2a5367;
+  background:#e9f7ff;
 }
-.badge.time{background:#fff2ce;color:#9a6d12}
+.badge.time{background:#e8fff8;color:#0e776e}
 .screen{display:none;padding:18px}
 .screen.active{display:block;animation:fadeIn .25s ease}
 .hero{
@@ -114,7 +110,7 @@ body{
 }
 .instruction{
   width:min(780px,100%);
-  background:#fffef7;
+  background:#fbfeff;
   border:1px solid var(--line);
   border-radius:18px;
   padding:16px;
@@ -129,13 +125,13 @@ body{
   font-weight:800;
   font-size:16px;
   color:#fff;
-  background:linear-gradient(135deg,var(--accent),#16834b);
+  background:linear-gradient(135deg,var(--accent),#118da0);
   cursor:pointer;
-  box-shadow:0 10px 20px rgba(37,179,111,.20);
+  box-shadow:0 10px 20px rgba(23,162,184,.20);
 }
 .btn.secondary{
-  background:#f4efdc;
-  color:#725c1c;
+  background:#edf8fb;
+  color:#166578;
   box-shadow:none;
 }
 .btn:disabled{opacity:.5;cursor:not-allowed}
@@ -150,12 +146,12 @@ body{
 .pill{
   padding:9px 12px;
   border-radius:999px;
-  background:#edf7e8;
-  color:#35513c;
+  background:#e7f6fb;
+  color:#2f5d72;
   font-size:14px;
   font-weight:800;
 }
-.pill.time{background:#fff2ce;color:#9a6d12}
+.pill.time{background:#e8fff8;color:#0e776e}
 .qtitle{
   font-size:clamp(20px,3.5vw,28px);
   line-height:1.45;
@@ -168,7 +164,7 @@ body{
 }
 .option{
   border:2px solid var(--line);
-  background:#fffdf6;
+  background:#fbfeff;
   color:var(--ink);
   border-radius:18px;
   padding:16px 14px;
@@ -178,9 +174,9 @@ body{
   min-height:66px;
   cursor:pointer;
 }
-.option:hover{transform:translateY(-1px);border-color:#b8d8b9}
+.option:hover{transform:translateY(-1px);border-color:#b8d8ea}
 .option.correct{border-color:var(--good);background:#eefaf3}
-.option.wrong{border-color:var(--bad);background:#fff2f2}
+.option.wrong{border-color:var(--bad);background:#fff2f4}
 .option.dim{opacity:.66}
 .footer{
   display:flex;
@@ -195,7 +191,7 @@ body{
   margin-top:14px;
   padding:14px;
   border-radius:16px;
-  background:#fbfff7;
+  background:#f5fbff;
   border:1px solid var(--line);
   line-height:1.5;
 }
@@ -209,7 +205,7 @@ body{
 }
 .final-panel{
   margin-top:16px;
-  background:#fbfff7;
+  background:#f5fbff;
   border:1px solid var(--line);
   border-radius:18px;
   padding:14px;
@@ -246,24 +242,24 @@ table.quiz-table{
   font-size:15px;
 }
 .quiz-table th,.quiz-table td{
-  border:1px solid #d8e4d4;
+  border:1px solid #d8e4f0;
   padding:10px;
   vertical-align:top;
 }
 .quiz-table th{
-  background:#eef8e8;
+  background:#edf8ff;
   text-align:left;
 }
 @keyframes fadeIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes starPop{0%{opacity:1;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-110px) scale(1.25) rotate(40deg)}}
-@keyframes drift{
-  0%{transform:translateY(110vh) rotate(18deg)}
-  100%{transform:translateY(-120px) rotate(18deg)}
+@keyframes rise{
+  0%{transform:translateY(110vh) scale(.7);opacity:0}
+  15%{opacity:.75}
+  100%{transform:translateY(-120px) scale(1.15);opacity:0}
 }
-@keyframes fly{
-  0%{transform:translateY(110vh) translateX(0);opacity:.1}
-  50%{opacity:.8}
-  100%{transform:translateY(-120px) translateX(60px);opacity:.1}
+@keyframes sway{
+  0%,100%{transform:translateY(0) rotate(15deg)}
+  50%{transform:translateY(-10px) rotate(-12deg)}
 }
 @media (max-width:700px){
   .options{grid-template-columns:1fr}
@@ -272,8 +268,8 @@ table.quiz-table{
 </style>
 </head>
 <body>
-<div class="bg-layers" id="bgLayers"></div>
-<div class="glows" id="glows"></div>
+<div class="bubbles" id="bubbles"></div>
+<div class="corals" id="corals"></div>
 <div class="confetti-layer" id="confettiLayer"></div>
 <div class="cross" id="crossMark">✕</div>
 
@@ -309,10 +305,11 @@ table.quiz-table{
 
     <div class="screen" id="quizScreen">
       <div class="quiz-head">
-        <div class="pill" id="modePill">Wild Neon Rainforest</div>
+        <div class="pill" id="modePill">Underwater Adventure</div>
         <div class="pill time" id="liveTimer">45s</div>
       </div>
       <h2 class="qtitle" id="questionText"></h2>
+      <div id="questionExtra"></div>
       <div class="options" id="optionsBox"></div>
       <div class="explain" id="explainBox"></div>
       <div class="footer">
@@ -373,24 +370,25 @@ function showScreen(name){
   el(name).classList.add("active");
 }
 function buildBackground(){
-  for(let i=0;i<14;i++){
-    const s=document.createElement("span");
-    s.style.left=Math.random()*100+"%";
-    s.style.top=Math.random()*100+"%";
-    s.style.width=(70+Math.random()*80)+"px";
-    s.style.height=(22+Math.random()*18)+"px";
-    s.style.opacity=.18;
-    s.style.animationDuration=(26+Math.random()*20)+"s";
-    s.style.animationDelay=(i*1.5)+"s";
-    document.getElementById("bgLayers").appendChild(s);
+  for(let i=0;i<22;i++){
+    const b=document.createElement("span");
+    b.style.left=Math.random()*100+"%";
+    b.style.top=Math.random()*100+"%";
+    b.style.width=(8+Math.random()*20)+"px";
+    b.style.height=b.style.width;
+    b.style.animationDuration=(12+Math.random()*12)+"s";
+    b.style.animationDelay=(Math.random()*8)+"s";
+    document.getElementById("bubbles").appendChild(b);
   }
-  for(let i=0;i<18;i++){
-    const g=document.createElement("span");
-    g.style.left=Math.random()*100+"%";
-    g.style.top=Math.random()*100+"%";
-    g.style.animationDuration=(14+Math.random()*10)+"s";
-    g.style.animationDelay=(Math.random()*8)+"s";
-    document.getElementById("glows").appendChild(g);
+  for(let i=0;i<12;i++){
+    const c=document.createElement("span");
+    c.style.left=(Math.random()*100)+"%";
+    c.style.top=(78+Math.random()*18)+"%";
+    c.style.width=(70+Math.random()*90)+"px";
+    c.style.height=(24+Math.random()*24)+"px";
+    c.style.animationDuration=(8+Math.random()*4)+"s";
+    c.style.animationDelay=(Math.random()*3)+"s";
+    document.getElementById("corals").appendChild(c);
   }
 }
 function data(){ return finalMode ? finalChallenge : quizData[currentIndex]; }
@@ -424,15 +422,42 @@ function renderQuestion(){
   el("explainBox").style.display="none";
   el("nextBtn").disabled=true;
   el("nextBtn").textContent=finalMode ? "See Result" : "Next";
-  data().o.forEach((opt,idx)=>{
+  if(currentIndex===8 && !finalMode){
+    el("questionText").textContent="Question 9: Look at the table and choose the correct correction.";
+    el("questionExtra").innerHTML=`
+      <table class="quiz-table">
+        <thead><tr><th>Sentence</th><th>Student Classification</th></tr></thead>
+        <tbody>
+          <tr><td>This is my book.</td><td>Demonstrative Pronoun</td></tr>
+          <tr><td>He is my friend.</td><td>Subject Pronoun</td></tr>
+          <tr><td>That is your bag.</td><td>Possessive Pronoun</td></tr>
+          <tr><td>They are playing.</td><td>Object Pronoun</td></tr>
+        </tbody>
+      </table>`;
+      const opts = [
+        "“That is your bag” is incorrectly classified as possessive pronoun.",
+        "“They are playing” should be object pronoun instead of subject pronoun.",
+        "“This is my book” should be object pronoun.",
+        "“He is my friend” should be demonstrative pronoun."
+      ];
+      renderOptions(opts, 1);
+      startTimer();
+      return;
+  }
+  el("questionExtra").innerHTML="";
+  renderOptions(data().o, data().a);
+  startTimer();
+}
+function renderOptions(options, answerIndex){
+  options.forEach((opt,idx)=>{
     const btn=document.createElement("button");
     btn.type="button";
     btn.className="option";
     btn.textContent=String.fromCharCode(65+idx)+". "+opt;
-    btn.onclick=()=>chooseAnswer(idx,btn);
+    btn.onclick=()=>chooseAnswer(idx,btn,answerIndex);
     el("optionsBox").appendChild(btn);
   });
-  startTimer();
+  data().a = answerIndex;
 }
 function showCross(){
   const c=el("crossMark");
@@ -479,17 +504,16 @@ function handleWrong(fromTimeout=false){
   locked=true;
   revealCorrect();
 }
-function chooseAnswer(i,btn){
+function chooseAnswer(i,btn,answerIndex){
   if(locked) return;
-  const d=data();
-  if(i===d.a){
+  if(i===answerIndex){
     clearInterval(timerId);
     locked=true;
     btn.classList.add("correct");
     score++;
     el("scoreBadge").textContent="Score: "+score;
     el("explainBox").style.display="block";
-    el("explainBox").textContent="Correct: "+d.e;
+    el("explainBox").textContent="Correct: "+data().e;
     el("nextBtn").disabled=false;
     starConfetti();
     playAudio("assets/correct.mp3");
@@ -522,7 +546,7 @@ el("startBtn").onclick=()=>{
   wrongFirstAttempts=0;
   finalMode=false;
   el("scoreBadge").textContent="Score: 0";
-  el("modePill").textContent="Wild Neon Rainforest";
+  el("modePill").textContent="Underwater Adventure";
   renderQuestion();
 };
 el("nextBtn").onclick=nextStep;
