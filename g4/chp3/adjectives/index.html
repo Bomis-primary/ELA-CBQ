@@ -6,18 +6,18 @@
 <title>Grade 4 - Adjectives</title>
 <style>
 :root{
-  --bg1:#032b4b;
-  --bg2:#0b5e8a;
-  --card:#f9fdff;
-  --ink:#173245;
-  --muted:#51697a;
-  --accent:#17a2b8;
-  --accent2:#4fd1c5;
-  --accent3:#ff9f6e;
-  --good:#1fbe77;
-  --bad:#ef6675;
-  --line:#d7e7f2;
-  --shadow:0 18px 42px rgba(0,28,52,.25);
+  --bg1:#021b36;
+  --bg2:#0a5d8f;
+  --bg3:#14a3c7;
+  --card:#f8fdff;
+  --ink:#143247;
+  --muted:#5a7385;
+  --good:#24c07a;
+  --bad:#ff6d7a;
+  --line:#d6e7f2;
+  --shadow:0 22px 52px rgba(0,26,48,.28);
+  --accent:#13b7d8;
+  --accent2:#ffb14a;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -25,30 +25,51 @@ body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
   color:var(--ink);
-  background:
-    radial-gradient(circle at 18% 18%, rgba(255,255,255,.12) 0 8%, transparent 9%),
-    radial-gradient(circle at 82% 14%, rgba(255,255,255,.10) 0 7%, transparent 8%),
-    linear-gradient(160deg,var(--bg1),var(--bg2));
   overflow-x:hidden;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(255,255,255,.16) 0 8%, transparent 9%),
+    radial-gradient(circle at 78% 14%, rgba(255,255,255,.14) 0 7%, transparent 8%),
+    linear-gradient(160deg,var(--bg1),var(--bg2) 55%, var(--bg3));
 }
-.bubbles,.corals,.confetti-layer{
+.sea-layer,.bubble-layer,.fish-layer,.coral-layer,.sparkle-layer{
   position:fixed;
   inset:0;
   pointer-events:none;
   overflow:hidden;
 }
-.bubbles span{
+.sea-layer{
+  background:
+    radial-gradient(circle at 20% 88%, rgba(255,255,255,.06) 0 8%, transparent 9%),
+    radial-gradient(circle at 60% 92%, rgba(255,255,255,.05) 0 7%, transparent 8%),
+    linear-gradient(to top, rgba(2,27,54,.48), transparent 38%);
+}
+.bubble-layer span{
   position:absolute;
-  border:2px solid rgba(255,255,255,.28);
+  border:2px solid rgba(255,255,255,.26);
   border-radius:50%;
   animation:rise linear infinite;
 }
-.corals span{
+.fish-layer span{
   position:absolute;
-  background:rgba(255,159,110,.18);
+  font-size:28px;
+  opacity:.8;
+  animation:swim linear infinite;
+}
+.coral-layer span{
+  position:absolute;
+  bottom:0;
   border-radius:40% 60% 30% 70%;
-  transform:rotate(15deg);
-  animation:sway ease-in-out infinite;
+  background:rgba(255,165,98,.22);
+  animation:wave ease-in-out infinite;
+}
+.sparkle-layer span{
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#fff7b0;
+  box-shadow:0 0 16px rgba(255,247,176,.95);
+  animation:twinkle linear infinite;
 }
 .card-wrap{
   max-width:1080px;
@@ -58,7 +79,7 @@ body{
 .card{
   min-height:calc(100vh - 28px);
   background:var(--card);
-  border-radius:28px;
+  border-radius:30px;
   overflow:hidden;
   box-shadow:var(--shadow);
   border:1px solid rgba(255,255,255,.55);
@@ -70,7 +91,7 @@ body{
   gap:10px;
   flex-wrap:wrap;
   padding:14px 16px;
-  background:linear-gradient(90deg,#effaff,#f2fbff);
+  background:linear-gradient(90deg,#effcff,#f2fbff);
   border-bottom:1px solid var(--line);
 }
 .badge{
@@ -78,10 +99,10 @@ body{
   border-radius:999px;
   font-size:14px;
   font-weight:800;
-  color:#2a5367;
-  background:#e9f7ff;
+  color:#25506a;
+  background:#e8f7ff;
 }
-.badge.time{background:#e8fff8;color:#0e776e}
+.badge.time{background:#e7fff9;color:#0c796d}
 .screen{display:none;padding:18px}
 .screen.active{display:block;animation:fadeIn .25s ease}
 .hero{
@@ -93,15 +114,16 @@ body{
   padding:12px 10px 24px;
 }
 .logo-wrap{
-  width:170px;
-  height:170px;
-  border-radius:38px;
+  width:180px;
+  height:180px;
+  border-radius:40px;
   overflow:hidden;
   background:#fff;
   display:flex;
   justify-content:center;
   align-items:center;
-  box-shadow:0 14px 32px rgba(20,44,25,.18);
+  box-shadow:0 14px 32px rgba(20,44,25,.16);
+  border:4px solid rgba(255,255,255,.55);
 }
 .logo-wrap img{
   width:100%;
@@ -109,29 +131,29 @@ body{
   object-fit:contain;
 }
 .instruction{
-  width:min(780px,100%);
-  background:#fbfeff;
+  width:min(820px,100%);
+  background:linear-gradient(180deg,#f8feff,#eefbff);
   border:1px solid var(--line);
-  border-radius:18px;
-  padding:16px;
+  border-radius:20px;
+  padding:18px;
   text-align:left;
   line-height:1.55;
   box-shadow:0 8px 20px rgba(34,54,30,.08);
 }
 .btn{
   border:none;
-  border-radius:16px;
+  border-radius:18px;
   padding:14px 20px;
   font-weight:800;
   font-size:16px;
   color:#fff;
-  background:linear-gradient(135deg,var(--accent),#118da0);
+  background:linear-gradient(135deg,#19c2e0,#0b7ea0);
   cursor:pointer;
-  box-shadow:0 10px 20px rgba(23,162,184,.20);
+  box-shadow:0 12px 24px rgba(25,194,224,.22);
 }
 .btn.secondary{
-  background:#edf8fb;
-  color:#166578;
+  background:#eef8fb;
+  color:#206277;
   box-shadow:none;
 }
 .btn:disabled{opacity:.5;cursor:not-allowed}
@@ -146,16 +168,19 @@ body{
 .pill{
   padding:9px 12px;
   border-radius:999px;
-  background:#e7f6fb;
-  color:#2f5d72;
+  background:#e8f7ff;
+  color:#25506a;
   font-size:14px;
   font-weight:800;
 }
-.pill.time{background:#e8fff8;color:#0e776e}
+.pill.time{background:#e7fff9;color:#0c796d}
 .qtitle{
   font-size:clamp(20px,3.5vw,28px);
   line-height:1.45;
-  margin:0 0 16px;
+  margin:0 0 14px;
+}
+#questionExtra{
+  margin-bottom:14px;
 }
 .options{
   display:grid;
@@ -166,7 +191,7 @@ body{
   border:2px solid var(--line);
   background:#fbfeff;
   color:var(--ink);
-  border-radius:18px;
+  border-radius:20px;
   padding:16px 14px;
   text-align:left;
   font-size:16px;
@@ -191,7 +216,7 @@ body{
   margin-top:14px;
   padding:14px;
   border-radius:16px;
-  background:#f5fbff;
+  background:#f4fbff;
   border:1px solid var(--line);
   line-height:1.5;
 }
@@ -205,7 +230,7 @@ body{
 }
 .final-panel{
   margin-top:16px;
-  background:#f5fbff;
+  background:#f4fbff;
   border:1px solid var(--line);
   border-radius:18px;
   padding:14px;
@@ -251,26 +276,42 @@ table.quiz-table{
   text-align:left;
 }
 @keyframes fadeIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes starPop{0%{opacity:1;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-110px) scale(1.25) rotate(40deg)}}
 @keyframes rise{
   0%{transform:translateY(110vh) scale(.7);opacity:0}
-  15%{opacity:.75}
+  15%{opacity:.8}
   100%{transform:translateY(-120px) scale(1.15);opacity:0}
 }
-@keyframes sway{
-  0%,100%{transform:translateY(0) rotate(15deg)}
-  50%{transform:translateY(-10px) rotate(-12deg)}
+@keyframes swim{
+  0%{transform:translateX(-15vw) translateY(0) scaleX(1);opacity:0}
+  20%{opacity:.8}
+  50%{transform:translateX(50vw) translateY(-16px) scaleX(-1)}
+  100%{transform:translateX(115vw) translateY(0) scaleX(1);opacity:0}
+}
+@keyframes wave{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-8px) rotate(4deg)}
+}
+@keyframes twinkle{
+  0%{transform:scale(.5);opacity:.1}
+  50%{opacity:.95}
+  100%{transform:scale(1.1);opacity:.1}
+}
+@keyframes starPop{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.35) rotate(0deg)}
+  100%{opacity:0;transform:translate(-50%,-130px) scale(1.4) rotate(45deg)}
 }
 @media (max-width:700px){
   .options{grid-template-columns:1fr}
-  .logo-wrap{width:132px;height:132px}
+  .logo-wrap{width:136px;height:136px}
 }
 </style>
 </head>
 <body>
-<div class="bubbles" id="bubbles"></div>
-<div class="corals" id="corals"></div>
-<div class="confetti-layer" id="confettiLayer"></div>
+<div class="sea-layer"></div>
+<div class="bubble-layer" id="bubbleLayer"></div>
+<div class="fish-layer" id="fishLayer"></div>
+<div class="coral-layer" id="coralLayer"></div>
+<div class="sparkle-layer" id="sparkleLayer"></div>
 <div class="cross" id="crossMark">✕</div>
 
 <div class="card-wrap">
@@ -370,25 +411,43 @@ function showScreen(name){
   el(name).classList.add("active");
 }
 function buildBackground(){
-  for(let i=0;i<22;i++){
+  for(let i=0;i<26;i++){
     const b=document.createElement("span");
     b.style.left=Math.random()*100+"%";
     b.style.top=Math.random()*100+"%";
-    b.style.width=(8+Math.random()*20)+"px";
+    b.style.width=(8+Math.random()*22)+"px";
     b.style.height=b.style.width;
-    b.style.animationDuration=(12+Math.random()*12)+"s";
+    b.style.animationDuration=(10+Math.random()*10)+"s";
     b.style.animationDelay=(Math.random()*8)+"s";
-    document.getElementById("bubbles").appendChild(b);
+    document.getElementById("bubbleLayer").appendChild(b);
   }
-  for(let i=0;i<12;i++){
+  const fish = ["🐠","🐟","🐡","🪼","🐬"];
+  for(let i=0;i<10;i++){
+    const f=document.createElement("span");
+    f.textContent=fish[i%fish.length];
+    f.style.left=(-10-Math.random()*20)+"vw";
+    f.style.top=(12+Math.random()*65)+"%";
+    f.style.animationDuration=(16+Math.random()*10)+"s";
+    f.style.animationDelay=(Math.random()*8)+"s";
+    f.style.fontSize=(22+Math.random()*16)+"px";
+    document.getElementById("fishLayer").appendChild(f);
+  }
+  for(let i=0;i<10;i++){
     const c=document.createElement("span");
     c.style.left=(Math.random()*100)+"%";
-    c.style.top=(78+Math.random()*18)+"%";
-    c.style.width=(70+Math.random()*90)+"px";
-    c.style.height=(24+Math.random()*24)+"px";
-    c.style.animationDuration=(8+Math.random()*4)+"s";
+    c.style.height=(35+Math.random()*70)+"px";
+    c.style.width=(26+Math.random()*60)+"px";
+    c.style.animationDuration=(3+Math.random()*4)+"s";
     c.style.animationDelay=(Math.random()*3)+"s";
-    document.getElementById("corals").appendChild(c);
+    document.getElementById("coralLayer").appendChild(c);
+  }
+  for(let i=0;i<16;i++){
+    const s=document.createElement("span");
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*100+"%";
+    s.style.animationDuration=(6+Math.random()*7)+"s";
+    s.style.animationDelay=(Math.random()*4)+"s";
+    document.getElementById("sparkleLayer").appendChild(s);
   }
 }
 function data(){ return finalMode ? finalChallenge : quizData[currentIndex]; }
@@ -422,6 +481,7 @@ function renderQuestion(){
   el("explainBox").style.display="none";
   el("nextBtn").disabled=true;
   el("nextBtn").textContent=finalMode ? "See Result" : "Next";
+  el("questionExtra").innerHTML="";
   if(currentIndex===8 && !finalMode){
     el("questionText").textContent="Question 9: Look at the table and choose the correct correction.";
     el("questionExtra").innerHTML=`
@@ -434,17 +494,15 @@ function renderQuestion(){
           <tr><td>They are playing.</td><td>Object Pronoun</td></tr>
         </tbody>
       </table>`;
-      const opts = [
-        "“That is your bag” is incorrectly classified as possessive pronoun.",
-        "“They are playing” should be object pronoun instead of subject pronoun.",
-        "“This is my book” should be object pronoun.",
-        "“He is my friend” should be demonstrative pronoun."
-      ];
-      renderOptions(opts, 1);
-      startTimer();
-      return;
+    renderOptions([
+      "“That is your bag” is incorrectly classified as possessive pronoun.",
+      "“They are playing” should be object pronoun instead of subject pronoun.",
+      "“This is my book” should be object pronoun.",
+      "“He is my friend” should be demonstrative pronoun."
+    ],1);
+    startTimer();
+    return;
   }
-  el("questionExtra").innerHTML="";
   renderOptions(data().o, data().a);
   startTimer();
 }
@@ -465,14 +523,14 @@ function showCross(){
   setTimeout(()=>c.classList.remove("show"),320);
 }
 function starConfetti(){
-  for(let i=0;i<16;i++){
+  for(let i=0;i<18;i++){
     const c=document.createElement("div");
     c.className="confetti-star";
     c.textContent="✦";
     c.style.left=45+Math.random()*10+"%";
     c.style.top=42+Math.random()*10+"%";
-    c.style.animationDelay=Math.random()*0.18+"s";
-    document.getElementById("confettiLayer").appendChild(c);
+    c.style.animationDelay=Math.random()*0.2+"s";
+    document.getElementById("sparkleLayer").appendChild(c);
     setTimeout(()=>c.remove(),1050);
   }
 }
