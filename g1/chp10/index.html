@@ -123,7 +123,8 @@ body{
 
 <!-- SPLASH with Innovine logo -->
 <div id="splash">
-    <img src="assets/logo.png" alt="Innovine Logo">
+    <!-- corrected path and filename -->
+    <img src="assets/innovine-logo.jpg" alt="Innovine Logo">
 </div>
 
 <!-- GAME -->
@@ -135,7 +136,7 @@ body{
     <div id="options"></div>
 </div>
 
-<!-- AUDIO (reuse existing assets) -->
+<!-- AUDIO -->
 <audio id="correctSound" src="assets/correct.mp3"></audio>
 <audio id="wrongSound" src="assets/wrong.mp3"></audio>
 <audio id="clapSound" src="assets/freesound_community-claps-44774.mp3"></audio>
@@ -256,6 +257,7 @@ function shuffleQuestions(arr){
     }
 }
 
+// show game after splash
 setTimeout(()=>{
     document.getElementById("splash").style.display="none";
     document.getElementById("game").style.display="block";
@@ -276,7 +278,7 @@ function loadQuestion(){
 
     let optHTML = "";
     q.o.forEach((opt,i)=>{
-        optHTML += `<div class='option' onclick='checkAnswer(this,${i})'>${opt}</div>`;
+        optHTML += `<div class="option" onclick="checkAnswer(this,${i})">${opt}</div>`;
     });
 
     document.getElementById("options").innerHTML = optHTML;
