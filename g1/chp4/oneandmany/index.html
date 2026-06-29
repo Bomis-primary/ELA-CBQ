@@ -55,6 +55,16 @@
         .screen { display: none; }
         .screen.active { display: block; }
 
+        /* --- LOGO STYLING --- */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .logo-container img {
+            max-width: 140px;
+            height: auto;
+        }
+
         /* --- TYPOGRAPHY --- */
         h1 {
             font-family: var(--font-head);
@@ -197,6 +207,9 @@
         <div class="card">
             
             <div id="scr-intro" class="screen active">
+                <div class="logo-container">
+                    <img src="assets/logo.png" alt="Innovine Logo">
+                </div>
                 <p class="meta-text">GRADE 1 • ENGLISH LANGUAGE ARTS</p>
                 <h1>Chapter 4: One and Many!</h1>
                 <p class="intro-p">Let's hike into the Magic Forest and learn when to add <strong>-s</strong> and <strong>-es</strong> to name many things together! Let's go!</p>
@@ -338,9 +351,9 @@
         function playFX(type) {
             let src = '';
             if (type === 'correct') {
-                src = 'g1/chp4/oneandmany/assets/correct.mp3';
+                src = 'assets/correct.mp3';
             } else if (type === 'wrong') {
-                src = 'g1/chp4/oneandmany/assets/wrong.mp3';
+                src = 'assets/wrong.mp3';
             }
 
             if (src) {
