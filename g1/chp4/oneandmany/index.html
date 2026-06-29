@@ -334,6 +334,23 @@
         let points = 0;
         let attempts = 0; // Tracks clicks per question
 
+        // Audio playing helper pointing directly to your updated paths
+        function playFX(type) {
+            let src = '';
+            if (type === 'correct') {
+                src = 'g1/chp4/oneandmany/assets/correct.mp3';
+            } else if (type === 'wrong') {
+                src = 'g1/chp4/oneandmany/assets/wrong.mp3';
+            }
+
+            if (src) {
+                const audio = new Audio(src);
+                audio.play().catch(err => {
+                    console.log('Audio playback pending interactive window activity.', err);
+                });
+            }
+        }
+
         function initGame() {
             document.getElementById('scr-intro').classList.remove('active');
             document.getElementById('scr-quiz').classList.add('active');
@@ -373,6 +390,7 @@
 
             if (selected === data.c) {
                 // CORRECT ANSWER chosen
+                playFX('correct');
                 element.classList.add('correct');
                 freezeTiles();
                 
@@ -387,6 +405,7 @@
                 document.getElementById('next-action-btn').style.display = 'block';
             } else {
                 // WRONG ANSWER chosen
+                playFX('wrong');
                 attempts++;
                 element.classList.add('wrong');
                 element.disabled = true; // Block this specific wrong tile
@@ -445,4 +464,3 @@
     </script>
 </body>
 </html>
-
