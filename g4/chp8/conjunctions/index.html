@@ -1,1 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Conjunctions Quiz - Grade 4</title>
+  <style>
+    :root{
+      --bg1:#05243b;
+      --bg2:#0a3d62;
+      --panel:rgba(7, 32, 53, .78);
+      --panel2:rgba(10, 58, 92, .78);
+      --text:#f4fbff;
+      --muted:#b7d7ea;
+      --accent:#69e2ff;
+      --accent2:#68ffb1;
+      --warn:#ff6b6b;
+      --gold:#ffd86b;
+      --shadow:0 16px 40px rgba(0,0,0,.25);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top, #0f5d85 0%, var(--bg2) 35%, var(--bg1) 100%);color:var(--text);overflow-x:hidden}
+    body:before,body:after{
+      content:"";position:fixed;inset:auto;pointer-events:none;z-index:0;opacity:.4
+    }
+    body:before{
+      left:-20%;top:-15%;width:140%;height:140%;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(255,255,255,.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,.07) 0 2px, transparent 3px),
+        radial-gradient(circle at 35% 75%, rgba(255,255,255,.05) 0 2px, transparent 3px);
+      animation: drift 18s linear infinite;
+    }
+    body:after{
+      left:-10%;bottom:-20%;width:120%;height:60%;
+      background:linear-gradient(180deg, transparent, rgba(21,160,186,.18), rgba(0,0,0,.12));
+      filter:blur(1px);
+    }
+    @keyframes drift{from{transform:translateY(0)}to{transform:translateY(30px)}}
+    .wrap{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+    .app{width:min(980px,100%);position:relative}
+    .card{
+      background:linear-gradient(180deg, rgba(12,49,79,.88), rgba(7,26,45,.88));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+      overflow:hidden;
+      backdrop-filter:blur(8px);
+    }
+    .topbar{
+      display:flex;justify-content:space-between;gap:12px;align-items:center;
+      padding:14px 16px;background:linear-gradient(90deg, rgba(105,226,255,.12), rgba(104,255,177,.08));
+      border-bottom:1px solid rgba(255,255,255,.08)
+    }
+    .pill{
+      padding:10px 12px;border-radius:999px;background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.09);font-size:14px;display:flex;gap:8px;align-items:center;white-space:nowrap
+    }
+    .score strong,.timer strong{color:#fff}
+    .main{padding:18px}
+    .screen{display:none}
+    .screen.active{display:block}
+    .center{display:grid;place-items:center;min-height:72vh;text-align:center}
+    .logoBox{
+      width:min(220px,58vw);aspect-ratio:1;border-radius:28px;margin:0 auto 14px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      display:grid;place-items:center;box-shadow:var(--shadow)
+    }
+    .logoBox img{max-width:82%;max-height:82%;object-fit:contain}
+    h1,h2{margin:0 0 10px}
+    h1{font-size:clamp(30px,5vw,48px)}
+    h2{font-size:clamp(24px,4vw,34px)}
+    p{margin:0 0 12px;color:var(--muted);line-height:1.5}
+    .btnRow{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:18px}
+    button{
+      appearance:none;border:0;cursor:pointer;font:inherit;color:#05243b;font-weight:700;
+      padding:14px 18px;border-radius:16px;background:linear-gradient(180deg,#a4f2ff,#69e2ff);
+      box-shadow:0 10px 20px rgba(0,0,0,.18);transition:transform .15s ease,filter .15s ease
+    }
+    button:hover{transform:translateY(-1px);filter:brightness(1.05)}
+    button:disabled{opacity:.65;cursor:not-allowed;transform:none}
+    .ghost{background:transparent;color:var(--text);border:1px solid rgba(255,255,255,.18)}
+    .quizHead{display:grid;grid-template-columns:1.2fr auto;gap:12px;align-items:center;margin-bottom:14px}
+    .qMeta{display:flex;flex-wrap:wrap;gap:10px}
+    .bar{
+      height:12px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin-top:10px
+    }
+    .bar > div{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .3s ease}
+    .qCard{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:18px;box-shadow:var(--shadow)
+    }
+    .question{
+      font-size:clamp(20px,3vw,28px);line-height:1.45;margin-bottom:14px
+    }
+    .options{display:grid;gap:12px}
+    .opt{
+      width:100%;text-align:left;background:rgba(255,255,255,.08);color:var(--text);
+      border:1px solid rgba(255,255,255,.12);padding:14px 14px;border-radius:16px;display:flex;gap:12px;align-items:flex-start
+    }
+    .opt span.tag{
+      flex:0 0 auto;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+      background:rgba(255,255,255,.12);font-weight:800
+    }
+    .opt.correct{background:rgba(104,255,177,.18);border-color:rgba(104,255,177,.4)}
+    .opt.wrong{background:rgba(255,107,107,.18);border-color:rgba(255,107,107,.35)}
+    .feedback{
+      margin-top:14px;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.1);min-height:58px
+    }
+    .nav{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:16px;flex-wrap:wrap}
+    .small{font-size:13px;color:var(--muted)}
+    .finalMsg{
+      font-size:clamp(18px,2.6vw,24px);line-height:1.45;margin-top:10px
+    }
+    .resultScore{
+      font-size:clamp(36px,7vw,64px);font-weight:900;color:var(--gold);margin:8px 0 14px
+    }
+    .review{
+      margin-top:16px;text-align:left;display:grid;gap:10px;max-height:42vh;overflow:auto;padding-right:4px
+    }
+    .revItem{
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+      border-radius:16px;padding:12px 14px
+    }
+    .revItem b{display:block;margin-bottom:6px}
+    .overlay{
+      position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden
+    }
+    .star,.stream{
+      position:absolute;opacity:.95;animation:fall linear forwards
+    }
+    .star{
+      width:12px;height:12px;background:var(--gold);
+      clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 92%,50% 72%,21% 92%,32% 57%,2% 35%,39% 35%);
+      filter:drop-shadow(0 0 6px rgba(255,216,107,.45))
+    }
+    .cross{
+      position:absolute;width:16px;height:16px;opacity:.9;animation:pop .5s ease-out forwards
+    }
+    .cross:before,.cross:after{
+      content:"";position:absolute;left:7px;top:0;width:2px;height:16px;background:var(--warn);border-radius:99px
+    }
+    .cross:before{transform:rotate(45deg)}
+    .cross:after{transform:rotate(-45deg)}
+    .stream{
+      width:2px;height:38px;background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.7));
+      border-radius:99px
+    }
+    @keyframes fall{
+      from{transform:translateY(-20px) rotate(0deg);opacity:1}
+      to{transform:translateY(110vh) rotate(360deg);opacity:0}
+    }
+    @keyframes pop{
+      0%{transform:scale(.7);opacity:0}
+      30%{transform:scale(1.2);opacity:1}
+      100%{transform:scale(1);opacity:0}
+    }
+    .intro{
+      position:fixed;inset:0;z-index:20;background:radial-gradient(circle at center,#13527c 0%, #07233a 70%, #04131f 100%);
+      display:grid;place-items:center;transition:opacity .4s ease,visibility .4s ease
+    }
+    .intro.hide{opacity:0;visibility:hidden}
+    .introCard{
+      text-align:center;padding:24px 20px;width:min(420px,92vw)
+    }
+    .introCard img{width:min(200px,48vw);height:auto;display:block;margin:0 auto 16px}
+    .introCard .mini{color:#c8ecff}
+    @media (max-width:720px){
+      .quizHead{grid-template-columns:1fr}
+      .topbar{flex-direction:column;align-items:stretch}
+      .pill{justify-content:space-between}
+      .main{padding:14px}
+      .question{font-size:22px}
+      .opt{padding:13px}
+    }
+  </style>
+</head>
+<body>
+  <div class="intro" id="intro">
+    <div class="introCard">
+      <img src="assets/logo.png" alt="Innovine Logo">
+      <h2>Innovine</h2>
+      <p class="mini">Loading the underwater learning adventure...</p>
+    </div>
+  </div>
 
+  <div class="overlay" id="overlay"></div>
+
+  <div class="wrap">
+    <div class="app">
+      <div class="card">
+        <div class="topbar">
+          <div class="pill score">Score: <strong id="scoreNow">0</strong> / <span id="scoreMax">12</span></div>
+          <div class="pill timer">Time Left: <strong id="timeLeft">45</strong>s</div>
+          <div class="pill">Question <strong id="qNum">0</strong> / <span id="qTotal">12</span></div>
+        </div>
+
+        <div class="main">
+          <section class="screen active center" id="startScreen">
+            <div>
+              <div class="logoBox"><img src="assets/logo.png" alt="Innovine Logo"></div>
+              <h1>Conjunctions Dive</h1>
+              <p>Grade 4 chapter-based MCQ challenge with an underwater theme.</p>
+              <p>Answer each question, use your one retry wisely, and finish the final challenge to see your result.</p>
+              <div class="btnRow">
+                <button id="startBtn">Start Quiz</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen" id="quizScreen">
+            <div class="quizHead">
+              <div>
+                <div class="qMeta">
+                  <div class="pill">Topic: <strong>Conjunctions</strong></div>
+                  <div class="pill">Attempts: <strong>2</strong></div>
+                  <div class="pill">Chapter: <strong>8</strong></div>
+                </div>
+                <div class="bar"><div id="progressBar"></div></div>
+              </div>
+              <div class="pill">Underwater Quest</div>
+            </div>
+
+            <div class="qCard">
+              <div class="question" id="questionText"></div>
+              <div class="options" id="optionsWrap"></div>
+              <div class="feedback" id="feedback">Choose the best answer to continue.</div>
+              <div class="nav">
+                <div class="small" id="attemptInfo">You have 2 tries for each question.</div>
+                <button class="ghost" id="nextBtn" disabled>Next</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen center" id="resultScreen">
+            <div>
+              <h2 id="resultTitle">Final Challenge Complete</h2>
+              <div class="resultScore" id="finalScore">0 / 12</div>
+              <p class="finalMsg" id="resultMsg"></p>
+              <div class="btnRow">
+                <button id="restartBtn">Play Again</button>
+              </div>
+              <div class="review" id="reviewBox"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {q:"Some students thought the picnic would be cancelled, ______ the rain stopped after a while.", o:["and","because","till","but"], a:3, e:"But shows contrast between the students’ thought and what actually happened."},
+      {q:"Her father stayed beside her ______ she felt confident enough to ride on her own.", o:["if","while","till","because"], a:2, e:"Till shows he stayed with her up to the point she felt confident."},
+      {q:"Aarav reads a storybook ______ he waits for the school bus.", o:["while","when","till","because"], a:0, e:"While fits because both actions happen at the same time."},
+      {q:"Kabir ran very fast, ______ another student finished first.", o:["because","but","and","so"], a:1, e:"But connects two ideas that contrast with each other."},
+      {q:"Meera took her umbrella ______ she saw that it was raining.", o:["if","when","till","while"], a:1, e:"When shows the action happened at the time she saw the rain."},
+      {q:"They measured the flour ______ added chocolate chips.", o:["but","because","and","or"], a:2, e:"And joins two actions in a simple sequence."},
+      {q:"The students could decorate their model ______ they finished their work neatly.", o:["when","till","if","while"], a:2, e:"If shows a condition that must happen first."},
+      {q:"Should we buy apples ______ oranges?", o:["because","but","or","and"], a:2, e:"Or is used when choosing between two things."},
+      {q:"The judges admired every picture ______ each one showed creativity.", o:["because","but","till","and"], a:0, e:"Because explains the reason the judges admired the pictures."},
+      {q:"The driver greets everyone, ______ the helper checks that all the students are seated safely.", o:["because","but","or","and"], a:3, e:"And joins two actions that happen together."},
+      {q:"Aanya wanted to play badminton, ______ it started raining.", o:["because","and","but","or"], a:2, e:"But shows the second situation changed her plan."},
+      {q:"The students made greeting cards ______ practised songs for the celebration.", o:["because","or","but","and"], a:3, e:"And joins two activities done by the students."}
+    ];
+
+    const state = {
+      idx: 0,
+      score: 0,
+      attempts: 0,
+      answered: false,
+      timer: null,
+      timeLeft: 45,
+      used: [],
+      retryUsed: false
+    };
+
+    const els = {
+      intro: document.getElementById('intro'),
+      startScreen: document.getElementById('startScreen'),
+      quizScreen: document.getElementById('quizScreen'),
+      resultScreen: document.getElementById('resultScreen'),
+      startBtn: document.getElementById('startBtn'),
+      restartBtn: document.getElementById('restartBtn'),
+      nextBtn: document.getElementById('nextBtn'),
+      questionText: document.getElementById('questionText'),
+      optionsWrap: document.getElementById('optionsWrap'),
+      feedback: document.getElementById('feedback'),
+      scoreNow: document.getElementById('scoreNow'),
+      scoreMax: document.getElementById('scoreMax'),
+      qNum: document.getElementById('qNum'),
+      qTotal: document.getElementById('qTotal'),
+      timeLeft: document.getElementById('timeLeft'),
+      progressBar: document.getElementById('progressBar'),
+      finalScore: document.getElementById('finalScore'),
+      resultMsg: document.getElementById('resultMsg'),
+      reviewBox: document.getElementById('reviewBox')
+    };
+
+    els.scoreMax.textContent = questions.length;
+    els.qTotal.textContent = questions.length;
+
+    function showScreen(name){
+      [els.startScreen, els.quizScreen, els.resultScreen].forEach(s => s.classList.remove('active'));
+      els[name].classList.add('active');
+    }
+
+    function startQuiz(){
+      state.idx = 0; state.score = 0; state.used = []; state.retryUsed = false;
+      els.scoreNow.textContent = state.score;
+      showScreen('quizScreen');
+      loadQuestion();
+    }
+
+    function startTimer(){
+      clearInterval(state.timer);
+      state.timeLeft = 45;
+      els.timeLeft.textContent = state.timeLeft;
+      state.timer = setInterval(() => {
+        state.timeLeft--;
+        els.timeLeft.textContent = state.timeLeft;
+        if(state.timeLeft <= 0){
+          clearInterval(state.timer);
+          handleWrong(true);
+        }
+      }, 1000);
+    }
+
+    function loadQuestion(){
+      state.answered = false;
+      state.attempts = 0;
+      const q = questions[state.idx];
+      els.qNum.textContent = state.idx + 1;
+      els.questionText.textContent = q.q;
+      els.feedback.textContent = "Choose the best answer to continue.";
+      els.nextBtn.disabled = true;
+      els.optionsWrap.innerHTML = "";
+      els.progressBar.style.width = ((state.idx) / questions.length * 100) + "%";
+      startTimer();
+
+      q.o.forEach((opt, i) => {
+        const b = document.createElement('button');
+        b.className = 'opt';
+        b.innerHTML = `<span class="tag">${String.fromCharCode(65+i)}</span><span>${opt}</span>`;
+        b.onclick = () => handleAnswer(i, b);
+        els.optionsWrap.appendChild(b);
+      });
+    }
+
+    function confetti(ok=true){
+      for(let i=0;i<14;i++){
+        const el = document.createElement('div');
+        el.className = ok ? 'star' : 'cross';
+        el.style.left = Math.random()*100 + 'vw';
+        el.style.top = (ok ? (10 + Math.random()*15) : (35 + Math.random()*15)) + 'vh';
+        el.style.animationDuration = (ok ? (1.2 + Math.random()*1.2) : 0.6) + 's';
+        el.style.transform = `translateX(${(Math.random()*120-60)}px) rotate(${Math.random()*360}deg)`;
+        document.getElementById('overlay').appendChild(el);
+        setTimeout(() => el.remove(), 1700);
+      }
+      for(let i=0;i<6;i++){
+        const s = document.createElement('div');
+        s.className = 'stream';
+        s.style.left = Math.random()*100 + 'vw';
+        s.style.top = '-10vh';
+        s.style.animationDuration = (2.2 + Math.random()*1.2) + 's';
+        s.style.opacity = .25 + Math.random()*.35;
+        document.getElementById('overlay').appendChild(s);
+        setTimeout(() => s.remove(), 3400);
+      }
+    }
+
+    function handleAnswer(choice, btn){
+      if(state.answered) return;
+      const q = questions[state.idx];
+      state.attempts++;
+
+      if(choice === q.a){
+        state.answered = true;
+        clearInterval(state.timer);
+        state.score++;
+        els.scoreNow.textContent = state.score;
+        els.feedback.textContent = "Correct! " + q.e;
+        markButtons(choice, true);
+        confetti(true);
+        els.nextBtn.disabled = false;
+        state.used.push({q:q.q, picked:q.o[choice], correct:q.o[q.a], explanation:q.e, right:true});
+      }else{
+        if(state.attempts === 1){
+          btn.classList.add('wrong');
+          els.feedback.textContent = "Try one more time.";
+          confetti(false);
+          return;
+        }
+        state.answered = true;
+        clearInterval(state.timer);
+        markButtons(choice, false);
+        els.feedback.textContent = `Correct answer: ${q.o[q.a]}. ${q.e}`;
+        confetti(false);
+        els.nextBtn.disabled = false;
+        state.used.push({q:q.q, picked:q.o[choice], correct:q.o[q.a], explanation:q.e, right:false});
+      }
+    }
+
+    function handleWrong(fromTimeout=false){
+      if(state.answered) return;
+      const q = questions[state.idx];
+      if(state.attempts === 0){
+        state.attempts = 2;
+        els.feedback.textContent = "Time's up. The correct answer is shown below.";
+      }
+      state.answered = true;
+      markButtons(q.a, false, true);
+      els.feedback.textContent = (fromTimeout ? "Time's up. " : "Correct answer: ") + q.o[q.a] + ". " + q.e;
+      els.nextBtn.disabled = false;
+      state.used.push({q:q.q, picked:"No answer", correct:q.o[q.a], explanation:q.e, right:false});
+      confetti(false);
+    }
+
+    function markButtons(correctIndex, wrongMode=false, revealOnly=false){
+      [...els.optionsWrap.children].forEach((b, i) => {
+        b.disabled = true;
+        if(i === correctIndex) b.classList.add('correct');
+        else if(!revealOnly && b.classList.contains('wrong')) b.classList.add('wrong');
+      });
+    }
+
+    function nextQuestion(){
+      if(state.idx < questions.length - 1){
+        state.idx++;
+        loadQuestion();
+      }else{
+        endQuiz();
+      }
+    }
+
+    function endQuiz(){
+      clearInterval(state.timer);
+      showScreen('resultScreen');
+      els.finalScore.textContent = `${state.score} / ${questions.length}`;
+      const percent = Math.round((state.score / questions.length) * 100);
+      els.resultMsg.textContent = percent >= 90 ? "Excellent work! You handled the conjunctions challenge with confidence." : percent >= 70 ? "Good job! You showed strong understanding and steady progress." : "Keep practising. You are building a good foundation with conjunctions.";
+      els.reviewBox.innerHTML = '<div class="small" style="margin-bottom:6px;">Review</div>' + state.used.map((x,i)=>`
+        <div class="revItem">
+          <b>${i+1}. ${x.q}</b>
+          Your answer: ${x.picked}<br>
+          Correct answer: ${x.correct}<br>
+          <span class="small">${x.explanation}</span>
+        </div>
+      `).join('');
+      els.progressBar.style.width = '100%';
+    }
+
+    els.startBtn.onclick = () => {
+      els.intro.classList.add('hide');
+      setTimeout(startQuiz, 250);
+    };
+    els.nextBtn.onclick = nextQuestion;
+    els.restartBtn.onclick = () => {
+      showScreen('startScreen');
+      els.progressBar.style.width = '0%';
+      els.scoreNow.textContent = '0';
+      els.timeLeft.textContent = '45';
+      els.feedback.textContent = 'Choose the best answer to continue.';
+    };
+
+    setTimeout(() => els.intro.classList.add('hide'), 5000);
+  </script>
+</body>
+</html>
