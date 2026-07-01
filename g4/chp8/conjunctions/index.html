@@ -18,7 +18,6 @@
   --shadow:0 22px 52px rgba(0,26,48,.28);
   --accent:#13b7d8;
   --accent2:#ffb14a;
-  --sea:#0b77a7;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -180,7 +179,9 @@ body{
   line-height:1.45;
   margin:0 0 14px;
 }
-#questionExtra{margin-bottom:14px}
+#questionExtra{
+  margin-bottom:14px;
+}
 .options{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -248,19 +249,16 @@ body{
   z-index:20;
 }
 .cross.show{opacity:.92}
-.bubble-pop{
+.confetti-star{
   position:fixed;
   left:50%;
   top:48%;
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,.9);
-  background:rgba(255,255,255,.25);
+  font-size:18px;
+  color:#ffd45c;
   opacity:0;
+  animation:starPop 1s ease forwards;
   z-index:20;
   pointer-events:none;
-  animation:bubblePop 1.1s ease forwards;
 }
 table.quiz-table{
   width:100%;
@@ -298,10 +296,9 @@ table.quiz-table{
   50%{opacity:.95}
   100%{transform:scale(1.1);opacity:.1}
 }
-@keyframes bubblePop{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}
-  12%{opacity:1}
-  100%{opacity:0;transform:translate(calc(-50% + var(--dx)), calc(-130px + var(--dy))) scale(1.6)}
+@keyframes starPop{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.35) rotate(0deg)}
+  100%{opacity:0;transform:translate(-50%,-130px) scale(1.4) rotate(45deg)}
 }
 @media (max-width:700px){
   .options{grid-template-columns:1fr}
@@ -337,8 +334,8 @@ table.quiz-table{
       <div class="hero">
         <div class="instruction">
           <strong>Instructions for students</strong><br><br>
-          Read each question carefully.<br>
-          Choose the best answer from 4 options.<br>
+          Read each passage carefully.<br>
+          Choose the best conjunction.<br>
           You get one retry if your first answer is wrong.<br>
           If you miss again, the correct answer and a short explanation will appear.<br>
           Answer before the timer ends.
@@ -404,114 +401,91 @@ const quizData = [
   { q:"The students made greeting cards ______ practised songs for the celebration.", o:["because","or","but","and"], a:3, e:"And joins two activities done by the students." }
 ];
 
-const finalChallenge = {
-  q:"Final challenge: Which sentence uses conjunctions correctly?",
-  o:["The boy was tired, but he kept running.","The boy was tired and he kept running but.","But the boy was tired he kept running and.","The boy tired and kept running but."],
-  a:0,
-  e:"But correctly joins two contrasting ideas."
-};
+const finalChallenge = { q:"Final challenge: Which sentence uses conjunctions correctly?", o:["The boy was tired, but he kept running.","The boy was tired and he kept running but.","But the boy was tired he kept running and.","The boy tired and kept running but."], a:0, e:"But correctly joins two contrasting ideas." };
 
-let currentIndex = 0;
-let score = 0;
-let attemptsLeft = 2;
-let locked = false;
-let timeLeft = 45;
-let timerId = null;
-let finalMode = false;
-let wrongFirstAttempts = 0;
-
-const el = id => document.getElementById(id);
+let currentIndex=0, score=0, attemptsLeft=2, locked=false, timeLeft=45, timerId=null, finalMode=false, wrongFirstAttempts=0;
+const el=id=>document.getElementById(id);
 
 function showScreen(name){
-  ["splashScreen","instructionScreen","quizScreen","finalScreen","resultScreen"].forEach(id => el(id).classList.remove("active"));
+  ["splashScreen","instructionScreen","quizScreen","finalScreen","resultScreen"].forEach(id=>el(id).classList.remove("active"));
   el(name).classList.add("active");
 }
-
 function buildBackground(){
   for(let i=0;i<26;i++){
-    const b = document.createElement("span");
-    b.style.left = Math.random()*100 + "%";
-    b.style.top = Math.random()*100 + "%";
-    b.style.width = (8 + Math.random()*22) + "px";
-    b.style.height = b.style.width;
-    b.style.animationDuration = (10 + Math.random()*10) + "s";
-    b.style.animationDelay = (Math.random()*8) + "s";
+    const b=document.createElement("span");
+    b.style.left=Math.random()*100+"%";
+    b.style.top=Math.random()*100+"%";
+    b.style.width=(8+Math.random()*22)+"px";
+    b.style.height=b.style.width;
+    b.style.animationDuration=(10+Math.random()*10)+"s";
+    b.style.animationDelay=(Math.random()*8)+"s";
     document.getElementById("bubbleLayer").appendChild(b);
   }
-
   const fish = ["🐠","🐟","🐡","🪼","🐬"];
   for(let i=0;i<10;i++){
-    const f = document.createElement("span");
-    f.textContent = fish[i%fish.length];
-    f.style.left = (-10 - Math.random()*20) + "vw";
-    f.style.top = (12 + Math.random()*65) + "%";
-    f.style.animationDuration = (16 + Math.random()*10) + "s";
-    f.style.animationDelay = (Math.random()*8) + "s";
-    f.style.fontSize = (22 + Math.random()*16) + "px";
+    const f=document.createElement("span");
+    f.textContent=fish[i%fish.length];
+    f.style.left=(-10-Math.random()*20)+"vw";
+    f.style.top=(12+Math.random()*65)+"%";
+    f.style.animationDuration=(16+Math.random()*10)+"s";
+    f.style.animationDelay=(Math.random()*8)+"s";
+    f.style.fontSize=(22+Math.random()*16)+"px";
     document.getElementById("fishLayer").appendChild(f);
   }
-
   for(let i=0;i<10;i++){
-    const c = document.createElement("span");
-    c.style.left = Math.random()*100 + "%";
-    c.style.height = (35 + Math.random()*70) + "px";
-    c.style.width = (26 + Math.random()*60) + "px";
-    c.style.animationDuration = (3 + Math.random()*4) + "s";
-    c.style.animationDelay = (Math.random()*3) + "s";
+    const c=document.createElement("span");
+    c.style.left=(Math.random()*100)+"%";
+    c.style.height=(35+Math.random()*70)+"px";
+    c.style.width=(26+Math.random()*60)+"px";
+    c.style.animationDuration=(3+Math.random()*4)+"s";
+    c.style.animationDelay=(Math.random()*3)+"s";
     document.getElementById("coralLayer").appendChild(c);
   }
-
   for(let i=0;i<16;i++){
-    const s = document.createElement("span");
-    s.style.left = Math.random()*100 + "%";
-    s.style.top = Math.random()*100 + "%";
-    s.style.animationDuration = (6 + Math.random()*7) + "s";
-    s.style.animationDelay = (Math.random()*4) + "s";
+    const s=document.createElement("span");
+    s.style.left=Math.random()*100+"%";
+    s.style.top=Math.random()*100+"%";
+    s.style.animationDuration=(6+Math.random()*7)+"s";
+    s.style.animationDelay=(Math.random()*4)+"s";
     document.getElementById("sparkleLayer").appendChild(s);
   }
 }
-
-function data(){
-  return finalMode ? finalChallenge : quizData[currentIndex];
-}
-
+function data(){ return finalMode ? finalChallenge : quizData[currentIndex]; }
 function playAudio(src){
-  const audio = new Audio(src);
-  audio.preload = "auto";
+  const audio=new Audio(src);
+  audio.preload="auto";
   audio.play().catch(()=>{});
 }
-
 function startTimer(){
   clearInterval(timerId);
-  timeLeft = 45;
-  el("timerBadge").textContent = "Time: " + timeLeft + "s";
-  el("liveTimer").textContent = timeLeft + "s";
-  timerId = setInterval(() => {
+  timeLeft=45;
+  el("timerBadge").textContent="Time: "+timeLeft+"s";
+  el("liveTimer").textContent=timeLeft+"s";
+  timerId=setInterval(()=>{
     timeLeft--;
-    el("timerBadge").textContent = "Time: " + timeLeft + "s";
-    el("liveTimer").textContent = timeLeft + "s";
-    if(timeLeft <= 0){
+    el("timerBadge").textContent="Time: "+timeLeft+"s";
+    el("liveTimer").textContent=timeLeft+"s";
+    if(timeLeft<=0){
       clearInterval(timerId);
       handleWrong(true);
     }
-  }, 1000);
+  },1000);
 }
-
 function renderQuestion(){
-  locked = false;
-  attemptsLeft = 2;
-  el("attemptPill").textContent = "Attempts left: " + attemptsLeft;
-  el("qBadge").textContent = finalMode ? "Final challenge" : `Question ${currentIndex+1}/12`;
-  el("questionText").textContent = data().q;
-  el("optionsBox").innerHTML = "";
-  el("explainBox").style.display = "none";
-  el("nextBtn").disabled = true;
-  el("nextBtn").textContent = finalMode ? "See Result" : "Next";
-  el("questionExtra").innerHTML = "";
+  locked=false;
+  attemptsLeft=2;
+  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
+  el("qBadge").textContent=finalMode ? "Final challenge" : `Question ${currentIndex+1}/12`;
+  el("questionText").textContent=data().q;
+  el("optionsBox").innerHTML="";
+  el("explainBox").style.display="none";
+  el("nextBtn").disabled=true;
+  el("nextBtn").textContent=finalMode ? "See Result" : "Next";
+  el("questionExtra").innerHTML="";
 
-  if(currentIndex === 8 && !finalMode){
-    el("questionText").textContent = "Question 9: Look at the table and choose the correct answer.";
-    el("questionExtra").innerHTML = `
+  if(currentIndex===8 && !finalMode){
+    el("questionText").textContent="Question 9: Look at the table and choose the correct answer.";
+    el("questionExtra").innerHTML=`
       <table class="quiz-table">
         <thead><tr><th>Sentence</th><th>Label</th></tr></thead>
         <tbody>
@@ -530,144 +504,120 @@ function renderQuestion(){
     startTimer();
     return;
   }
-
   renderOptions(data().o, data().a);
   startTimer();
 }
-
 function renderOptions(options, answerIndex){
-  options.forEach((opt, idx) => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "option";
-    btn.textContent = String.fromCharCode(65 + idx) + ". " + opt;
-    btn.onclick = () => chooseAnswer(idx, btn, answerIndex);
+  options.forEach((opt,idx)=>{
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="option";
+    btn.textContent=String.fromCharCode(65+idx)+". "+opt;
+    btn.onclick=()=>chooseAnswer(idx,btn,answerIndex);
     el("optionsBox").appendChild(btn);
   });
   data().a = answerIndex;
 }
-
 function showCross(){
-  const c = el("crossMark");
+  const c=el("crossMark");
   c.classList.add("show");
-  setTimeout(() => c.classList.remove("show"), 320);
+  setTimeout(()=>c.classList.remove("show"),320);
 }
-
-function bubbleConfetti(){
+function starConfetti(){
   for(let i=0;i<18;i++){
-    const b = document.createElement("div");
-    b.className = "bubble-pop";
-    b.style.setProperty("--dx", (Math.random()*140 - 70) + "px");
-    b.style.setProperty("--dy", (Math.random()*80 - 40) + "px");
-    b.style.left = (45 + Math.random()*10) + "%";
-    b.style.top = (45 + Math.random()*10) + "%";
-    b.style.width = (8 + Math.random()*14) + "px";
-    b.style.height = b.style.width;
-    b.style.animationDelay = (Math.random()*0.18) + "s";
-    document.body.appendChild(b);
-    setTimeout(() => b.remove(), 1200);
+    const c=document.createElement("div");
+    c.className="confetti-star";
+    c.textContent="✦";
+    c.style.left=45+Math.random()*10+"%";
+    c.style.top=42+Math.random()*10+"%";
+    c.style.animationDelay=Math.random()*0.2+"s";
+    document.getElementById("sparkleLayer").appendChild(c);
+    setTimeout(()=>c.remove(),1050);
   }
 }
-
 function revealCorrect(){
-  const d = data();
-  [...document.querySelectorAll(".option")].forEach((btn, idx) => {
-    btn.disabled = true;
-    if(idx === d.a) btn.classList.add("correct");
+  const d=data();
+  [...document.querySelectorAll(".option")].forEach((btn,idx)=>{
+    btn.disabled=true;
+    if(idx===d.a) btn.classList.add("correct");
     else btn.classList.add("dim");
   });
-  el("explainBox").style.display = "block";
-  el("explainBox").textContent = "Correct answer: " + String.fromCharCode(65 + d.a) + ". " + d.o[d.a] + " — " + d.e;
-  el("nextBtn").disabled = false;
+  el("explainBox").style.display="block";
+  el("explainBox").textContent="Correct answer: "+String.fromCharCode(65+d.a)+". "+d.o[d.a]+" — "+d.e;
+  el("nextBtn").disabled=false;
 }
-
 function handleWrong(fromTimeout=false){
   if(!fromTimeout){
     showCross();
     playAudio("assets/wrong.mp3");
   }
   attemptsLeft--;
-  el("attemptPill").textContent = "Attempts left: " + attemptsLeft;
-
-  if(attemptsLeft > 0 && !fromTimeout){
+  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
+  if(attemptsLeft>0 && !fromTimeout){
     wrongFirstAttempts++;
-    el("explainBox").style.display = "block";
-    el("explainBox").textContent = "Try once more. Read the sentence carefully and choose the best conjunction.";
+    el("explainBox").style.display="block";
+    el("explainBox").textContent="Try once more. Read the passage carefully and choose the best conjunction.";
     return;
   }
-
   clearInterval(timerId);
-  locked = true;
+  locked=true;
   revealCorrect();
 }
-
-function chooseAnswer(i, btn, answerIndex){
+function chooseAnswer(i,btn,answerIndex){
   if(locked) return;
-
-  if(i === answerIndex){
+  if(i===answerIndex){
     clearInterval(timerId);
-    locked = true;
+    locked=true;
     btn.classList.add("correct");
     score++;
-    el("scoreBadge").textContent = "Score: " + score;
-    el("explainBox").style.display = "block";
-    el("explainBox").textContent = "Correct: " + data().e;
-    el("nextBtn").disabled = false;
-    bubbleConfetti();
+    el("scoreBadge").textContent="Score: "+score;
+    el("explainBox").style.display="block";
+    el("explainBox").textContent="Correct: "+data().e;
+    el("nextBtn").disabled=false;
+    starConfetti();
     playAudio("assets/correct.mp3");
     return;
   }
-
   btn.classList.add("wrong");
   showCross();
   handleWrong(false);
 }
-
 function showResults(){
   showScreen("resultScreen");
-  el("resultTitle").textContent = score >= 11 ? "Amazing!" : score >= 8 ? "Excellent!" : "Great effort!";
-  el("resultText").textContent = `You scored ${score} out of 12. First-retry uses: ${wrongFirstAttempts}.`;
-  el("reviewPanel").innerHTML = "<strong>Chapter focus</strong><br>Using conjunctions like and, but, or, because, when, while, till, and if to join ideas clearly.";
-  playAudio("assets/freesound_community-claps-44774.mp3");
+  el("resultTitle").textContent=score>=11 ? "Amazing!" : score>=8 ? "Excellent!" : "Great effort!";
+  el("resultText").textContent=`You scored ${score} out of 12. First-retry uses: ${wrongFirstAttempts}.`;
+  el("reviewPanel").innerHTML="<strong>What this chapter practiced</strong><br>Using conjunctions to join ideas clearly in sentences and passages.";
 }
-
 function nextStep(){
   if(finalMode){
     showResults();
+    playAudio("assets/freesound_community-claps-44774.mp3");
     return;
   }
   currentIndex++;
-  if(currentIndex < quizData.length){
-    renderQuestion();
-  }else{
-    showScreen("finalScreen");
-  }
+  if(currentIndex<quizData.length) renderQuestion();
+  else showScreen("finalScreen");
 }
-
-el("startBtn").onclick = () => {
+el("startBtn").onclick=()=>{
   showScreen("quizScreen");
-  currentIndex = 0;
-  score = 0;
-  wrongFirstAttempts = 0;
-  finalMode = false;
-  el("scoreBadge").textContent = "Score: 0";
-  el("modePill").textContent = "Underwater Adventure";
+  currentIndex=0;
+  score=0;
+  wrongFirstAttempts=0;
+  finalMode=false;
+  el("scoreBadge").textContent="Score: 0";
+  el("modePill").textContent="Underwater Adventure";
   renderQuestion();
 };
-
-el("nextBtn").onclick = nextStep;
-
-el("finalStartBtn").onclick = () => {
-  finalMode = true;
+el("nextBtn").onclick=nextStep;
+el("finalStartBtn").onclick=()=>{
+  finalMode=true;
   showScreen("quizScreen");
-  el("modePill").textContent = "Final challenge";
+  el("modePill").textContent="Final challenge";
   renderQuestion();
 };
-
-el("restartBtn").onclick = () => location.reload();
-
+el("restartBtn").onclick=()=>location.reload();
 buildBackground();
-setTimeout(() => showScreen("instructionScreen"), 5000);
+setTimeout(()=>showScreen("instructionScreen"),5000);
 </script>
 </body>
 </html>
