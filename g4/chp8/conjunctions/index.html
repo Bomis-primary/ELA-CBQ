@@ -200,7 +200,6 @@
         <div class="main">
           <section class="screen active center" id="startScreen">
             <div>
-              <div class="logoBox"><img src="assets/logo.png" alt="Innovine Logo"></div>
               <h1>Conjunctions Dive</h1>
               <p>Grade 4 chapter-based MCQ challenge with an underwater theme.</p>
               <p>Answer each question, use your one retry wisely, and finish the final challenge to see your result.</p>
@@ -273,8 +272,7 @@
       answered: false,
       timer: null,
       timeLeft: 45,
-      used: [],
-      retryUsed: false
+      used: []
     };
 
     const els = {
@@ -308,7 +306,7 @@
     }
 
     function startQuiz(){
-      state.idx = 0; state.score = 0; state.used = []; state.retryUsed = false;
+      state.idx = 0; state.score = 0; state.used = [];
       els.scoreNow.textContent = state.score;
       showScreen('quizScreen');
       loadQuestion();
@@ -383,7 +381,7 @@
         state.score++;
         els.scoreNow.textContent = state.score;
         els.feedback.textContent = "Correct! " + q.e;
-        markButtons(choice, true);
+        markButtons(q.a);
         confetti(true);
         els.nextBtn.disabled = false;
         state.used.push({q:q.q, picked:q.o[choice], correct:q.o[q.a], explanation:q.e, right:true});
@@ -396,7 +394,8 @@
         }
         state.answered = true;
         clearInterval(state.timer);
-        markButtons(choice, false);
+        btn.classList.add('wrong');
+        markButtons(q.a);
         els.feedback.textContent = `Correct answer: ${q.o[q.a]}. ${q.e}`;
         confetti(false);
         els.nextBtn.disabled = false;
@@ -407,23 +406,18 @@
     function handleWrong(fromTimeout=false){
       if(state.answered) return;
       const q = questions[state.idx];
-      if(state.attempts === 0){
-        state.attempts = 2;
-        els.feedback.textContent = "Time's up. The correct answer is shown below.";
-      }
       state.answered = true;
-      markButtons(q.a, false, true);
+      markButtons(q.a);
       els.feedback.textContent = (fromTimeout ? "Time's up. " : "Correct answer: ") + q.o[q.a] + ". " + q.e;
       els.nextBtn.disabled = false;
       state.used.push({q:q.q, picked:"No answer", correct:q.o[q.a], explanation:q.e, right:false});
       confetti(false);
     }
 
-    function markButtons(correctIndex, wrongMode=false, revealOnly=false){
+    function markButtons(correctIndex){
       [...els.optionsWrap.children].forEach((b, i) => {
         b.disabled = true;
         if(i === correctIndex) b.classList.add('correct');
-        else if(!revealOnly && b.classList.contains('wrong')) b.classList.add('wrong');
       });
     }
 
@@ -454,8 +448,8 @@
     }
 
     els.startBtn.onclick = () => {
-      els.intro.classList.add('hide');
-      setTimeout(startQuiz, 250);
+      els.startScreen.classList.remove('active');
+      startQuiz();
     };
     els.nextBtn.onclick = nextQuestion;
     els.restartBtn.onclick = () => {
@@ -464,6 +458,7 @@
       els.scoreNow.textContent = '0';
       els.timeLeft.textContent = '45';
       els.feedback.textContent = 'Choose the best answer to continue.';
+      clearInterval(state.timer);
     };
 
     setTimeout(() => els.intro.classList.add('hide'), 5000);
