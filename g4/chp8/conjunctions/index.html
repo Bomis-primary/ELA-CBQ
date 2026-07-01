@@ -448,11 +448,12 @@
     }
 
     els.startBtn.onclick = () => {
-      els.startScreen.classList.remove('active');
+      document.getElementById('startScreen').hidden = true;
       startQuiz();
     };
     els.nextBtn.onclick = nextQuestion;
     els.restartBtn.onclick = () => {
+      document.getElementById('startScreen').hidden = false;
       showScreen('startScreen');
       els.progressBar.style.width = '0%';
       els.scoreNow.textContent = '0';
