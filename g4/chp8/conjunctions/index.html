@@ -260,21 +260,6 @@ body{
   z-index:20;
   pointer-events:none;
 }
-table.quiz-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:10px;
-  font-size:15px;
-}
-.quiz-table th,.quiz-table td{
-  border:1px solid #d8e4f0;
-  padding:10px;
-  vertical-align:top;
-}
-.quiz-table th{
-  background:#edf8ff;
-  text-align:left;
-}
 @keyframes fadeIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes rise{
   0%{transform:translateY(110vh) scale(.7);opacity:0}
@@ -334,8 +319,8 @@ table.quiz-table{
       <div class="hero">
         <div class="instruction">
           <strong>Instructions for students</strong><br><br>
-          Read each passage carefully.<br>
-          Choose the best conjunction.<br>
+          Read each question carefully.<br>
+          Choose the best answer from 4 options.<br>
           You get one retry if your first answer is wrong.<br>
           If you miss again, the correct answer and a short explanation will appear.<br>
           Answer before the timer ends.
@@ -387,18 +372,18 @@ table.quiz-table{
 
 <script>
 const quizData = [
-  { q:"Some students thought the picnic would be cancelled, ______ the rain stopped after a while.", o:["and","because","till","but"], a:3, e:"But shows contrast between the students’ thought and what actually happened." },
-  { q:"Her father stayed beside her ______ she felt confident enough to ride on her own.", o:["if","while","till","because"], a:2, e:"Till shows he stayed with her up to the point she felt confident." },
-  { q:"Aarav reads a storybook ______ he waits for the school bus.", o:["while","when","till","because"], a:0, e:"While fits because both actions happen at the same time." },
-  { q:"Kabir ran very fast, ______ another student finished first.", o:["because","but","and","so"], a:1, e:"But connects two ideas that contrast with each other." },
-  { q:"Meera took her umbrella ______ she saw that it was raining.", o:["if","when","till","while"], a:1, e:"When shows the action happened at the time she saw the rain." },
-  { q:"They measured the flour ______ added chocolate chips.", o:["but","because","and","or"], a:2, e:"And joins two actions in a simple sequence." },
-  { q:"The students could decorate their model ______ they finished their work neatly.", o:["when","till","if","while"], a:2, e:"If shows a condition that must happen first." },
-  { q:"Should we buy apples ______ oranges?", o:["because","but","or","and"], a:2, e:"Or is used when choosing between two things." },
-  { q:"The judges admired every picture ______ each one showed creativity.", o:["because","but","till","and"], a:0, e:"Because explains the reason the judges admired the pictures." },
-  { q:"The driver greets everyone, ______ the helper checks that all the students are seated safely.", o:["because","but","or","and"], a:3, e:"And joins two actions that happen together." },
-  { q:"Aanya wanted to play badminton, ______ it started raining.", o:["because","and","but","or"], a:2, e:"But shows the second situation changed her plan." },
-  { q:"The students made greeting cards ______ practised songs for the celebration.", o:["because","or","but","and"], a:3, e:"And joins two activities done by the students." }
+  { q:"1. The students of Grade 4 were excited about their class picnic. They packed their bags the night before. Their teacher reminded them to carry a water bottle, a cap, and some healthy snacks. On the morning of the picnic, dark clouds covered the sky. Some students thought the picnic would be cancelled, but the rain stopped after a while. Everyone reached school on time, and the bus left happily for the park.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nSome students thought the picnic would be cancelled, ______ the rain stopped after a while.\na) and\nb) because\nc) till\nd) but\nAnswer: d) but", o:["and","because","till","but"], a:3, e:"But shows contrast between the students’ thought and what actually happened." },
+  { q:"2. Riya wanted to learn how to ride a bicycle during her summer holidays. Her father held the bicycle carefully as she practised every evening. After a few days, Riya was able to balance on her own. Her father stayed close to her until she felt confident enough to ride without help.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nHer father stayed beside her ______ she felt confident enough to ride on her own.\na) if\nb) while\nc) till\nd) because\nAnswer: c) till", o:["if","while","till","because"], a:2, e:"Till shows he stayed with her up to the point she felt confident." },
+  { q:"3. Every morning, Aarav reaches the bus stop ten minutes early. He talks to his friends and reads a storybook while waiting for the school bus. As soon as the bus arrives, everyone stands in a line and gets in safely.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nAarav reads a storybook ______ he waits for the school bus.\na) while\nb) when\nc) till\nd) because\nAnswer: a) while", o:["while","when","till","because"], a:0, e:"While fits because both actions happen at the same time." },
+  { q:"4. Sports Day\nIt was Sports Day at school. Kabir practised every evening because he wanted to perform well in the races. On the day of the event, he ran as fast as he could, but another student crossed the finish line first. His teacher praised him for trying his best.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nKabir ran very fast, ______ another student finished first.\na) because\nb) but\nc) and\nd) so\nAnswer: b) but", o:["because","but","and","so"], a:1, e:"But connects two ideas that contrast with each other." },
+  { q:"5. One morning, Meera looked out of the window before leaving for school. She saw dark clouds and heavy rain. She quickly picked up her umbrella before stepping outside. Her mother smiled because Meera remembered to carry it.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nMeera took her umbrella ______ she saw that it was raining.\na) if\nb) when\nc) till\nd) while\nAnswer: b) when", o:["if","when","till","while"], a:1, e:"When shows the action happened at the time she saw the rain." },
+  { q:"6. Baking Cookies\nNisha and her grandmother decided to bake chocolate cookies. They measured the flour, mixed the butter with sugar, and added chocolate chips. Soon the kitchen was filled with a sweet smell, and everyone gathered to taste the fresh cookies. The family enjoyed the treat together.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nThey measured the flour ______ added chocolate chips.\na) but\nb) because\nc) and\nd) or\nAnswer: c) and", o:["but","because","and","or"], a:2, e:"And joins two actions in a simple sequence." },
+  { q:"7. The students were making a model of the solar system in class. Their teacher reminded them to handle the materials carefully. She told them that they could decorate the model with colours if they finished their work neatly and on time. Everyone worked with great care.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nThe students could decorate their model ______ they finished their work neatly.\na) when\nb) till\nc) if\nd) while\nAnswer: c) if", o:["when","till","if","while"], a:2, e:"If shows a condition that must happen first." },
+  { q:"8. Meera went to the market with her mother to buy fruits and vegetables. They picked fresh apples, bananas, tomatoes, and carrots. At the checkout counter, her mother asked if they also needed oranges. Meera thought for a moment before answering.\nQuestion:\nWhich conjunction best completes the sentence?\n\"Should we buy apples ______ oranges?\"\na) because\nb) but\nc) or\nd) and\nAnswer: c) or", o:["because","but","or","and"], a:2, e:"Or is used when choosing between two things." },
+  { q:"9. The school organised an art competition. The students used bright colours to create beautiful drawings. Some painted nature scenes, while others drew animals and birds. The judges admired every picture because each one showed creativity and careful effort.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nThe judges admired every picture ______ each one showed creativity.\na) because\nb) but\nc) till\nd) and\nAnswer: a) because", o:["because","but","till","and"], a:0, e:"Because explains the reason the judges admired the pictures." },
+  { q:"10. Every morning, the school bus arrives at the bus stop on time. The children stand in a line and wait patiently. The driver greets everyone with a smile, and the helper checks that all the students are safely seated before the bus starts moving.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nThe driver greets everyone, ______ the helper checks that all the students are seated safely.\na) because\nb) but\nc) or\nd) and\nAnswer: d) and", o:["because","but","or","and"], a:3, e:"And joins two actions that happen together." },
+  { q:"11. Aanya planned to play badminton with her friends after school. Dark clouds appeared in the sky, and soon it began to rain heavily. Instead of going outside, she stayed indoors and read her favourite storybook. She still enjoyed her afternoon.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nAanya wanted to play badminton, ______ it started raining.\na) because\nb) and\nc) but\nd) or\nAnswer: c) but", o:["because","and","but","or"], a:2, e:"But shows the second situation changed her plan." },
+  { q:"12. The students decorated their classroom for the school festival. They hung colourful paper decorations, made greeting cards, and practised songs for the celebration. Everyone worked together happily, and the classroom looked bright and welcoming. Their teacher appreciated the teamwork.\nQuestion:\nWhich conjunction best completes the sentence based on the passage?\nThe students made greeting cards ______ practised songs for the celebration.\na) because\nb) or\nc) but\nd) and\nAnswer: d) and", o:["because","or","but","and"], a:3, e:"And joins two activities done by the students." }
 ];
 
 const finalChallenge = { q:"Final challenge: Which sentence uses conjunctions correctly?", o:["The boy was tired, but he kept running.","The boy was tired and he kept running but.","But the boy was tired he kept running and.","The boy tired and kept running but."], a:0, e:"But correctly joins two contrasting ideas." };
@@ -482,28 +467,6 @@ function renderQuestion(){
   el("nextBtn").disabled=true;
   el("nextBtn").textContent=finalMode ? "See Result" : "Next";
   el("questionExtra").innerHTML="";
-
-  if(currentIndex===8 && !finalMode){
-    el("questionText").textContent="Question 9: Look at the table and choose the correct answer.";
-    el("questionExtra").innerHTML=`
-      <table class="quiz-table">
-        <thead><tr><th>Sentence</th><th>Label</th></tr></thead>
-        <tbody>
-          <tr><td>This is my book.</td><td>Demonstrative pronoun</td></tr>
-          <tr><td>He is my friend.</td><td>Subject pronoun</td></tr>
-          <tr><td>That is your bag.</td><td>Possessive pronoun</td></tr>
-          <tr><td>They are playing.</td><td>Object pronoun</td></tr>
-        </tbody>
-      </table>`;
-    renderOptions([
-      "“That is your bag” is correctly classified as possessive pronoun.",
-      "“They are playing” should be object pronoun instead of subject pronoun.",
-      "“This is my book” should be object pronoun.",
-      "“He is my friend” should be demonstrative pronoun."
-    ], 1);
-    startTimer();
-    return;
-  }
   renderOptions(data().o, data().a);
   startTimer();
 }
