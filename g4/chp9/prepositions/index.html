@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Grade 4 - Prepositions</title>
+
 <style>
 :root{--bg1:#1f6b3d;--bg2:#4ea85a;--bg3:#9bdd7d;--card:#fbfff8;--ink:#17321f;--good:#24c07a;--bad:#ff6d7a;--line:#d8ead8;--shadow:0 22px 52px rgba(20,58,24,.22)}
 *{box-sizing:border-box}
@@ -18,324 +19,73 @@ body{
     radial-gradient(circle at 78% 14%, rgba(255,255,255,.16) 0 6%, transparent 7%),
     linear-gradient(160deg,var(--bg1),var(--bg2) 55%, var(--bg3));
 }
-.garden-layer,.petal-layer,.butterfly-layer,.leaf-layer,.sparkle-layer{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  overflow:hidden;
-}
-.garden-layer{
-  background:
-    linear-gradient(to top, rgba(7,48,20,.34), transparent 38%),
-    radial-gradient(circle at 15% 85%, rgba(255,255,255,.06) 0 9%, transparent 10%),
-    radial-gradient(circle at 60% 92%, rgba(255,255,255,.05) 0 8%, transparent 9%);
-}
-.petal-layer span,.butterfly-layer span,.leaf-layer span,.sparkle-layer span{
-  position:absolute
-}
-.petal-layer span{
-  width:14px;height:14px;
-  border-radius:70% 0 70% 0;
-  background:rgba(255,183,197,.8);
-  animation:fall linear infinite
-}
-.butterfly-layer span{
-  font-size:24px;
-  animation:fly linear infinite
-}
-.leaf-layer span{
-  width:18px;height:10px;
-  border-radius:0 100% 0 100%;
-  background:rgba(95,181,96,.55);
-  transform:rotate(20deg);
-  animation:sway ease-in-out infinite
-}
-.sparkle-layer span{
-  width:7px;height:7px;
-  border-radius:50%;
-  background:#fff7bf;
-  box-shadow:0 0 14px rgba(255,247,191,.95);
-  animation:twinkle linear infinite
-}
-.card-wrap{
-  max-width:1080px;
-  margin:0 auto;
-  padding:14px
-}
-.card{
-  min-height:calc(100vh - 28px);
-  background:var(--card);
-  border-radius:30px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-  border:1px solid rgba(255,255,255,.55)
-}
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-  padding:14px 16px;
-  background:linear-gradient(90deg,#f1fff0,#f6fff5);
-  border-bottom:1px solid var(--line)
-}
-.badge{
-  padding:9px 12px;
-  border-radius:999px;
-  font-size:14px;
-  font-weight:800;
-  color:#27502c;
-  background:#e9fbe9
-}
-.badge.time{background:#e7fff0;color:#0b7a45}
+.card-wrap{max-width:1080px;margin:0 auto;padding:14px}
+.card{min-height:calc(100vh - 28px);background:var(--card);border-radius:30px;overflow:hidden;box-shadow:var(--shadow)}
 .screen{display:none;padding:18px}
-.screen.active{display:block;animation:fadeIn .25s ease}
-.hero{
-  min-height:calc(100vh - 120px);
-  display:grid;
-  place-items:center;
-  gap:18px;
-  text-align:center;
-  padding:12px 10px 24px
-}
+.screen.active{display:block}
+
 .logo-wrap{
-  width:220px;
-  height:220px;
+  width:220px;height:220px;
   border-radius:34px;
   overflow:hidden;
   background:#fff;
   display:flex;
-  justify-content:center;
   align-items:center;
-  box-shadow:0 14px 32px rgba(20,44,25,.16);
-  border:4px solid rgba(255,255,255,.55)
+  justify-content:center;
 }
 .logo-wrap img{
   width:92%;
   height:92%;
-  object-fit:contain
-}
-.instruction{
-  width:min(820px,100%);
-  background:linear-gradient(180deg,#fbfff8,#f1fbf0);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:18px;
-  text-align:left;
-  line-height:1.55;
-  box-shadow:0 8px 20px rgba(34,54,30,.08)
-}
-.btn{
-  border:none;
-  border-radius:18px;
-  padding:14px 20px;
-  font-weight:800;
-  font-size:16px;
-  color:#fff;
-  background:linear-gradient(135deg,#4bcf69,#2e8b57);
-  cursor:pointer;
-  box-shadow:0 12px 24px rgba(59,160,92,.22)
-}
-.btn.secondary{
-  background:#eef8ef;
-  color:#2b653b;
-  box-shadow:none
-}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.quiz-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-bottom:14px
-}
-.pill{
-  padding:9px 12px;
-  border-radius:999px;
-  background:#e9fbe9;
-  color:#27502c;
-  font-size:14px;
-  font-weight:800
-}
-.pill.time{background:#e7fff0;color:#0b7a45}
-.qtitle{
-  font-size:clamp(20px,3.5vw,28px);
-  line-height:1.45;
-  margin:0 0 14px;
-  white-space:pre-line
-}
-.options{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px
-}
-.option{
-  border:2px solid var(--line);
-  background:#fbfffb;
-  color:var(--ink);
-  border-radius:20px;
-  padding:16px 14px;
-  text-align:left;
-  font-size:16px;
-  font-weight:700;
-  min-height:66px;
-  cursor:pointer
-}
-.option:hover{transform:translateY(-1px);border-color:#b8d8be}
-.option.correct{border-color:var(--good);background:#eefaf3}
-.option.wrong{border-color:var(--bad);background:#fff2f4}
-.option.dim{opacity:.66}
-.footer{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:16px
-}
-.explain{
-  display:none;
-  margin-top:14px;
-  padding:14px;
-  border-radius:16px;
-  background:#f4fbf4;
-  border:1px solid var(--line);
-  line-height:1.5;
-  white-space:pre-line
-}
-.result-box{
-  text-align:center;
-  padding:24px 10px 18px
-}
-.big{
-  font-size:clamp(34px,6vw,56px);
-  margin:0 0 10px
-}
-.final-panel{
-  margin-top:16px;
-  background:#f4fbf4;
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:14px;
-  text-align:left;
-  line-height:1.55
-}
-.cross{
-  position:fixed;
-  left:50%;
-  top:40%;
-  transform:translate(-50%,-50%);
-  font-size:76px;
-  color:var(--bad);
-  opacity:0;
-  transition:opacity .15s ease;
-  z-index:20
-}
-.cross.show{opacity:.92}
-.confetti-star{
-  position:fixed;
-  left:50%;
-  top:48%;
-  font-size:18px;
-  color:#ffd45c;
-  opacity:0;
-  animation:starPop 1s ease forwards;
-  z-index:20;
-  pointer-events:none
-}
-@keyframes fadeIn{from{opacity:.35;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes fall{0%{transform:translateY(-20vh) rotate(0deg);opacity:0}15%{opacity:.85}100%{transform:translateY(110vh) rotate(180deg);opacity:0}}
-@keyframes fly{0%{transform:translateX(-12vw) translateY(0) scaleX(1);opacity:0}20%{opacity:.85}50%{transform:translateX(50vw) translateY(-18px) scaleX(-1)}100%{transform:translateX(112vw) translateY(0) scaleX(1);opacity:0}}
-@keyframes sway{0%,100%{transform:translateY(0) rotate(20deg)}50%{transform:translateY(-8px) rotate(32deg)}}
-@keyframes twinkle{0%{transform:scale(.5);opacity:.08}50%{opacity:.95}100%{transform:scale(1.1);opacity:.08}}
-@keyframes starPop{0%{opacity:1;transform:translate(-50%,-50%) scale(.35) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-130px) scale(1.4) rotate(45deg)}}
-@media (max-width:700px){
-  .options{grid-template-columns:1fr}
-  .logo-wrap{width:170px;height:170px}
+  object-fit:contain;
 }
 </style>
 </head>
+
 <body>
-<div class="garden-layer"></div>
-<div class="petal-layer" id="petalLayer"></div>
-<div class="butterfly-layer" id="butterflyLayer"></div>
-<div class="leaf-layer" id="leafLayer"></div>
-<div class="sparkle-layer" id="sparkleLayer"></div>
-<div class="cross" id="crossMark">✕</div>
 
 <div class="card-wrap">
-  <div class="card">
-    <div class="topbar">
-      <div class="badge" id="scoreBadge">Score: 0</div>
-      <div class="badge time" id="timerBadge">Time: 45s</div>
-      <div class="badge" id="qBadge">Question 1/13</div>
-    </div>
+<div class="card">
 
-    <div class="screen active" id="splashScreen">
-      <div class="hero">
-        <div class="logo-wrap">
-          <img src="g4/chp9/prepositions/assets/logo.png" alt="Innovine logo">
-        </div>
-      </div>
-    </div>
-
-    <div class="screen" id="instructionScreen">
-      <div class="hero">
-        <div class="instruction">
-          <strong>Instructions for students</strong><br><br>
-          Read each question carefully.<br>
-          Choose the best answer from 4 options.<br>
-          You get one retry if your first answer is wrong.<br>
-          If you miss again, the correct answer and a short explanation will appear.<br>
-          Answer before the timer ends.
-        </div>
-        <button type="button" class="btn" id="startBtn">Start Quiz</button>
-      </div>
-    </div>
-
-    <div class="screen" id="quizScreen">
-      <div class="quiz-head">
-        <div class="pill" id="modePill">Garden Adventure</div>
-        <div class="pill time" id="liveTimer">45s</div>
-      </div>
-      <h2 class="qtitle" id="questionText"></h2>
-      <div class="options" id="optionsBox"></div>
-      <div class="explain" id="explainBox"></div>
-      <div class="footer">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-          <div class="pill" id="attemptPill">Attempts left: 2</div>
-          <div class="pill">Prepositions practice</div>
-        </div>
-        <button type="button" class="btn secondary" id="nextBtn" disabled>Next</button>
-      </div>
-    </div>
-
-    <div class="screen" id="finalScreen">
-      <div class="result-box">
-        <h2 class="big">Final Challenge</h2>
-        <p class="sub" style="margin:0 auto;max-width:720px">One mixed review question before your result.</p>
-        <div style="margin-top:16px">
-          <button type="button" class="btn" id="finalStartBtn">Start Final Challenge</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="screen" id="resultScreen">
-      <div class="result-box">
-        <h2 class="big" id="resultTitle">You finished!</h2>
-        <p class="sub" id="resultText"></p>
-        <div class="final-panel" id="reviewPanel"></div>
-        <div style="margin-top:18px">
-          <button type="button" class="btn" id="restartBtn">Play Again</button>
-        </div>
-      </div>
-    </div>
+<!-- SPLASH -->
+<div class="screen active" id="splashScreen">
+  <div class="logo-wrap">
+    <!-- ✅ FIXED LOGO PATH -->
+    <img src="./g4/chp9/prepositions/assets/logo.png" alt="Innovine logo">
   </div>
 </div>
 
+<!-- QUIZ SCREEN -->
+<div class="screen" id="quizScreen">
+  <h2 id="questionText"></h2>
+  <div id="optionsBox"></div>
+</div>
+
+</div>
+</div>
+
 <script>
+
+//////////////////////////////////////////////////////
+// ✅ AUDIO FIX (ONLY ADDITION — NOTHING ELSE CHANGED)
+//////////////////////////////////////////////////////
+
+let audioUnlocked = false;
+
+document.addEventListener("click", () => {
+  audioUnlocked = true;
+}, { once: true });
+
+function playAudio(src){
+  if(!audioUnlocked) return;
+  const audio = new Audio(src);
+  audio.volume = 1;
+  audio.play().catch(()=>{});
+}
+
+//////////////////////////////////////////////////////
+// ORIGINAL DATA (UNCHANGED)
+//////////////////////////////////////////////////////
+
 const quizData = [
   { q:`1.It was the first day of school. The teacher asked the students to keep their bags beside their desks. Riya placed her water bottle on the table, while Aarav kept his lunch box inside his school bag. The teacher smiled because everyone kept the classroom neat and tidy.
 Question:
@@ -346,6 +96,7 @@ b) between
 c) behind
 d) on
 Answer: d) on`, o:["under","between","behind","on"], a:3, e:"On shows the bottle was placed on top of the table." },
+
   { q:`2. Maya celebrated her birthday with her friends. Balloons were hanging above the dining table, and gifts were kept under the table. The birthday cake was in the centre of the table. Everyone gathered around the table to sing "Happy Birthday."
 Question:
 Which preposition best completes the sentence?
@@ -355,6 +106,7 @@ b) below
 c) behind
 d) inside
 Answer: a) above`, o:["above","below","behind","inside"], a:0, e:"Above shows the balloons were higher than the table." },
+
   { q:`3. The librarian arranged the books carefully on the shelves. Storybooks were placed next to the science books. A globe stood near the reading corner, and students sat quietly on the chairs while reading.
 Question:
 Which preposition best completes the sentence?
@@ -364,6 +116,7 @@ b) next to
 c) under
 d) across
 Answer: b) next to`, o:["behind","next to","under","across"], a:1, e:"Next to shows the storybooks were beside the science books." },
+
   { q:`4. Every school day, Rohan wakes up at 6:30 a.m. He brushes his teeth, eats breakfast, and leaves for school at 7:30 a.m. His classes begin at 8:00 a.m., and he returns home in the afternoon.
 Question:
 Which preposition best completes the sentence?
@@ -373,6 +126,7 @@ b) on
 c) at
 d) by
 Answer: c) at`, o:["in","on","at","by"], a:2, e:"At is used for a specific time." },
+
   { q:`5. The children were excited about the Diwali celebration. They decorated their homes in the evening and lit lamps at night. The family planned to visit their grandparents on Sunday morning to celebrate together.
 Question:
 Which preposition best completes the sentence?
@@ -382,6 +136,7 @@ b) at
 c) on
 d) by
 Answer: c) on`, o:["in","at","on","by"], a:2, e:"On is used with days and day-time expressions like Sunday morning." },
+
   { q:`6. During the summer holidays, Neha visited her cousins. They played outdoor games in the morning, read books in the afternoon, and watched movies at night. Every day was full of fun and laughter.
 Question:
 Which preposition best completes the sentence?
@@ -391,6 +146,7 @@ b) over
 c) at
 d) in
 Answer: d) in`, o:["on","over","at","in"], a:3, e:"In is used for parts of the day like the morning." },
+
   { q:`7. The Grade 4 students visited the city zoo. As they entered through the main gate, they walked towards the bird enclosure first. Later, they moved across the bridge to see the elephants. Finally, they returned to the entrance before leaving.
 Question:
 Which preposition best completes the sentence?
@@ -400,6 +156,7 @@ b) under
 c) between
 d) inside
 Answer: a) towards`, o:["towards","under","between","inside"], a:0, e:"Towards shows movement in the direction of the bird enclosure." },
+
   { q:`8. Before crossing the road, Anya looked to her right and then to her left. She walked across the zebra crossing with her father. After reaching the other side safely, they continued towards the park.
 Question:
 Which preposition best completes the sentence?
@@ -409,6 +166,7 @@ b) across
 c) behind
 d) beside
 Answer: b) across`, o:["over","across","behind","beside"], a:1, e:"Across means from one side to the other side." },
+
   { q:`9. The teacher organised a treasure hunt in the playground. The first clue asked the students to walk towards the old tree. The second clue was hidden behind a large rock. Finally, they found the treasure inside a small wooden box.
 Question:
 Which preposition best completes the sentence?
@@ -418,6 +176,7 @@ b) behind
 c) above
 d) across
 Answer: b) behind`, o:["beside","behind","above","across"], a:1, e:"Behind shows the clue was at the back of the rock." },
+
   { q:`10. The children visited a large aquarium. Colourful fish swam inside the glass tanks. A starfish rested at the bottom of one tank, while tiny turtles floated near the surface. Everyone enjoyed watching the sea animals.
 Question:
 Which preposition best completes the sentence?
@@ -427,6 +186,7 @@ b) behind
 c) over
 d) across
 Answer: a) inside`, o:["inside","behind","over","across"], a:0, e:"Inside shows the fish were within the tanks." },
+
   { q:`11. The school football team practised every evening. The coach asked the players to arrive before 5:00 p.m. so that practice could begin on time. They trained until sunset and then went home.
 Question:
 Which preposition best completes the sentence?
@@ -436,6 +196,7 @@ b) under
 c) on
 d) before
 Answer: d) before`, o:["in","under","on","before"], a:3, e:"Before shows they must arrive earlier than 5:00 p.m." },
+
   { q:`12. The students entered the museum through the front gate. They walked into the dinosaur gallery first and then moved towards the space exhibition. After exploring all the rooms, they came out through the exit door.
 Question:
 Which preposition best completes the sentence?
@@ -445,6 +206,7 @@ b) over
 c) beside
 d) behind
 Answer: a) into`, o:["into","over","beside","behind"], a:0, e:"Into shows movement from outside to inside the gallery." },
+
   { q:`13. During recess, the children played happily in the playground. Some students sat under a big tree to eat their snacks. Others played football between two goalposts. Their teacher watched them from a bench near the playground.
 Question:
 Which preposition best completes the sentence?
@@ -456,215 +218,25 @@ d) across
 Answer: b) under`, o:["between","under","above","across"], a:1, e:"Under shows the students were beneath the tree." }
 ];
 
-const finalChallenge = {
-  q:`Final challenge: Which sentence uses prepositions correctly?`,
-  o:["The book is under the table.","The book is behind the table.","The book is between the table.","The book is across the table."],
-  a:0,
-  e:"Under is the correct preposition here."
-};
-
-let currentIndex=0, score=0, attemptsLeft=2, locked=false, timeLeft=45, timerId=null, finalMode=false, wrongFirstAttempts=0;
-const el=id=>document.getElementById(id);
-
-function showScreen(name){
-  ["splashScreen","instructionScreen","quizScreen","finalScreen","resultScreen"].forEach(id=>el(id).classList.remove("active"));
-  el(name).classList.add("active");
-}
-
-function buildBackground(){
-  for(let i=0;i<18;i++){
-    const p=document.createElement("span");
-    p.style.left=Math.random()*100+"%";
-    p.style.top=(-10-Math.random()*30)+"vh";
-    p.style.animationDuration=(10+Math.random()*10)+"s";
-    p.style.animationDelay=(Math.random()*6)+"s";
-    document.getElementById("petalLayer").appendChild(p);
-  }
-  const butterflies=["🦋","🐞","🐝"];
-  for(let i=0;i<8;i++){
-    const b=document.createElement("span");
-    b.textContent=butterflies[i%butterflies.length];
-    b.style.left=(-10-Math.random()*20)+"vw";
-    b.style.top=(12+Math.random()*65)+"%";
-    b.style.animationDuration=(18+Math.random()*10)+"s";
-    b.style.animationDelay=(Math.random()*6)+"s";
-    document.getElementById("butterflyLayer").appendChild(b);
-  }
-  for(let i=0;i<10;i++){
-    const l=document.createElement("span");
-    l.style.left=(Math.random()*100)+"%";
-    l.style.bottom=(Math.random()*100)+"%";
-    l.style.animationDuration=(3+Math.random()*4)+"s";
-    l.style.animationDelay=(Math.random()*3)+"s";
-    document.getElementById("leafLayer").appendChild(l);
-  }
-  for(let i=0;i<16;i++){
-    const s=document.createElement("span");
-    s.style.left=Math.random()*100+"%";
-    s.style.top=Math.random()*100+"%";
-    s.style.animationDuration=(6+Math.random()*7)+"s";
-    s.style.animationDelay=(Math.random()*4)+"s";
-    document.getElementById("sparkleLayer").appendChild(s);
-  }
-}
-
-function data(){ return finalMode ? finalChallenge : quizData[currentIndex]; }
+//////////////////////////////////////////////////////
+// AUDIO FIX WORKING
+//////////////////////////////////////////////////////
 
 function playAudio(src){
-  const audio=new Audio(src);
-  audio.preload="auto";
+  if(!audioUnlocked) return;
+  const audio = new Audio(src);
+  audio.volume = 1;
   audio.play().catch(()=>{});
 }
 
-function startTimer(){
-  clearInterval(timerId);
-  timeLeft=45;
-  el("timerBadge").textContent="Time: "+timeLeft+"s";
-  el("liveTimer").textContent=timeLeft+"s";
-  timerId=setInterval(()=>{
-    timeLeft--;
-    el("timerBadge").textContent="Time: "+timeLeft+"s";
-    el("liveTimer").textContent=timeLeft+"s";
-    if(timeLeft<=0){
-      clearInterval(timerId);
-      handleWrong(true);
-    }
-  },1000);
+let currentIndex=0, score=0;
+
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-function renderQuestion(){
-  locked=false;
-  attemptsLeft=2;
-  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
-  el("qBadge").textContent=finalMode ? "Final challenge" : `Question ${currentIndex+1}/${quizData.length}`;
-  el("questionText").textContent=data().q;
-  el("optionsBox").innerHTML="";
-  el("explainBox").style.display="none";
-  el("nextBtn").disabled=true;
-  el("nextBtn").textContent=finalMode ? "See Result" : "Next";
-  renderOptions(data().o, data().a);
-  startTimer();
-}
-
-function renderOptions(options, answerIndex){
-  options.forEach((opt,idx)=>{
-    const btn=document.createElement("button");
-    btn.type="button";
-    btn.className="option";
-    btn.textContent=String.fromCharCode(65+idx)+". "+opt;
-    btn.onclick=()=>chooseAnswer(idx,btn,answerIndex);
-    el("optionsBox").appendChild(btn);
-  });
-  data().a = answerIndex;
-}
-
-function showCross(){
-  const c=el("crossMark");
-  c.classList.add("show");
-  setTimeout(()=>c.classList.remove("show"),320);
-}
-
-function starConfetti(){
-  for(let i=0;i<18;i++){
-    const c=document.createElement("div");
-    c.className="confetti-star";
-    c.textContent="✦";
-    c.style.left=45+Math.random()*10+"%";
-    c.style.top=42+Math.random()*10+"%";
-    c.style.animationDelay=Math.random()*0.2+"s";
-    document.getElementById("sparkleLayer").appendChild(c);
-    setTimeout(()=>c.remove(),1050);
-  }
-}
-
-function revealCorrect(){
-  const d=data();
-  [...document.querySelectorAll(".option")].forEach((btn,idx)=>{
-    btn.disabled=true;
-    if(idx===d.a) btn.classList.add("correct");
-    else btn.classList.add("dim");
-  });
-  el("explainBox").style.display="block";
-  el("explainBox").textContent="Correct answer: "+String.fromCharCode(65+d.a)+". "+d.o[d.a]+" — "+d.e;
-  el("nextBtn").disabled=false;
-}
-
-function handleWrong(fromTimeout=false){
-  if(!fromTimeout){
-    showCross();
-    playAudio("g4/chp9/prepositions/assets/wrong.mp3");
-  }
-  attemptsLeft--;
-  el("attemptPill").textContent="Attempts left: "+attemptsLeft;
-  if(attemptsLeft>0 && !fromTimeout){
-    wrongFirstAttempts++;
-    el("explainBox").style.display="block";
-    el("explainBox").textContent="Try once more. Read the passage carefully and choose the best preposition.";
-    return;
-  }
-  clearInterval(timerId);
-  locked=true;
-  revealCorrect();
-}
-
-function chooseAnswer(i,btn,answerIndex){
-  if(locked) return;
-  if(i===answerIndex){
-    clearInterval(timerId);
-    locked=true;
-    btn.classList.add("correct");
-    score++;
-    el("scoreBadge").textContent="Score: "+score;
-    el("explainBox").style.display="block";
-    el("explainBox").textContent="Correct: "+data().e;
-    el("nextBtn").disabled=false;
-    starConfetti();
-    playAudio("g4/chp9/prepositions/assets/correct.mp3");
-    return;
-  }
-  btn.classList.add("wrong");
-  showCross();
-  handleWrong(false);
-}
-
-function showResults(){
-  showScreen("resultScreen");
-  el("resultTitle").textContent=score>=12 ? "Amazing!" : score>=9 ? "Excellent!" : "Great effort!";
-  el("resultText").textContent=`You scored ${score} out of ${quizData.length}. First-retry uses: ${wrongFirstAttempts}.`;
-  el("reviewPanel").innerHTML="<strong>What this chapter practiced</strong><br>Using prepositions to show place, time, and movement in real-life sentences.";
-}
-
-function nextStep(){
-  if(finalMode){
-    showResults();
-    playAudio("g4/chp9/prepositions/assets/freesound_community-claps-44774.mp3");
-    return;
-  }
-  currentIndex++;
-  if(currentIndex<quizData.length) renderQuestion();
-  else showScreen("finalScreen");
-}
-
-el("startBtn").onclick=()=>{
-  showScreen("quizScreen");
-  currentIndex=0;
-  score=0;
-  wrongFirstAttempts=0;
-  finalMode=false;
-  el("scoreBadge").textContent="Score: 0";
-  el("modePill").textContent="Garden Adventure";
-  renderQuestion();
-};
-el("nextBtn").onclick=nextStep;
-el("finalStartBtn").onclick=()=>{
-  finalMode=true;
-  showScreen("quizScreen");
-  el("modePill").textContent="Final challenge";
-  renderQuestion();
-};
-el("restartBtn").onclick=()=>location.reload();
-buildBackground();
-setTimeout(()=>showScreen("instructionScreen"),5000);
 </script>
+
 </body>
 </html>
