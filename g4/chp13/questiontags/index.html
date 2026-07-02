@@ -1,1 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ice Cream Parlor - Question Tags</title>
+    <style>
+        :root {
+            --primary: #db2777;       /* Strawberry Pink Primary */
+            --primary-light: #fbcfe8; /* Soft Pastel Pink */
+            --secondary: #0ea5e9;     /* Sky Blue Accent */
+            --background: #f0f9ff;    /* Soft Sky Blue Tint */
+            --surface: #ffffff;       /* Pure White Card */
+            --text: #4c0519;          /* Deep Berry Red Text */
+            --text-light: #9d174d;    /* Mid-tone Raspberry */
+            --success: #10b981;       /* Mint Green Success */
+            --error: #f43f5e;         /* Cherry Red Error */
+            --warning: #f59e0b;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Pastel Sprinkles Falling Down */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .sprinkle {
+            position: absolute;
+            width: 6px;
+            height: 14px;
+            border-radius: 20px;
+            opacity: 0.4;
+            animation: driftSprinkles 15s infinite linear;
+        }
+
+        @keyframes driftSprinkles {
+            0% { transform: translateY(-20px) rotate(0deg); }
+            100% { transform: translateY(105vh) rotate(360deg); }
+        }
+
+        /* Container & Sweet Parlor Card UI */
+        .game-container {
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 12px 35px rgba(219, 39, 119, 0.05);
+            border: 3px solid var(--primary-light);
+            position: relative;
+        }
+
+        /* Screen Management */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Splash Screen Config */
+        #splash-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .logo-container img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        /* Parlor Tracker Header */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px dashed var(--primary-light);
+            padding-bottom: 15px;
+        }
+
+        .tracker-item {
+            background: #fff1f2;
+            border: 1px dashed var(--primary);
+            padding: 8px 18px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            border-radius: 50px;
+        }
+
+        .tracker-item span {
+            color: var(--primary);
+        }
+
+        /* Melting Ice Cream Timer Bar */
+        .timer-container {
+            width: 100%;
+            height: 10px;
+            background: #ffe4e6;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, #f472b6, var(--primary));
+            transition: width 1s linear;
+        }
+
+        /* Flavor Scoop Context Passages */
+        .passage-box {
+            background: #fffbeb; /* Soft Vanilla Cream */
+            border-left: 5px solid #fbbf24;
+            padding: 18px 22px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #78350f;
+            border-radius: 8px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--text);
+        }
+
+        /* Sweet Topping Button Layout */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid #ffe4e6;
+            padding: 15px 22px;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--text);
+            position: relative;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #fff1f2;
+            border-color: var(--primary);
+            transform: scale(1.01);
+        }
+
+        .option-btn:disabled { cursor: not-allowed; }
+
+        /* Parlor Serving Validation Overlays */
+        .option-btn.correct {
+            background-color: #e6fffa !important; /* Mint Green */
+            border-color: var(--success) !important;
+            color: #065f46 !important;
+        }
+
+        .option-btn.wrong {
+            background-color: #fff5f5 !important;
+            border-color: var(--error) !important;
+            color: #9f1239 !important;
+        }
+
+        .option-btn.wrong::after {
+            content: "✕";
+            position: absolute;
+            right: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--error);
+            font-weight: bold;
+        }
+
+        /* Chef Recipe Tip Panels */
+        .feedback-box {
+            display: none;
+            padding: 16px;
+            border-radius: 14px;
+            margin-top: 15px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .feedback-box.retry {
+            display: block;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .feedback-box.explanation {
+            display: block;
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+
+        /* Next Order Trigger Button */
+        .action-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), #ec4899);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(219, 39, 119, 0.2);
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(219, 39, 119, 0.3);
+        }
+
+        /* Rainbow Sprinkles Confetti Explosion */
+        .confetti-star {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 100;
+            animation: sprinkleBurst 0.6s ease-out forwards;
+        }
+
+        @keyframes sprinkleBurst {
+            0% { transform: translate(0, 0) scale(1.5); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 20px; }
+            .game-header { font-size: 0.85rem; }
+            .passage-box { font-size: 0.95rem; }
+            .question-text { font-size: 1.05rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg" id="ambient-layer"></div>
+
+    <div class="game-container">
+        <div id="splash-screen" class="card screen active">
+            <div class="logo-container">
+                <img src="assets/logo.png" alt="Innovine Logo">
+            </div>
+            <h2 style="margin-top:25px; font-size:1.7rem; color: var(--primary);">The Ice Cream Parlor</h2>
+            <p style="color:var(--text-light); margin: 12px 0 30px 0; font-size: 0.95rem;">Scoop & Match: Question Tag Toppings</p>
+            <button class="action-btn" id="start-btn" style="display:none;" onclick="startChallenge()">Open Parlor</button>
+            <p id="loading-msg" style="color: var(--text-light); font-style: italic; font-size: 0.9rem;">Mixing pastel topping batches...</p>
+        </div>
+
+        <div id="quiz-screen" class="card screen">
+            <div class="game-header">
+                <div class="tracker-item">Order: <span id="q-current">1</span>/<span id="q-total">11</span></div>
+                <div class="tracker-item">Tip Box Score: <span id="score-val">00</span></div>
+            </div>
+
+            <div class="timer-container">
+                <div class="timer-bar" id="timer-bar"></div>
+            </div>
+
+            <div class="passage-box" id="passage-text">Loading order notes...</div>
+            <div class="question-text" id="question-text">Loading question prompt...</div>
+
+            <div class="options-grid" id="options-box"></div>
+
+            <div class="feedback-box" id="feedback-message"></div>
+            
+            <button class="action-btn" id="next-btn" style="display:none; margin-top: 15px;" onclick="handleNextStep()">Serve Next Order &gt;</button>
+        </div>
+
+        <div id="result-screen" class="card screen" style="text-align: center;">
+            <h2 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 10px;">Day Shift Closed</h2>
+            <p style="color: var(--text-light); margin-bottom: 30px; font-size: 0.95rem;">Perfect recipe tallies successfully processed:</p>
+            
+            <div style="margin: 25px 0;">
+                <span id="final-score" style="font-size: 4.5rem; font-weight: 800; color: var(--text);">0</span>
+                <span style="font-size: 2rem; color: var(--text-light);">/11</span>
+            </div>
+
+            <div id="performance-commentary" style="font-size: 1.05rem; margin-bottom: 30px; line-height: 1.6; background: #fff1f2; border: 1px dashed var(--primary-light); padding: 18px; border-radius: 16px; color: var(--text);"></div>
+
+            <button class="action-btn" onclick="restartGame()">Start New Shift</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                passage: "Riya rushed to class to submit her homework but realized she didn’t bring her notebook. She whispered to her friend Aarav, “You didn’t forget your homework, _____?”",
+                question: "Question: Fill in the blank with the correct question tag.",
+                options: ["did you?", "didn’t you?", "isn’t it?", "aren’t you?"],
+                answer: "did you?",
+                explanation: "The main clause is negative ('didn’t forget'), so the rule requires a positive question tag: 'did you?'."
+            },
+            {
+                passage: "Arjun ran to the school gate but realized he didn’t catch the bus. His sister asked worriedly, “You didn’t miss the bus, _____?”",
+                question: "Question: Fill in the blank with the correct question tag.",
+                options: ["did you?", "didn’t you?", "aren’t you?", "is it?"],
+                answer: "did you?",
+                explanation: "Because the main statement is negative ('didn’t miss'), it takes a positive tag ('did you?') to verify facts."
+            },
+            {
+                passage: "Riya and Aarav were helping the gardener in the school garden. They had just planted a small sapling and watered it carefully. Riya looked at the tiny leaves and smiled. She turned to Aarav and said, “This is a beautiful sapling, _____?”",
+                question: "Question: Select the correct matching question tag.",
+                options: ["isn’t it?", "aren’t you?", "isn’t she?", "aren’t they?"],
+                answer: "isn’t it?",
+                explanation: "The clause starts with a positive auxiliary ('This is'), matching safely with the singular negative tag 'isn't it?'."
+            },
+            {
+                passage: "After planting, Aarav imagined the sapling growing into a big tree. He said to Riya, “I would love to see it grow tall and strong, _____?”",
+                question: "Question: Select the correct matching question tag.",
+                options: ["isn’t it?", "wouldn’t you?", "won’t it?", "isn’t she?"],
+                answer: "wouldn’t you?",
+                explanation: "The speaker addresses the other person directly about an opinion starting with 'would', requiring a 'wouldn’t you?' reverse check."
+            },
+            {
+                passage: "During the morning rush, Arjun realized he might have missed the school bus. His sister ran after him and asked worriedly, “You didn’t miss the bus, _____?”",
+                question: "Question: Select the correct matching question tag.",
+                options: ["did you?", "didn’t you?", "hasn’t he?", "haven’t you?"],
+                answer: "did you?",
+                explanation: "Since the main statement uses the negative past auxiliary 'didn’t miss', it reverses to the positive form 'did you?'."
+            },
+            {
+                passage: "Rohan returned the library book he had borrowed. He said to his friend, “You returned the book yesterday, _____?”",
+                question: "Question: Select the correct matching question tag.",
+                options: ["didn’t you?", "haven’t you?", "didn’t he?", "hasn’t he?"],
+                answer: "didn’t you?",
+                explanation: "The verb 'returned' is simple past positive, which demands a negative helper tag 'didn’t you?' targeting the subject 'You'."
+            },
+            {
+                passage: "Meera looked at her brother, who was eating breakfast slowly. She asked, “You finished your breakfast, _____?”",
+                question: "Question: Select the correct matching question tag.",
+                options: ["did you?", "didn’t you?", "haven’t you?", "hasn’t she?"],
+                answer: "didn’t you?",
+                explanation: "The sentence uses positive simple past ('finished'), making 'didn't you?' the proper structural opposite tag."
+            },
+            {
+                passage: "During a cycling activity, the teacher reminded all students, “You are wearing your helmets, _____?”",
+                question: "Question: Select the correct matching question tag.",
+                options: ["aren’t you?", "isn’t he?", "isn’t it?", "aren’t they?"],
+                answer: "aren’t you?",
+                explanation: "The positive phrase 'You are' triggers a negative match targeting the same pronoun: 'aren’t you?'."
+            },
+            {
+                passage: "A student arrived at the railway station in a hurry. The principal asked, “You didn’t miss the train this morning, _____?”",
+                question: "Question: Select the correct matching question tag.",
+                options: ["did you?", "didn’t you?", "isn’t it?", "aren’t you?"],
+                answer: "did you?",
+                explanation: "A negative input clause ('didn't miss') requires a positive tag configuration ('did you?')."
+            },
+            {
+                passage: "Before leaving the classroom, Aarav checked with his friend, “You have cleaned your desk properly, _____?”",
+                question: "Question: Select the correct matching question tag.",
+                options: ["hasn’t he?", "haven’t you?", "isn’t it?", "haven’t they?"],
+                answer: "haven’t you?",
+                explanation: "The auxiliary 'have' coupled with 'You' forms the exact matching tag pair 'haven’t you?'."
+            },
+            {
+                passage: "Meera showed her completed science project to the teacher. She said, “You didn’t forget to label all the diagrams, _____?”",
+                question: "Question: Select the correct matching question tag.",
+                options: ["did you?", "didn’t you?", "haven’t you?", "did she?"],
+                answer: "did you?",
+                explanation: "The clause 'You didn’t forget' uses negative past format, matching with the positive tag 'did you?'."
+            }
+        ];
+
+        // System Configurations
+        const TIME_LIMIT = 45; // Grade 4 logic constraint
+        let currentIdx = 0;
+        let score = 0;
+        let timerInterval = null;
+        let remainingTime = TIME_LIMIT;
+        let errorCountForCurrentQuestion = 0;
+
+        // Custom Media Allocation
+        const soundCorrect = new Audio('assets/correct.mp3');
+        const soundWrong = new Audio('assets/wrong.mp3');
+        const soundClaps = new Audio('assets/freesound_community-claps-44774.mp3');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initializePastelSprinkles();
+            
+            // Mandatory 5 second loader loop configuration
+            setTimeout(() => {
+                document.getElementById('loading-msg').style.display = 'none';
+                document.getElementById('start-btn').style.display = 'block';
+            }, 5000);
+        });
+
+        function initializePastelSprinkles() {
+            const layer = document.getElementById('ambient-layer');
+            const colors = ['#f472b6', '#38bdf8', '#fbbf24', '#34d399', '#c084fc'];
+            for(let i = 0; i < 15; i++) {
+                const sp = document.createElement('div');
+                sp.className = 'sprinkle';
+                sp.style.background = colors[Math.floor(Math.random() * colors.length)];
+                sp.style.left = `${Math.random() * 100}vw`;
+                sp.style.top = `${Math.random() * -20}px`;
+                sp.style.animationDelay = `${Math.random() * 12}s`;
+                sp.style.animationDuration = `${Math.random() * 8 + 8}s`;
+                layer.appendChild(sp);
+            }
+        }
+
+        function startChallenge() {
+            document.getElementById('splash-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            document.getElementById('q-total').textContent = quizData.length;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            errorCountForCurrentQuestion = 0;
+            const item = quizData[currentIdx];
+            
+            document.getElementById('q-current').textContent = currentIdx + 1;
+            document.getElementById('passage-text').textContent = item.passage;
+            document.getElementById('question-text').textContent = item.question;
+            document.getElementById('next-btn').style.display = 'none';
+            
+            const msgBox = document.getElementById('feedback-message');
+            msgBox.style.display = 'none';
+
+            const box = document.getElementById('options-box');
+            box.innerHTML = '';
+            
+            item.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => verifyToppingMatch(btn, opt);
+                box.appendChild(btn);
+            });
+
+            remainingTime = TIME_LIMIT;
+            refreshMeltingTimer();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                remainingTime--;
+                refreshMeltingTimer();
+                if(remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    triggerParlorTimeout();
+                }
+            }, 1000);
+        }
+
+        function refreshMeltingTimer() {
+            const bar = document.getElementById('timer-bar');
+            const pct = (remainingTime / TIME_LIMIT) * 100;
+            bar.style.width = `${pct}%`;
+            
+            if (pct < 30) {
+                bar.style.background = 'var(--error)';
+            } else if (pct < 60) {
+                bar.style.background = 'var(--warning)';
+            } else {
+                bar.style.background = 'linear-gradient(90deg, #f472b6, var(--primary))';
+            }
+        }
+
+        function burstToppingSprinkles(targetBtn) {
+            const rect = targetBtn.getBoundingClientRect();
+            const colors = ['#f472b6', '#38bdf8', '#fbbf24', '#34d399', '#e879f9'];
+            for(let i=0; i<16; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-star';
+                confetti.innerHTML = '●';
+                confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = `${rect.left + rect.width/2}px`;
+                confetti.style.top = `${rect.top + rect.height/2}px`;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * 85 + 35;
+                confetti.style.setProperty('--x', `${Math.cos(angle) * dist}px`);
+                confetti.style.setProperty('--y', `${Math.sin(angle) * dist}px`);
+                
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 600);
+            }
+        }
+
+        function verifyToppingMatch(selectedBtn, chosenText) {
+            const currentItem = quizData[currentIdx];
+            const msgBox = document.getElementById('feedback-message');
+            
+            if (chosenText === currentItem.answer) {
+                clearInterval(timerInterval);
+                selectedBtn.classList.add('correct');
+                score++;
+                document.getElementById('score-val').textContent = score < 10 ? '0' + score : score;
+                burstToppingSprinkles(selectedBtn);
+                
+                try { soundCorrect.play(); } catch(e){}
+                lockParlorOptions();
+                
+                msgBox.textContent = "🍦 Sweet Match! The topping balances the ice cream scoop flavors perfectly.";
+                msgBox.className = "feedback-box explanation";
+                document.getElementById('next-btn').style.display = 'block';
+            } else {
+                errorCountForCurrentQuestion++;
+                selectedBtn.classList.add('wrong');
+                selectedBtn.disabled = true;
+                
+                try { soundWrong.play(); } catch(e){}
+
+                if(errorCountForCurrentQuestion === 1) {
+                    msgBox.textContent = "🍧 Flavor Mismatch! The statement polarity is out of balance. Mix again!";
+                    msgBox.className = "feedback-box retry";
+                } else {
+                    clearInterval(timerInterval);
+                    lockParlorOptions();
+                    exposePerfectTopping(currentItem.answer);
+                    
+                    msgBox.innerHTML = `<strong>⚠️ Recipe Failed.</strong> ${currentItem.explanation}`;
+                    msgBox.className = "feedback-box explanation";
+                    document.getElementById('next-btn').style.display = 'block';
+                }
+            }
+        }
+
+        function triggerParlorTimeout() {
+            lockParlorOptions();
+            const currentItem = quizData[currentIdx];
+            exposePerfectTopping(currentItem.answer);
+            
+            const msgBox = document.getElementById('feedback-message');
+            msgBox.innerHTML = `<strong>⌛ The ice cream melted!</strong> ${currentItem.explanation}`;
+            msgBox.className = "feedback-box explanation";
+            document.getElementById('next-btn').style.display = 'block';
+            try { soundWrong.play(); } catch(e){}
+        }
+
+        function exposePerfectTopping(correctValue) {
+            const boxes = document.querySelectorAll('.option-btn');
+            boxes.forEach(btn => {
+                if(btn.textContent === correctValue) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+
+        function lockParlorOptions() {
+            const boxes = document.querySelectorAll('.option-btn');
+            boxes.forEach(btn => btn.disabled = true);
+        }
+
+        function handleNextStep() {
+            currentIdx++;
+            if(currentIdx < quizData.length) {
+                loadQuestion();
+            } else {
+                renderFinalParlorReport();
+            }
+        }
+
+        function renderFinalParlorReport() {
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            
+            document.getElementById('final-score').textContent = score;
+            const commentary = document.getElementById('performance-commentary');
+            
+            if(score === quizData.length) {
+                commentary.textContent = "🍨 PARLOR RANK: FIVE-STAR MASTER CHEF! You matched every statement scoop with its opposite tag topping flawlessly!";
+                try { soundClaps.play(); } catch(e){}
+            } else if(score >= 8) {
+                commentary.textContent = "🍦 PARLOR RANK: SENIOR SUNDAE ARTIST! Incredible balancing of question tags. Your service quality was highly impressive.";
+                try { soundClaps.play(); } catch(e){}
+            } else if(score >= 5) {
+                commentary.textContent = "🍧 PARLOR RANK: SCOOP APPRENTICE! The ice creams taste good, but check the positive-to-negative inverse rules to avoid mixing flavors up.";
+            } else {
+                commentary.textContent = "📖 PARLOR RANK: KITCHEN REBOOT! High recipe error logs. Take another look at the training manual for question tags and try the shift again.";
+            }
+        }
+
+        function restartGame() {
+            currentIdx = 0;
+            score = 0;
+            document.getElementById('score-val').textContent = "00";
+            document.getElementById('result-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            loadQuestion();
+        }
+    </script>
+</body>
+</html>
