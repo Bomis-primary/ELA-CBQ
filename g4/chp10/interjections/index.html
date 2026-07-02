@@ -1,1 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interjection Arcade - Grade 4</title>
+    <style>
+        :root {
+            --primary: #9333ea; /* Retro Electric Violet */
+            --primary-light: #a855f7;
+            --secondary: #ec4899; /* Cyber Pink */
+            --background: #faf5ff;
+            --surface: #ffffff;
+            --text: #1e1b4b;
+            --text-light: #6b7280;
+            --success: #10b981;
+            --error: #f43f5e;
+            --warning: #f59e0b;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Arcade Background Particles */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .pixel-particle {
+            position: absolute;
+            background-color: rgba(236, 72, 153, 0.15);
+            width: 15px;
+            height: 15px;
+            animation: floatUp 20s infinite linear;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Container & Retro Card Layout */
+        .game-container {
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 4px solid var(--text);
+            box-shadow: 8px 8px 0px var(--text);
+            border-radius: 4px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Screen Configurations */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Splash Intro Screen */
+        #splash-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .logo-container img {
+            max-width: 200px;
+            height: auto;
+            image-rendering: pixelated;
+        }
+
+        /* Trackers Bar */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 3px dashed var(--text);
+            padding-bottom: 15px;
+        }
+
+        .tracker-item {
+            background: #f3e8ff;
+            border: 2px solid var(--text);
+            padding: 6px 14px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            color: var(--text);
+            box-shadow: 3px 3px 0px var(--text);
+        }
+
+        .tracker-item span {
+            color: var(--secondary);
+        }
+
+        /* Arcade Timer Progress Bar */
+        .timer-container {
+            width: 100%;
+            height: 12px;
+            background: #e5e7eb;
+            border: 2px solid var(--text);
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--secondary);
+            transition: width 1s linear;
+        }
+
+        /* Context Block & Question Layer */
+        .passage-box {
+            background: #fff1f2;
+            border: 2px solid var(--text);
+            padding: 15px 20px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--text);
+            box-shadow: 4px 4px 0px rgba(236, 72, 153, 0.2);
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        /* Pixel Grid Buttons */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #ffffff;
+            border: 2px solid var(--text);
+            padding: 14px 20px;
+            font-size: 1.05rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            font-weight: bold;
+            box-shadow: 3px 3px 0px var(--text);
+            position: relative;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #fae8ff;
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px var(--text);
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: translate(1px, 1px);
+            box-shadow: 1px 1px 0px var(--text);
+        }
+
+        .option-btn:disabled { cursor: not-allowed; }
+
+        /* Answer Validation Visual Overlays */
+        .option-btn.correct {
+            background-color: #d1fae5 !important;
+            border-color: var(--text) !important;
+            color: #065f46 !important;
+        }
+
+        .option-btn.wrong {
+            background-color: #ffe4e6 !important;
+            border-color: var(--text) !important;
+            color: #9f1239 !important;
+        }
+
+        .option-btn.wrong::after {
+            content: "✕";
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--error);
+            font-weight: bold;
+        }
+
+        /* Feedback/Explanation Boxes */
+        .feedback-box {
+            display: none;
+            padding: 15px;
+            border: 2px solid var(--text);
+            margin-top: 15px;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        .feedback-box.retry {
+            display: block;
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .feedback-box.explanation {
+            display: block;
+            background: #ecfdf5;
+            color: #065f46;
+        }
+
+        /* Navigation Button System */
+        .action-btn {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: 2px solid var(--text);
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--text);
+            transition: all 0.1s ease;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-light);
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--text);
+        }
+
+        .action-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px var(--text);
+        }
+
+        /* Retro Confetti Star Matrix */
+        .confetti-star {
+            position: absolute;
+            color: #eab308;
+            font-size: 22px;
+            pointer-events: none;
+            z-index: 100;
+            animation: explode 0.5s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(1.2); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 20px; }
+            .game-header { font-size: 0.85rem; }
+            .passage-box { font-size: 0.95rem; }
+            .question-text { font-size: 1.05rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg" id="ambient-layer"></div>
+
+    <div class="game-container">
+        <div id="splash-screen" class="card screen active">
+            <div class="logo-container">
+                <img src="assets/logo.png" alt="Innovine Logo">
+            </div>
+            <h2 style="margin-top:25px; font-size:1.6rem; text-transform: uppercase;">Interjection Arcade</h2>
+            <p style="color:var(--text-light); margin: 15px 0 30px 0; font-size: 0.9rem;">Grade 4 Grammar Challenge Matrix</p>
+            <button class="action-btn" id="start-btn" style="display:none;" onclick="startChallenge()">[ START GAME ]</button>
+            <p id="loading-msg" style="color: var(--text-light); font-style: italic; font-size: 0.9rem;">Booting dynamic assets system...</p>
+        </div>
+
+        <div id="quiz-screen" class="card screen">
+            <div class="game-header">
+                <div class="tracker-item">STAGE: <span id="q-current">1</span>/<span id="q-total">12</span></div>
+                <div class="tracker-item">SCORE: <span id="score-val">00</span></div>
+            </div>
+
+            <div class="timer-container">
+                <div class="timer-bar" id="timer-bar"></div>
+            </div>
+
+            <div class="passage-box" id="passage-text">Loading context database...</div>
+            <div class="question-text" id="question-text">Loading evaluation target...</div>
+
+            <div class="options-grid" id="options-box"></div>
+
+            <div class="feedback-box" id="feedback-message"></div>
+            
+            <button class="action-btn" id="next-btn" style="display:none; margin-top: 15px;" onclick="handleNextStep()">NEXT STAGE &gt;</button>
+        </div>
+
+        <div id="result-screen" class="card screen" style="text-align: center;">
+            <h2 style="font-size: 1.8rem; color: var(--primary); margin-bottom: 10px; text-transform: uppercase;">Game Over</h2>
+            <p style="color: var(--text-light); margin-bottom: 30px; font-size: 0.9rem;">Final parameters processed:</p>
+            
+            <div style="margin: 25px 0;">
+                <span id="final-score" style="font-size: 4rem; font-weight: 800; color: var(--text);">0</span>
+                <span style="font-size: 2rem; color: var(--text-light);">/12</span>
+            </div>
+
+            <div id="performance-commentary" style="font-size: 1.05rem; margin-bottom: 30px; font-weight: bold; background: #faf5ff; border: 2px solid var(--text); padding: 15px;"></div>
+
+            <button class="action-btn" onclick="restartGame()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                passage: "Riya was about to submit her notebook when she suddenly realised her homework sheet was not inside her bag. She quickly checked her desk again, feeling worried and confused.",
+                question: "She exclaimed, “_____! I can’t find my homework anywhere.” What does the interjection express?",
+                options: ["happiness", "instruction", "sadness and worry", "greeting"],
+                answer: "sadness and worry",
+                explanation: "The text highlights that Riya was feeling worried and confused about her missing sheet, so the interjection naturally matches sadness and worry."
+            },
+            {
+                passage: "Arjun entered the classroom and saw balloons, decorations, and his friends standing around a cake singing for him.",
+                question: "He said, “_____! I didn’t expect this at all!” What feeling does the interjection show?",
+                options: ["surprise", "sadness", "anger", "fear"],
+                answer: "surprise",
+                explanation: "Arjun states 'I didn't expect this at all' upon seeing his unexpected party, indicating complete surprise."
+            },
+            {
+                passage: "While watering plants, Meera accidentally hit a flower pot and it broke into pieces on the floor. She stood still looking shocked.",
+                question: "She said, “_____! What have I done?” What does the interjection show?",
+                options: ["realization", "instruction", "greeting", "request"],
+                answer: "realization",
+                explanation: "Meera is looking shocked at the broken pieces and realizes the mistake she has accidentally made."
+            },
+            {
+                passage: "The children reached the park happily with food and games, but suddenly heavy rain started and the picnic had to be cancelled.",
+                question: "One child said, “_____! Our picnic is ruined.” What does the interjection express?",
+                options: ["joy", "sadness and disappointment", "surprise only", "instruction"],
+                answer: "sadness and disappointment",
+                explanation: "The sudden cancellation of a fun activity like a picnic causes a strong feeling of sadness and disappointment."
+            },
+            {
+                passage: "During class, a loud sound came from the corridor when a chair suddenly fell down. All students turned around in shock.",
+                question: "A student said, “_____! What was that sound?” What feeling is expressed?",
+                options: ["surprise", "happiness", "sadness", "agreement"],
+                answer: "surprise",
+                explanation: "Turning around in shock at an unexpected, sudden loud noise represents a sudden reaction of surprise."
+            },
+            {
+                passage: "The school football team scored the final goal just before the whistle and won the match. Everyone started cheering loudly.",
+                question: "The students shouted, “_____! We won the match!” What does the interjection show?",
+                options: ["sadness", "fear", "excitement and joy", "confusion"],
+                answer: "excitement and joy",
+                explanation: "Scoring a final goal and winning a sporting match results in cheering, excitement, and immense joy."
+            },
+            {
+                passage: "Meera searched everywhere for her kitten but could not find it even after a long time. She sat quietly feeling upset.",
+                question: "She said, “_____! My kitten is missing.” What does the interjection express?",
+                options: ["happiness", "command", "surprise", "sadness"],
+                answer: "sadness",
+                explanation: "Sitting quietly and feeling completely upset over a missing pet indicates an expression of true sadness."
+            },
+            {
+                passage: "The teacher asked a difficult question, and suddenly a student gave the correct answer that no one expected.",
+                question: "The teacher said, “_____! That’s the correct answer.” What does the interjection show?",
+                options: ["anger", "realization or surprise", "sadness", "instruction"],
+                answer: "realization or surprise",
+                explanation: "Because nobody expected the correct answer to the difficult question, it causes a feeling of realization or pleasant surprise."
+            },
+            {
+                passage: "Aarav was carrying a glass of milk when he slipped and spilled it all on the floor. He looked at the mess helplessly.",
+                question: "He said, “_____! Now I have nothing left.” What feeling is expressed?",
+                options: ["regret and sadness", "joy", "instruction", "greeting"],
+                answer: "regret and sadness",
+                explanation: "Slipping, spilling the milk completely, and looking at the mess helplessly prompts an emotion of regret and sadness."
+            },
+            {
+                passage: "Siya entered the school hall and saw beautiful decorations, lights, and gifts prepared for the festival celebration.",
+                question: "She said, “_____! This looks so beautiful!” What does the interjection show?",
+                options: ["sadness", "fear", "anger", "surprise"],
+                answer: "surprise",
+                explanation: "Beholding unexpectedly beautiful festive lighting and arrangements causes a feeling of sudden awe and surprise."
+            },
+            {
+                passage: "After continuous rainfall, farmers saw their fields damaged and crops destroyed. They stood silently looking at the loss.",
+                question: "A farmer said, “_____! All our hard work is gone.” What does the interjection express?",
+                options: ["happiness", "sadness and disappointment", "instruction", "excitement"],
+                answer: "sadness and disappointment",
+                explanation: "Standing silently looking at a massive physical loss and destroyed hard work indicates pure sadness and profound disappointment."
+            },
+            {
+                passage: "While reading quietly in the library, a sudden loud noise came from outside the room. Everyone looked up immediately.",
+                question: "A student said, “_____! That scared me.” What feeling is shown?",
+                options: ["surprise", "happiness", "sadness", "command"],
+                answer: "surprise",
+                explanation: "Looking up instantly at a sudden frightening noise that breaks the library silence denotes a clear reaction of surprise."
+            }
+        ];
+
+        // System Variables
+        const TIME_LIMIT = 45; // Grade 4 rule
+        let currentIdx = 0;
+        let score = 0;
+        let timerInterval = null;
+        let remainingTime = TIME_LIMIT;
+        let errorCountForCurrentQuestion = 0;
+
+        // Audio Objects Setup
+        const soundCorrect = new Audio('assets/correct.mp3');
+        const soundWrong = new Audio('assets/wrong.mp3');
+        const soundClaps = new Audio('assets/freesound_community-claps-44774.mp3');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            generateArcadeParticles();
+            
+            // Fixed 5-second branding logo rule execution
+            setTimeout(() => {
+                document.getElementById('loading-msg').style.display = 'none';
+                document.getElementById('start-btn').style.display = 'block';
+            }, 5000);
+        });
+
+        function generateArcadeParticles() {
+            const layer = document.getElementById('ambient-layer');
+            for(let i = 0; i < 10; i++) {
+                const p = document.createElement('div');
+                p.className = 'pixel-particle';
+                p.style.left = `${Math.random() * 100}vw`;
+                p.style.animationDelay = `${Math.random() * 15}s`;
+                p.style.animationDuration = `${Math.random() * 10 + 12}s`;
+                layer.appendChild(p);
+            }
+        }
+
+        function startChallenge() {
+            document.getElementById('splash-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            document.getElementById('q-total').textContent = quizData.length;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            errorCountForCurrentQuestion = 0;
+            const item = quizData[currentIdx];
+            
+            document.getElementById('q-current').textContent = currentIdx + 1;
+            document.getElementById('passage-text').textContent = item.passage;
+            document.getElementById('question-text').textContent = item.question;
+            document.getElementById('next-btn').style.display = 'none';
+            
+            const msgBox = document.getElementById('feedback-message');
+            msgBox.style.display = 'none';
+
+            const box = document.getElementById('options-box');
+            box.innerHTML = '';
+            
+            item.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => evaluateChoice(btn, opt);
+                box.appendChild(btn);
+            });
+
+            remainingTime = TIME_LIMIT;
+            updateTimerBar();
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                remainingTime--;
+                updateTimerBar();
+                if(remainingTime <= 0) {
+                    clearInterval(timerInterval);
+                    triggerTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerBar() {
+            const bar = document.getElementById('timer-bar');
+            const pct = (remainingTime / TIME_LIMIT) * 100;
+            bar.style.width = `${pct}%`;
+            
+            if (pct < 30) {
+                bar.style.background = 'var(--error)';
+            } else if (pct < 60) {
+                bar.style.background = 'var(--warning)';
+            } else {
+                bar.style.background = 'var(--secondary)';
+            }
+        }
+
+        function triggerPixelStars(targetBtn) {
+            const rect = targetBtn.getBoundingClientRect();
+            for(let i=0; i<12; i++) {
+                const star = document.createElement('div');
+                star.className = 'confetti-star';
+                star.innerHTML = '★';
+                star.style.left = `${rect.left + rect.width/2}px`;
+                star.style.top = `${rect.top + rect.height/2}px`;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * 80 + 40;
+                star.style.setProperty('--x', `${Math.cos(angle) * dist}px`);
+                star.style.setProperty('--y', `${Math.sin(angle) * dist}px`);
+                
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), 500);
+            }
+        }
+
+        function evaluateChoice(selectedBtn, chosenText) {
+            const currentItem = quizData[currentIdx];
+            const msgBox = document.getElementById('feedback-message');
+            
+            if (chosenText === currentItem.answer) {
+                clearInterval(timerInterval);
+                selectedBtn.classList.add('correct');
+                score++;
+                document.getElementById('score-val').textContent = score < 10 ? '0' + score : score;
+                triggerPixelStars(selectedBtn);
+                
+                try { soundCorrect.play(); } catch(e){}
+                disableInteractiveOptions();
+                
+                msgBox.textContent = "[ SUCCESS ] Excellent deduction of human emotion context!";
+                msgBox.className = "feedback-box explanation";
+                document.getElementById('next-btn').style.display = 'block';
+            } else {
+                errorCountForCurrentQuestion++;
+                selectedBtn.classList.add('wrong');
+                selectedBtn.disabled = true;
+                
+                try { soundWrong.play(); } catch(e){}
+
+                if(errorCountForCurrentQuestion === 1) {
+                    msgBox.textContent = "[ ATTEMPT FAILED ] That doesn't match the passage's emotion. Try again!";
+                    msgBox.className = "feedback-box retry";
+                } else {
+                    clearInterval(timerInterval);
+                    disableInteractiveOptions();
+                    revealCorrectMatch(currentItem.answer);
+                    
+                    msgBox.innerHTML = `<strong>[ ANALYTICS ] Incorrect.</strong> ${currentItem.explanation}`;
+                    msgBox.className = "feedback-box explanation";
+                    document.getElementById('next-btn').style.display = 'block';
+                }
+            }
+        }
+
+        function triggerTimeout() {
+            disableInteractiveOptions();
+            const currentItem = quizData[currentIdx];
+            revealCorrectMatch(currentItem.answer);
+            
+            const msgBox = document.getElementById('feedback-message');
+            msgBox.innerHTML = `<strong>[ TIME OVER ]</strong> ${currentItem.explanation}`;
+            msgBox.className = "feedback-box explanation";
+            document.getElementById('next-btn').style.display = 'block';
+            try { soundWrong.play(); } catch(e){}
+        }
+
+        function revealCorrectMatch(correctAnswerValue) {
+            const targets = document.querySelectorAll('.option-btn');
+            targets.forEach(btn => {
+                if(btn.textContent === correctAnswerValue) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+
+        function disableInteractiveOptions() {
+            const targets = document.querySelectorAll('.option-btn');
+            targets.forEach(btn => btn.disabled = true);
+        }
+
+        function handleNextStep() {
+            currentIdx++;
+            if(currentIdx < quizData.length) {
+                loadQuestion();
+            } else {
+                displayFinalMetrics();
+            }
+        }
+
+        function displayFinalMetrics() {
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            
+            document.getElementById('final-score').textContent = score;
+            const commentary = document.getElementById('performance-commentary');
+            
+            if(score === quizData.length) {
+                commentary.textContent = "RANK: PIXEL CHAMPION! You understood every interjection perfectly!";
+                try { soundClaps.play(); } catch(e){}
+            } else if(score >= 9) {
+                commentary.textContent = "RANK: HIGH SCORE HERO! Fantastic grasp of contextual exclamation markers.";
+                try { soundClaps.play(); } catch(e){}
+            } else if(score >= 6) {
+                commentary.textContent = "RANK: PRO PLAYER! Good work, but pay a bit closer attention to clues next time.";
+            } else {
+                commentary.textContent = "RANK: AMATEUR REBOOT! Go through the chapter story boxes again to practice.";
+            }
+        }
+
+        function restartGame() {
+            currentIdx = 0;
+            score = 0;
+            document.getElementById('score-val').textContent = "00";
+            document.getElementById('result-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.add('active');
+            loadQuestion();
+        }
+    </script>
+</body>
+</html>
