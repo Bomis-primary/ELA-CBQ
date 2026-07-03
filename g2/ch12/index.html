@@ -5,27 +5,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prepositions Interactive</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #f4f4f9; }
-        .container { max-width: 600px; width: 100%; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body { 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--background); 
+            color: var(--text);
+            padding: 20px; 
+        }
+
+        .container { 
+            max-width: 600px; 
+            width: 100%; 
+            background: var(--card-bg); 
+            padding: 40px 30px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.05); 
+            text-align: center; 
+            position: relative;
+            overflow: hidden;
+        }
+
         .hidden { display: none !important; }
-        button { display: block; width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 5px; cursor: pointer; background: #007bff; color: white; font-size: 16px; }
-        #splash-screen { display: flex; justify-content: center; align-items: center; height: 300px; }
-        #logo { width: 200px; }
-        .confetti { position: fixed; width: 10px; height: 10px; background: gold; opacity: 0; animation: fall 1s linear; }
-        @keyframes fall { to { transform: translateY(500px); opacity: 1; } }
+
+        /* Splash Screen styling */
+        #splash-screen { 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            min-height: 250px; 
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Game UI Elements */
+        h2 { font-size: 20px; margin-bottom: 24px; line-height: 1.5; color: var(--text); }
+        
+        #options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+
+        button { 
+            display: block; 
+            width: 100%; 
+            padding: 14px 20px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            background: var(--card-bg); 
+            color: var(--text); 
+            font-size: 16px; 
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        button:hover:not(:disabled) { 
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        #options button.correct {
+            background-color: #ecfdf5;
+            border-color: var(--success);
+            color: #065f46;
+        }
+
+        #options button.wrong {
+            background-color: #fef2f2;
+            border-color: var(--error);
+            color: #991b1b;
+        }
+
+        .meta-info {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        /* Action/Restart buttons */
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            border: none;
+            font-weight: 600;
+        }
+        .btn-action:hover { background: var(--primary-hover); }
+
+        /* Confetti elements */
+        .confetti { 
+            position: fixed; 
+            width: 8px; 
+            height: 16px; 
+            opacity: 0.8; 
+            top: -20px;
+            z-index: 999;
+            animation: fall 1.5s linear forwards; 
+        }
+
+        @keyframes fall { 
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; } 
+        }
     </style>
 </head>
 <body>
 
 <div id="app" class="container">
     <div id="splash-screen">
-        <img id="logo" src="assets/logo.png" alt="Logo">
+        <h2 style="margin-bottom: 5px;">Loading Prepositions Challenge</h2>
+        <p style="color: var(--text-muted)">Get ready...</p>
+        <div class="spinner"></div>
     </div>
 
     <div id="game-ui" class="hidden">
         <h2 id="question-text">Loading...</h2>
         <div id="options"></div>
-        <p>Attempts: <span id="attempts">1</span>/2</p>
+        <div class="meta-info">
+            <span>Attempts for this question: <span id="attempts">1</span>/2</span>
+        </div>
     </div>
 </div>
 
@@ -45,51 +170,139 @@
         { q: "Which sentence does not belong?", options: ["The books are in the cupboard.", "The vegetables are in the basket.", "The fish are in the aquarium.", "The helicopter is above the building."], a: 3 }
     ];
 
-    let currentQ = 0, score = 0, attempts = 1;
-    const splash = document.getElementById('splash-screen'), gameUI = document.getElementById('game-ui'), qText = document.getElementById('question-text'), optsDiv = document.getElementById('options');
+    // --- RANDOMIZATION LOGIC ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
 
-    setTimeout(() => { splash.classList.add('hidden'); gameUI.classList.remove('hidden'); loadQuestion(); }, 5000);
+    shuffleArray(questions);
+
+    questions.forEach(q => {
+        const correctAnswerText = q.options[q.a];
+        shuffleArray(q.options);
+        q.a = q.options.indexOf(correctAnswerText);
+    });
+    // ---------------------------
+
+    let currentQ = 0, score = 0, attempts = 1;
+    let isInteractionLocked = false; 
+
+    const splash = document.getElementById('splash-screen');
+    const gameUI = document.getElementById('game-ui');
+    const qText = document.getElementById('question-text');
+    const optsDiv = document.getElementById('options');
+
+    // Simulate splash presentation window (reduced duration slightly for snappier loading)
+    setTimeout(() => { 
+        splash.classList.add('hidden'); 
+        gameUI.classList.remove('hidden'); 
+        loadQuestion(); 
+    }, 2500);
 
     function loadQuestion() {
         if(currentQ >= questions.length) { endScreen(); return; }
         attempts = 1;
+        isInteractionLocked = false;
         document.getElementById('attempts').innerText = attempts;
+        
         const q = questions[currentQ];
-        qText.innerText = q.q;
+        qText.innerText = `Question ${currentQ + 1} of ${questions.length}: ${q.q}`;
         optsDiv.innerHTML = '';
+        
         q.options.forEach((opt, i) => {
-            let btn = document.createElement('button'); btn.innerText = opt; btn.onclick = () => check(i);
+            let btn = document.createElement('button'); 
+            btn.innerText = opt; 
+            btn.onclick = () => check(i, btn);
             optsDiv.appendChild(btn);
         });
     }
 
     function triggerConfetti() {
-        for(let i=0; i<20; i++) {
-            let c = document.createElement('div'); c.className = 'confetti';
-            c.style.left = Math.random() * 100 + '%'; c.style.background = ['gold', 'red', 'blue'][i%3];
-            document.body.appendChild(c); setTimeout(() => c.remove(), 1000);
+        for(let i = 0; i < 30; i++) {
+            let c = document.createElement('div'); 
+            c.className = 'confetti';
+            c.style.left = Math.random() * 100 + 'vw'; 
+            c.style.background = ['#fbbf24', '#f87171', '#60a5fa', '#34d399'][i % 4];
+            c.style.transform = `scale(${Math.random() * 0.6 + 0.4})`;
+            c.style.animationDelay = (Math.random() * 0.3) + 's';
+            document.body.appendChild(c); 
+            setTimeout(() => c.remove(), 2000);
         }
     }
 
-    function check(idx) {
-        if(idx === questions[currentQ].a) {
-            score++; new Audio('assets/claps.mp3').play(); triggerConfetti();
-            currentQ++; loadQuestion();
-        } else if(attempts < 2) {
-            new Audio('assets/wrong.mp3').play(); // Now playing audio correctly
-            attempts++; document.getElementById('attempts').innerText = attempts;
-            alert("Try again!");
+    function playAudioSilently(src) {
+        const audio = new Audio(src);
+        audio.play().catch(() => {
+            // Silently absorb audio failures caused by missing local files or browser rules
+            console.log(`Audio notification triggered: ${src}`);
+        });
+    }
+
+    function check(idx, selectedButton) {
+        if (isInteractionLocked) return;
+
+        const currentQuestionData = questions[currentQ];
+        
+        // Disable other interactions temporarily during evaluation feedback phase
+        if(idx === currentQuestionData.a) {
+            isInteractionLocked = true;
+            selectedButton.classList.add('correct');
+            
+            // Only grant full point value if solved on the first run of the question
+            if (attempts === 1) { score++; } 
+            
+            playAudioSilently('assets/claps.mp3'); 
+            triggerConfetti();
+            
+            setTimeout(() => {
+                currentQ++; 
+                loadQuestion();
+            }, 1200);
+
         } else {
-            alert("Correct answer was: " + questions[currentQ].options[questions[currentQ].a]);
-            currentQ++; loadQuestion();
+            selectedButton.classList.add('wrong');
+            selectedButton.disabled = true; 
+            
+            if(attempts < 2) {
+                playAudioSilently('assets/wrong.mp3');
+                attempts++; 
+                document.getElementById('attempts').innerText = attempts;
+                alert("Incorrect. Try your second attempt!");
+            } else {
+                isInteractionLocked = true;
+                playAudioSilently('assets/wrong.mp3');
+                
+                // Highlight correct selection for learning clarity
+                const buttons = optsDiv.getElementsByTagName('button');
+                if (buttons[currentQuestionData.a]) {
+                    buttons[currentQuestionData.a].classList.add('correct');
+                }
+                
+                setTimeout(() => {
+                    alert(`Moving on! The correct answer was: \n"${currentQuestionData.options[currentQuestionData.a]}"`);
+                    currentQ++; 
+                    loadQuestion();
+                }, 600);
+            }
         }
     }
 
     function endScreen() {
         let pct = (score / questions.length) * 100;
-        let msg = pct >= 75 ? "Good job!" : (pct >= 40 ? "Review this chapter and try again." : "Let’s practise more.");
-        qText.innerText = `Final Score: ${score}/${questions.length} - ${msg}`;
-        optsDiv.innerHTML = '<button onclick="location.reload()">Restart</button>';
+        let msg = pct >= 75 ? "Excellent work! You understand prepositions well." : (pct >= 40 ? "Review this chapter and try again." : "Let’s practice more together.");
+        
+        qText.innerText = "Quiz Completed!";
+        optsDiv.innerHTML = `
+            <div style="font-size: 24px; font-weight: bold; margin: 10px 0 20px 0; color: var(--primary);">
+                Score: ${score} / ${questions.length} (${Math.round(pct)}%)
+            </div>
+            <p style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.4;">${msg}</p>
+            <button class="btn-action" onclick="location.reload()">Restart Challenge</button>
+        `;
+        document.querySelector('.meta-info').classList.add('hidden');
     }
 </script>
 </body>
