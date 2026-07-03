@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prepositions Interactive</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #f4f4f9; }
+        .container { max-width: 600px; width: 100%; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
+        button { display: block; width: 100%; padding: 15px; margin: 10px 0; border: none; border-radius: 5px; cursor: pointer; background: #007bff; color: white; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        #logo { width: 150px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
 
+<div id="app" class="container">
+    <img id="logo" src="assets/logo.png" alt="Logo" class="hidden">
+    <div id="game-ui">
+        <h2 id="question-text">Loading...</h2>
+        <div id="options"></div>
+        <p>Attempts: <span id="attempts">1</span>/2</p>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { q: "During a train journey, you place your backpack in the luggage rack. Which sentence best describes its position?", options: ["The backpack is under the luggage rack.", "The backpack is over the luggage rack.", "The backpack is on the luggage rack.", "The backpack is between the luggage rack."], a: 2 },
+        { q: "Which sentence shows a different position relationship from the others?", options: ["The shoes are under the bed.", "The cat is under the table.", "The cricket bat is under the bench.", "The clock is above the door."], a: 3 },
+        { q: "A child says: 'I used 'between' because the water bottle was placed in the middle of two lunch boxes.' Why is this a good choice?", options: ["Because 'between' describes something in the middle of two things", "Because 'between' means very far away", "Because 'between' tells how many objects there are", "Because 'between' describes an action"], a: 0 },
+        { q: "You are sitting on a bench. A butterfly flies higher than your head. Which sentence?", options: ["The butterfly is below my head.", "The butterfly is above my head.", "The butterfly is between my head.", "The butterfly is near my head."], a: 1 },
+        { q: "Statement: 'The bridge is over the river.' Reason: 'Over' describes something extending across or above another thing.", options: ["The reason is correct and explains the statement", "The reason is correct but does not explain", "The reason is wrong but the statement is correct", "Both are wrong"], a: 0 },
+        { q: "Which sentence shows incorrect understanding of prepositions?", options: ["The medicine box is on the top shelf.", "The doormat is near the front door.", "The keys are between the two cushions.", "The ceiling fan is below the carpet."], a: 3 },
+        { q: "Which sentence shows correct understanding of prepositions?", options: ["I would use 'near' to describe the bakery next to my house.", "I would use 'below' to describe a bird flying in the sky.", "I would use 'under' to describe a kite above a tree.", "I would use 'between' to describe one object by itself."], a: 0 },
+        { q: "During a picnic, which sentence is incorrect?", options: ["The snacks are in the basket.", "The water bottles are near the picnic mat.", "The football is under the tree.", "The sandwiches are over the lunch box."], a: 3 },
+        { q: "Monkey sits on a branch, another hangs beneath it. Which sentence describes the second monkey?", options: ["The monkey is over the branch.", "The monkey is above the branch.", "The monkey is under the branch.", "The monkey is between the branch."], a: 2 },
+        { q: "A child writes: 'The rainbow appeared below the clouds.' What should be corrected?", options: ["rainbow → rainbows", "below → above", "appeared → appears", "clouds → cloud"], a: 1 },
+        { q: "You stand in the space separating two information counters. Which sentence?", options: ["I am near the counters.", "I am above the counters.", "I am between the counters.", "I am under the counters."], a: 2 },
+        { q: "Which sentence does not belong?", options: ["The books are in the cupboard.", "The vegetables are in the basket.", "The fish are in the aquarium.", "The helicopter is above the building."], a: 3 }
+    ];
+
+    let currentQ = 0, score = 0, attempts = 1;
+    const logo = document.getElementById('logo'), qText = document.getElementById('question-text'), optsDiv = document.getElementById('options');
+
+    function showLogo() {
+        logo.classList.remove('hidden');
+        setTimeout(() => { logo.classList.add('hidden'); loadQuestion(); }, 5000);
+    }
+
+    function loadQuestion() {
+        if(currentQ >= questions.length) { endScreen(); return; }
+        attempts = 1;
+        document.getElementById('attempts').innerText = attempts;
+        const q = questions[currentQ];
+        qText.innerText = q.q;
+        optsDiv.innerHTML = '';
+        q.options.forEach((opt, i) => {
+            let btn = document.createElement('button');
+            btn.innerText = opt;
+            btn.onclick = () => check(i);
+            optsDiv.appendChild(btn);
+        });
+    }
+
+    function check(idx) {
+        if(idx === questions[currentQ].a) {
+            score++;
+            new Audio('assets/claps.mp3').play(); // Updated path
+            currentQ++; loadQuestion();
+        } else if(attempts < 2) {
+            new Audio('assets/wrong.mp3').play(); // Updated path[cite: 1]
+            attempts++;
+            document.getElementById('attempts').innerText = attempts;
+            alert("Try again!");
+        } else {
+            alert("Correct answer was: " + questions[currentQ].options[questions[currentQ].a]);
+            currentQ++; loadQuestion();
+        }
+    }
+
+    function endScreen() {
+        let pct = (score / questions.length) * 100;
+        let msg = pct >= 75 ? "Good job!" : (pct >= 40 ? "Review this chapter and try again." : "Let’s practise more.");
+        qText.innerText = `Final Score: ${score}/${questions.length} - ${msg}`;
+        optsDiv.innerHTML = '<button onclick="location.reload()">Restart</button>';
+    }
+
+    showLogo();
+</script>
+</body>
+</html>
