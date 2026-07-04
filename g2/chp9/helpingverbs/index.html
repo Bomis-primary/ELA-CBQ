@@ -349,7 +349,7 @@
     </div>
 
     <div id="splash-screen">
-        <img src="assets/logo.png" alt="Innovine Logo" class="branding-logo">
+        <img src="assets/logo.png" alt="Innovine Logo" class="branding-logo" onerror="this.style.display='none';">
     </div>
 
     <div id="intro-card" class="game-container">
@@ -461,7 +461,7 @@
                 question: "Which sentence does NOT follow the same helping verb pattern as the others?",
                 options: ["The children are singing a song.", "The players are warming up.", "The birds are building nests.", "The gardener is watering the plants."],
                 answer: 3,
-                explanation: Options a, b, and c all use the plural helping verb 'are'. Option d uses the singular helping verb 'is' because there is only one gardener."
+                explanation: "Options a, b, and c all use the plural helping verb 'are'. Option d uses the singular helping verb 'is' because there is only one gardener."
             },
             {
                 type: "Odd One Out (Subject–Verb Match)",
@@ -529,7 +529,7 @@
                 question: "What should be corrected?",
                 options: ["I → We", "are → am", "excited → excitement", "picnic → picnics"],
                 answer: 1,
-                explanation: To fix the sentence while keeping 'I', 'are' must change to 'am' because 'I' always pairs with 'am'."
+                explanation: "To fix the sentence while keeping 'I', 'are' must change to 'am' because 'I' always pairs with 'am'."
             }
         ];
 
@@ -537,30 +537,32 @@
         let currentQuestionIndex = 0;
         let score = 0;
         let timerInterval = null;
-        let timeRemaining = 60; // Grade 2 rule: 60 seconds
+        let timeRemaining = 60; 
         let attemptsMade = 0;
         let finalChallengeActive = false;
 
-        // Sound Player Wrapper with defensive failure mitigation
+        // Sound Player Wrapper with safety mitigation
         function safePlayAudio(elementId) {
             const audio = document.getElementById(elementId);
             if (audio) {
                 audio.currentTime = 0;
-                audio.play().catch(e => console.log("Audio playback managed safely:", e));
+                audio.play().catch(e => console.log("Audio muted dynamically by browser autoplay policy. Handled safely."));
             }
         }
 
-        // Window Initializer Orchestration
+        // Failsafe Initializer Transition Sequence
         window.addEventListener('DOMContentLoaded', () => {
-            // Display Splash Branding Screen for exactly 5 seconds, then transition to Intro
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
-                splash.style.opacity = 0;
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                    document.getElementById('intro-card').classList.add('active');
-                }, 500);
-            }, 5000);
+                if (splash) {
+                    splash.style.opacity = 0;
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        const introCard = document.getElementById('intro-card');
+                        if (introCard) introCard.classList.add('active');
+                    }, 500);
+                }
+            }, 5000); // 5000ms Locked Timer Track
         });
 
         // Initialize and Start Quiz
@@ -639,7 +641,6 @@
                 document.getElementById(`ind-${selectedIndex}`).innerHTML = '★';
                 triggerConfettiBurst(cards[selectedIndex]);
                 
-                // Add points based on dynamic retry penalty evaluation
                 if (attemptsMade === 0) {
                     score++;
                 }
@@ -652,14 +653,12 @@
                 safePlayAudio('audio-wrong');
                 cards[selectedIndex].classList.add('selected-wrong');
                 document.getElementById(`ind-${selectedIndex}`).innerHTML = '❌';
-                cards[selectedIndex].classList.add('disabled'); // Disable this broken choice
+                cards[selectedIndex].classList.add('disabled'); 
 
                 if (attemptsMade === 1) {
-                    // Give student 1 dynamic second try
                     alert("Oops! That's not quite right. Look at whether the sentence talks about one or more than one, then try again!");
                     cards[selectedIndex].classList.remove('selected-wrong');
                 } else {
-                    // Out of opportunities for this current index
                     clearInterval(timerInterval);
                     cards[currentData.answer].classList.add('revealed-correct');
                     document.getElementById(`ind-${currentData.answer}`).innerHTML = '★';
@@ -673,7 +672,6 @@
             const currentData = quizDatabase[currentQuestionIndex];
             const cards = document.getElementsByClassName('option-card');
             
-            // Lock active selection interactions
             for(let card of cards) { card.classList.add('disabled'); }
             
             cards[currentData.answer].classList.add('revealed-correct');
@@ -748,7 +746,6 @@
                 star.style.left = `${bounds.left + (bounds.width / 2)}px`;
                 star.style.top = `${bounds.top + (bounds.height / 2)}px`;
                 
-                // Set custom expansion direction variations
                 const angle = Math.random() * Math.PI * 2;
                 const distance = 40 + Math.random() * 80;
                 star.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
