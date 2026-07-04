@@ -1,1 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Tenses Interactive</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --background: #F5F7FA;
+            --surface: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Bar Indicators */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .hud-item {
+            background: #EDF2F7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .timer-badge {
+            background: #FFEBEB;
+            color: var(--error);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Intro Screen */
+        #intro-screen {
+            text-align: center;
+            padding: 40px 10px;
+        }
+
+        .logo-placeholder {
+            width: 180px;
+            height: auto;
+            max-height: 80px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        /* Question Layout */
+        .question-type-badge {
+            display: inline-block;
+            background: #EBF8FF;
+            color: #2B6CB0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: var(--surface);
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (min-width: 768px) {
+            .option-btn:hover:not(:disabled) {
+                border-color: var(--primary);
+                background: #F0F7FF;
+            }
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.correct {
+            background: #E6FFFA;
+            border-color: var(--success);
+            color: #234E52;
+        }
+
+        .option-btn.wrong {
+            background: #FFF5F5;
+            border-color: var(--error);
+            color: #742A2A;
+        }
+
+        /* Controls / Feedback Panel */
+        .feedback-panel {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .feedback-panel.hint {
+            background: #FEFCBF;
+            border-left: 5px solid #D69E2E;
+            color: #744210;
+            display: block;
+        }
+
+        .feedback-panel.explanation {
+            background: #EBF8FF;
+            border-left: 5px solid var(--primary);
+            color: #2B6CB0;
+            display: block;
+        }
+
+        .action-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .next-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .next-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Results Screen */
+        #result-screen {
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .restart-btn {
+            background: var(--text);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* Utilities */
+        .audio-ctrl {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Confetti Effect Overlays */
+        .confetti-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <canvas id="canvas" class="confetti-canvas"></canvas>
+
+    <div class="top-bar" id="hud" style="display: none;">
+        <div class="hud-item" id="score-tracker">Score: 0</div>
+        <button class="audio-ctrl" id="mute-btn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+        <div class="hud-item timer-badge" id="timer">⏱️ 60s</div>
+    </div>
+
+    <div class="progress-container" id="progress-container" style="display: none;">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="intro-screen" class="screen active">
+        <img src="assets/logo.png" alt="Innovine Logo" class="logo-placeholder" onerror="this.style.display='none'">
+        <h2 style="font-size: 1.6rem; margin-bottom: 10px;">English Grammar Interactive</h2>
+        <p style="color: var(--text-light); margin-bottom: 20px;">Tenses: Simple Present & Simple Past (Grade 2)</p>
+        <p style="font-size: 0.9rem; color: var(--text-light);">Loading questions...</p>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div id="badge" class="question-type-badge"></div>
+        <div id="question" class="question-text"></div>
+        <div id="options" class="options-grid"></div>
+        
+        <div id="feedback" class="feedback-panel"></div>
+        
+        <div class="action-container">
+            <button id="next-btn" class="next-btn" onclick="handleNext()">Next Question</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <div class="result-title" id="result-title"></div>
+        <p id="result-eval" style="font-size: 1.1rem; color: var(--text-light);"></p>
+        <div class="score-display" id="final-score">0/15</div>
+        <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+    </div>
+</div>
+
+<audio id="snd-correct" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></preload>
+
+<script>
+    // System & Assessment Core Directives 
+    const questions = [
+        {
+            type: "Experience-Based MCQ",
+            q: "Which sentence would you most likely use while talking about something you do every school day?",
+            options: ["I packed my bag yesterday.", "I walk to the bus stop every morning.", "I visited my grandmother last weekend.", "I watched a movie on Sunday."],
+            answer: 1,
+            hint: "Look for the sentence that talks about a routine that happens 'every morning'.",
+            exp: "We use simple present tense ('walk', 'every morning') to talk about habits and daily routines."
+        },
+        {
+            type: "Odd One Out",
+            q: "Which sentence talks about a different time from the others?",
+            options: ["We played kho-kho after school yesterday.", "My cousin visited us during the holidays.", "The gardener watered the plants this morning.", "The librarian helps students find books."],
+            answer: 3,
+            hint: "Three options talk about finished actions in the past. Find the one that describes a general truth or routine.",
+            exp: "'Helps' is simple present tense, whereas 'played', 'visited', and 'watered' are past tense actions."
+        },
+        {
+            type: "Reasoning MCQ",
+            q: "A child says: 'I used \"went\" when writing about my trip to the zoo.' Why is this a good choice?",
+            options: ["Because the zoo trip already happened", "Because all travel words use \"went\"", "Because \"went\" shows a future action", "Because zoos are visited regularly."],
+            answer: 0,
+            hint: "Think about when the zoo trip happened. Did it happen in the past, or is it a routine?",
+            exp: "'Went' is the past tense form of 'go'. It is used because the trip to the zoo has already finished."
+        },
+        {
+            type: "Experience-Based MCQ",
+            q: "You are describing something that happens every Friday. Which sentence would you say?",
+            options: ["We sang songs in music class last Friday.", "We sing songs in music class every Friday.", "We sung songs in music class every Friday.", "We sings songs in music class every Friday."],
+            answer: 1,
+            hint: "When multiple people ('We') do something regularly, use the base action word without 's'.",
+            exp: "For a regular layout of actions with plural subjects like 'We', use the simple present tense form 'sing'."
+        },
+        {
+            type: "Assertion–Reason MCQ",
+            q: "Statement: 'The children played football yesterday' is written in the simple past tense.<br><br>Reason: The action has already happened.",
+            options: ["The reason is correct and explains the statement.", "The reason is correct but does not explain the statement.", "The reason is wrong but the statement is correct.", "Both the reason and the statement are wrong."],
+            answer: 0,
+            hint: "Check if 'played' shows a past action, and check if 'yesterday' matches that reasoning.",
+            exp: "Both statement and reason are perfectly accurate. Simple past tense handles actions already finished."
+        },
+        {
+            type: "NOT Correct Understanding",
+            q: "Which sentence shows incorrect understanding of time?",
+            options: ["We plant saplings during every nature club meeting.", "We planted saplings during last month's nature club meeting.", "We visit the garden every Thursday.", "We planted saplings every Thursday tomorrow."],
+            answer: 3,
+            hint: "Look closely at the word 'tomorrow'. Can we pair a past tense action word like 'planted' with future planning?",
+            exp: "'Planted' means the event already happened, so mixing it with 'tomorrow' is an incorrect framework."
+        },
+        {
+            type: "Purpose-Based Reasoning MCQ",
+            q: "Which sentence shows correct understanding of simple present tense?",
+            options: ["I use it to talk about habits and routines.", "I use it only for things that happened yesterday.", "I use it only for festivals.", "I use it only for future plans."],
+            answer: 0,
+            hint: "Think about what simple present means—does it describe yesterday, or things we repeat consistently?",
+            exp: "The simple present tense is natively designed to communicate everyday habits, patterns, and repeated routines."
+        },
+        {
+            type: "Error Detection MCQ",
+            q: "A child writes about a family outing. Which sentence is incorrect?",
+            options: ["We visited a fort during our holiday.", "We watched the sunset from the hill.", "We enjoy the boat ride every summer.", "We visited the fort every summer last weekend."],
+            answer: 3,
+            hint: "Can something happen both 'every summer' (repeated routine) and 'last weekend' (one specific past time) simultaneously?",
+            exp: "Combining 'every summer' and 'last weekend' creates an illogical contextual overlap, making this option incorrect."
+        },
+        {
+            type: "Experience-Based MCQ",
+            q: "You volunteer every Sunday to help collect books for donation. Which sentence best describes this activity?",
+            options: ["I collected books for donation last Sunday.", "I collect books for donation every Sunday.", "I collecting books for donation every Sunday.", "I collected books for donation every Sunday yesterday."],
+            answer: 1,
+            hint: "Since you do it 'every Sunday', you need the simple present form that shows an ongoing custom.",
+            exp: "'I collect' seamlessly matches the recurring structural timeline of 'every Sunday'."
+        },
+        {
+            type: "Case-Based MCQ",
+            q: "A child writes: 'Yesterday, my brother play cricket with his friends.' What should be corrected?",
+            options: ["yesterday → tomorrow", "play → played", "brother → brothers", "friends → friend"],
+            answer: 1,
+            hint: "The word 'Yesterday' means the action took place in the past. What structural change does the action word 'play' need?",
+            exp: "To show that the action happened yesterday, the verb must switch to the simple past tense form: 'played'."
+        },
+        {
+            type: "Experience-Based MCQ",
+            q: "Which sentence would a child say while talking about something that happens regularly during the monsoon?",
+            options: ["It rained heavily last Tuesday.", "Dark clouds gather during the monsoon.", "The rain stopped yesterday afternoon.", "The clouds gathered every day yesterday."],
+            answer: 1,
+            hint: "Look for a general weather cycle truth that happens regularly, not just a description of yesterday.",
+            exp: "'Dark clouds gather' describes a structural, regular environmental occurrence using simple present tense."
+        },
+        {
+            type: "Odd One Out",
+            q: "Which sentence does not belong with the others?",
+            options: ["My aunt baked a cake for my birthday.", "We visited a museum during our trip.", "The puppy chased a ball in the park.", "My grandfather reads the newspaper every morning."],
+            answer: 3,
+            hint: "Look at the action words: baked, visited, chased, reads. Three lines describe single past events.",
+            exp: "'Reads' is in the simple present tense representing a habit, while all other options deploy past tense actions."
+        },
+        {
+            type: "Reasoning MCQ",
+            q: "Why is 'reads' used in the sentence: 'My grandfather reads the newspaper every morning.'?",
+            options: ["Because it describes a regular habit", "Because it describes something that happened once", "Because it describes a future event", "Because newspapers are important"],
+            answer: 0,
+            hint: "What does 'every morning' tell us about how often grandfather reads?",
+            exp: "The singular verb ending with '-s' ('reads') indicates an ongoing morning sequence or habit."
+        },
+        {
+            type: "Assertion–Reason MCQ",
+            q: "Statement: 'Riya visited the science museum last week' is written in the simple past tense.<br><br>Reason: 'Last week' tells us that the action has already happened.",
+            options: ["Both are correct and the reason explains the statement.", "Both are correct but not related.", "Statement is correct, reason is wrong.", "Statement is wrong, reason is correct."],
+            answer: 0,
+            hint: "Does 'visited' point to the past? Does the timeline trigger phrase 'last week' validate that assignment?",
+            exp: "The time indicator 'last week' dictates why the simple past tense verb 'visited' was used."
+        },
+        {
+            type: "Experience-Based MCQ",
+            q: "A teacher asks students to share one of their regular habits. Which sentence would best answer the question?",
+            options: ["I finished a storybook yesterday.", "I borrowed a book from the library last week.", "I read for twenty minutes every evening.", "I read a book on Saturday afternoon."],
+            answer: 2,
+            hint: "A habit is an action you repeat. Look for the selection with a timeline phrase indicating a routine pattern.",
+            exp: "'I read... every evening' clearly represents a classic ongoing personal habit in simple present tense."
+        }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let attempts = 0;
+    let timerInterval = null;
+    let timeLeft = 60;
+    let isMuted = false;
+
+    // Elements
+    const introScreen = document.getElementById('intro-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const hud = document.getElementById('hud');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const scoreTracker = document.getElementById('score-tracker');
+    const timerElement = document.getElementById('timer');
+    const badgeElement = document.getElementById('badge');
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const feedbackElement = document.getElementById('feedback');
+    const nextBtn = document.getElementById('next-btn');
+
+    // Init Logic: Auto transition past logo screen after 5 seconds
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            introScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            hud.style.display = 'flex';
+            progressContainer.style.display = 'block';
+            loadQuestion();
+        }, 5000);
+    });
+
+    function loadQuestion() {
+        clearInterval(timerInterval);
+        timeLeft = 60; // Grade 2 rule: 60s minimum
+        timerElement.textContent = `⏱️ ${timeLeft}s`;
+        attempts = 0;
+        
+        feedbackElement.style.display = 'none';
+        feedbackElement.className = 'feedback-panel';
+        nextBtn.style.display = 'none';
+        
+        const qData = questions[currentIdx];
+        badgeElement.textContent = qData.type;
+        questionElement.innerHTML = qData.q;
+        optionsElement.innerHTML = '';
+        
+        progressBar.style.width = `${(currentIdx / questions.length) * 100}%`;
+        scoreTracker.textContent = `Score: ${score}`;
+
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = opt;
+            btn.onclick = () => selectOption(idx, btn);
+            optionsElement.appendChild(btn);
+        });
+
+        startTimer();
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = `⏱️ ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                lockOptionsDueToTimeout();
+            }
+        }, 1000);
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        document.getElementById('mute-btn').textContent = isMuted ? "🔇" : "🔊";
+    }
+
+    function playSound(type) {
+        if (isMuted) return;
+        const sound = document.getElementById(type === 'correct' ? 'snd-correct' : 'snd-wrong');
+        if(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
+    }
+
+    function selectOption(selectedIdx, clickedBtn) {
+        const qData = questions[currentIdx];
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+
+        if (selectedIdx === qData.answer) {
+            // Correct logic
+            clearInterval(timerInterval);
+            clickedBtn.classList.add('correct');
+            playSound('correct');
+            if (attempts === 0) score++;
+            scoreTracker.textContent = `Score: ${score}`;
+            
+            // Trigger visual celebratory feedback mechanics
+            triggerConfetti();
+
+            feedbackElement.innerHTML = `<strong>Correct!</strong> ${qData.exp}`;
+            feedbackElement.className = 'feedback-panel explanation';
+            
+            disableAllOptions();
+            nextBtn.style.display = 'block';
+        } else {
+            // Wrong Logic
+            attempts++;
+            clickedBtn.classList.add('wrong');
+            clickedBtn.disabled = true;
+            playSound('wrong');
+
+            if (attempts === 1) {
+                // First evaluation error scenario: prompt retry with hint
+                feedbackElement.innerHTML = `<strong>Try Again!</strong> Hint: ${qData.hint}`;
+                feedbackElement.className = 'feedback-panel hint';
+            } else {
+                // Secondary error scenario: provide resolution framework
+                clearInterval(timerInterval);
+                feedbackElement.innerHTML = `<strong>Incorrect.</strong> The correct answer was: <em>${qData.options[qData.answer]}</em>.<br><br>${qData.exp}`;
+                feedbackElement.className = 'feedback-panel explanation';
+                
+                optionButtons[qData.answer].classList.add('correct');
+                disableAllOptions();
+                nextBtn.style.display = 'block';
+            }
+        }
+    }
+
+    function lockOptionsDueToTimeout() {
+        const qData = questions[currentIdx];
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+        feedbackElement.innerHTML = `<strong>Time's up!</strong> The correct answer was: <em>${qData.options[qData.answer]}</em>.<br><br>${qData.exp}`;
+        feedbackElement.className = 'feedback-panel explanation';
+        optionButtons[qData.answer].classList.add('correct');
+        disableAllOptions();
+        nextBtn.style.display = 'block';
+    }
+
+    function disableAllOptions() {
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+        optionButtons.forEach(btn => btn.disabled = true);
+    }
+
+    function handleNext() {
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        clearInterval(timerInterval);
+        quizScreen.classList.remove('active');
+        resultScreen.classList.add('active');
+        hud.style.display = 'none';
+        progressContainer.style.display = 'none';
+
+        const finalScoreElement = document.getElementById('final-score');
+        const titleElement = document.getElementById('result-title');
+        const evalElement = document.getElementById('result-eval');
+
+        finalScoreElement.textContent = `${score}/${questions.length}`;
+        const percentage = (score / questions.length) * 100;
+
+        // Structured functional score boundaries matching deployment logic
+        if (percentage >= 75) {
+            titleElement.textContent = "Good job! 🎉";
+            evalElement.textContent = "You have an excellent grasp of Simple Present and Simple Past tenses.";
+            triggerConfettiLoop();
+        } else if (percentage >= 40) {
+            titleElement.textContent = "Review this chapter and try again 📖";
+            evalElement.textContent = "You're getting close! Practice a bit more to clear up timeline differences.";
+        } else {
+            titleElement.textContent = "Let’s practise more 💪";
+            evalElement.textContent = "Review daily routines and finished actions, then check back to build your skills.";
+        }
+    }
+
+    function restartQuiz() {
+        currentIdx = 0;
+        score = 0;
+        resultScreen.classList.remove('active');
+        quizScreen.classList.add('active');
+        hud.style.display = 'flex';
+        progressContainer.style.display = 'block';
+        loadQuestion();
+    }
+
+    // Canvas Confetti Framework Layout Mechanics
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let confetti = [];
+    let confettiTimer = null;
+
+    function triggerConfetti() {
+        initConfetti();
+        canvas.style.display = 'block';
+        setTimeout(() => {
+            canvas.style.display = 'none';
+            confetti = [];
+        }, 2500);
+    }
+
+    function triggerConfettiLoop() {
+        initConfetti();
+        canvas.style.display = 'block';
+    }
+
+    function initConfetti() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+        confetti = [];
+        for (let i = 0; i < 60; i++) {
+            confetti.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                r: Math.random() * 6 + 4,
+                d: Math.random() * canvas.height,
+                color: `cssHashes-${Math.floor(Math.random()*4)}`,
+                colorHex: ['#4A90E2', '#2ECC71', '#F1C40F', '#E74C3C'][Math.floor(Math.random()*4)],
+                tilt: Math.random() * 10 - 5
+            });
+        }
+        if(!confettiTimer) {
+            confettiTimer = requestAnimationFrame(drawConfetti);
+        }
+    }
+
+    function drawConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let alive = false;
+        confetti.forEach((p) => {
+            p.y += Math.cos(p.d) + 1 + p.r / 2;
+            p.x += Math.sin(p.tilt);
+            
+            if (p.y < canvas.height) alive = true;
+
+            ctx.beginPath();
+            ctx.lineWidth = p.r;
+            ctx.strokeStyle = p.colorHex;
+            ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+            ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+            ctx.stroke();
+        });
+
+        if(canvas.style.display === 'block') {
+            requestAnimationFrame(drawConfetti);
+        } else {
+            confettiTimer = null;
+        }
+    }
+</script>
+
+</body>
+</html>
