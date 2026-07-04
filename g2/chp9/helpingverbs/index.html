@@ -1,1 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Helping Verbs Interactive Quiz</title>
+    <style>
+        /* CSS Reset & Variables */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        :root {
+            --primary: #2B6CB0;
+            --primary-light: #EBF4F6;
+            --secondary: #48BB78;
+            --correct: #ED8936;
+            --wrong: #E53E3E;
+            --text-dark: #2D3748;
+            --text-light: #718096;
+            --bg-gradient: linear-gradient(135deg, #EBF4F6 0%, #F4F9F4 100%);
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Dynamic Background elements */
+        .ambient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .ambient-symbol {
+            position: absolute;
+            color: rgba(43, 108, 176, 0.05);
+            font-size: 3.5rem;
+            font-weight: bold;
+            animation: float 14s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-25px) rotate(15deg); }
+        }
+
+        /* Branding Splash Overlay (Only place where logo appears) */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .branding-logo {
+            max-width: 220px;
+            height: auto;
+            animation: pulseLogo 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Game Containers */
+        .game-container {
+            width: 90%;
+            max-width: 650px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+            z-index: 10;
+            position: relative;
+            display: none;
+            border: 1px solid #e2e8f0;
+        }
+
+        .game-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header UI Components */
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .timer-box {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: #edf2f7;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.4s ease;
+        }
+
+        /* Question and Options layouts */
+        .question-text {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .context-box {
+            background: #f7fafc;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+
+        .option-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .option-card:hover:not(.disabled) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .option-card.selected-wrong {
+            border-color: var(--wrong);
+            background: #FFF5F5;
+            color: #C53030;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .option-card.revealed-correct {
+            border-color: #48BB78;
+            background: #F0FFF4;
+            color: #22543D;
+        }
+
+        .option-card.disabled {
+            pointer-events: none;
+        }
+
+        /* Indicators */
+        .indicator-icon {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Feedback and Action panel */
+        .feedback-panel {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .feedback-title.wrong-info { color: #C53030; }
+        .feedback-title.correct-info { color: #22543D; }
+
+        .action-btn {
+            width: 100%;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: none;
+        }
+
+        .action-btn:hover {
+            background: #38A169;
+        }
+
+        /* Screens specific configs */
+        .intro-screen, .result-screen {
+            text-align: center;
+        }
+
+        .intro-title {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .intro-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .badge-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            background: #edf2f7;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Particle Confetti and Shake Canvas elements */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .confetti-star {
+            position: absolute;
+            color: var(--correct);
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: burst 0.8s ease-out forwards;
+            z-index: 100;
+        }
+
+        @keyframes burst {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* Result Styles */
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 4px solid var(--primary);
+        }
+
+        .score-lbl { font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; margin-top: 2px;}
+
+        /* Mobile Adjustments */
+        @media(max-width: 600px) {
+            .game-container { padding: 25px 20px; width: 95%; }
+            .question-text { font-size: 1.1rem; }
+            .option-card { font-size: 0.95rem; padding: 12px 16px; }
+            .intro-title { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="ambient-symbol" style="top: 12%; left: 7%; animation-delay: 0s;">am</div>
+        <div class="ambient-symbol" style="top: 68%; left: 14%; animation-delay: 3s;">is</div>
+        <div class="ambient-symbol" style="top: 22%; right: 9%; animation-delay: 1.5s;">are</div>
+        <div class="ambient-symbol" style="top: 78%; right: 12%; animation-delay: 4s;">is</div>
+        <div class="ambient-symbol" style="top: 45%; left: 48%; animation-delay: 2.5s;">are</div>
+    </div>
+
+    <div id="splash-screen">
+        <img src="assets/logo.png" alt="Innovine Logo" class="branding-logo">
+    </div>
+
+    <div id="intro-card" class="game-container">
+        <div class="intro-screen">
+            <h1 class="intro-title">Helping Verbs Builder</h1>
+            <p class="intro-subtitle">Learn how helping verbs link subjects and actions safely together!</p>
+            
+            <div class="badge-grid">
+                <span class="badge">Grade 2</span>
+                <span class="badge">Subject: English</span>
+                <span class="badge">15 Challenges</span>
+            </div>
+
+            <button class="action-btn" style="display: block; background-color: var(--primary);" onclick="startQuiz()">Begin Adventure</button>
+        </div>
+    </div>
+
+    <div id="quiz-card" class="game-container">
+        <div class="quiz-meta">
+            <span id="question-index-counter">Question 1 of 15</span>
+            <div class="timer-box">
+                ⏱️ <span id="timer-countdown">60</span>s
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div id="progress-indicator-line" class="progress-bar"></div>
+        </div>
+
+        <div id="context-wrapper" class="context-box" style="display: none;"></div>
+        <div id="question-text-field" class="question-text"></div>
+
+        <div id="options-wrapper-element" class="options-grid"></div>
+
+        <div id="feedback-panel-element" class="feedback-panel">
+            <div id="feedback-title-text" class="feedback-title"></div>
+            <div id="feedback-explanation-body"></div>
+        </div>
+
+        <button id="action-control-button" class="action-btn" onclick="handleActionClick()"></button>
+    </div>
+
+    <div id="result-card" class="game-container">
+        <div class="result-screen">
+            <h1 class="intro-title" id="completion-greeting">Wonderful Effort!</h1>
+            <p class="intro-subtitle">You have completed the entire Helping Verbs Topic Quest.</p>
+            
+            <div class="score-circle">
+                <span id="final-score-display">0/15</span>
+                <div class="score-lbl">Score Tracker</div>
+            </div>
+
+            <p id="performance-feedback-text" style="margin-bottom: 25px; color: var(--text-dark); font-weight: 500;"></p>
+
+            <button class="action-btn" style="display: block; background-color: var(--primary);" onclick="restartQuiz()">Restart Adventure</button>
+        </div>
+    </div>
+
+    <audio id="audio-correct" src="assets/correct.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+    <audio id="audio-applause" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+    <script>
+        // Quiz Data Matrix structurally configured in gradual ascending difficulty
+        const quizDatabase = [
+            {
+                type: "Experience-Based MCQ (Morning Assembly)",
+                context: "During the morning assembly, the principal welcomes everyone.",
+                question: "Which sentence would be correct?",
+                options: ["The students is standing quietly.", "The students are standing quietly.", "The students am standing quietly.", "The students are stands quietly."],
+                answer: 1,
+                explanation: "'Students' is plural (more than one), so the correct helping verb to combine with the action is 'are'."
+            },
+            {
+                type: "Experience-Based MCQ (Railway Journey)",
+                context: "Your family is travelling by train. Looking out of the window, you notice one station approaching.",
+                question: "Which sentence would you most likely say?",
+                options: ["The station are coming.", "The station am coming.", "The station is coming closer.", "The station are closer."],
+                answer: 2,
+                explanation: "'The station' is singular (one thing), so we always link it with the helping verb 'is'."
+            },
+            {
+                type: "Experience-Based MCQ (Science Exhibition)",
+                context: "During a science exhibition, several models are displayed in the hall.",
+                question: "Which sentence would be correct?",
+                options: ["The models is attracting visitors.", "The models are attracting visitors.", "The models am attracting visitors.", "The models are attracts visitors."],
+                answer: 1,
+                explanation: "Since 'models' refers to plural items, it requires the plural helping verb 'are'."
+            },
+            {
+                type: "Experience-Based MCQ (Community Cleanliness Drive)",
+                context: "You and your neighbours are cleaning a park together.",
+                question: "Which sentence would you say?",
+                options: ["We are helping to keep the park clean.", "We is helping to keep the park clean.", "We am helping to keep the park clean.", "We are helps to keep the park clean."],
+                answer: 0,
+                explanation: "'We' represents a plural perspective including yourself, requiring the matching structural verb 'are'."
+            },
+            {
+                type: "Experience-Based MCQ (Weather Report)",
+                context: "You are watching a weather report on television. The reporter is talking about dark clouds in the sky.",
+                question: "Which sentence would be most suitable?",
+                options: ["The clouds is moving quickly.", "The clouds are moving quickly.", "The clouds am moving quickly.", "The clouds are moves quickly."],
+                answer: 1,
+                explanation: "'Clouds' is a plural naming word, making 'are moving' the only correct helper syntax arrangement."
+            },
+            {
+                type: "Odd One Out (Helping Verb Pattern)",
+                context: "Look closely at how helping verbs match the words before them.",
+                question: "Which sentence does NOT follow the same helping verb pattern as the others?",
+                options: ["The children are singing a song.", "The players are warming up.", "The birds are building nests.", "The gardener is watering the plants."],
+                answer: 3,
+                explanation: Options a, b, and c all use the plural helping verb 'are'. Option d uses the singular helping verb 'is' because there is only one gardener."
+            },
+            {
+                type: "Odd One Out (Subject–Verb Match)",
+                question: "Which sentence does not belong because its helping verb is incorrect?",
+                options: ["I am reading a storybook.", "She is planting a sapling.", "They are painting a wall.", "We is collecting waste paper."],
+                answer: 3,
+                explanation: "'We' is plural and must use 'are'. Saying 'We is' breaks standard structural syntax rules."
+            },
+            {
+                type: "Reasoning MCQ",
+                context: "A student says: 'I used \"are\" in the sentence \"The puppies are sleeping.\"'",
+                question: "Why is this correct?",
+                options: ["Because \"puppies\" means more than one puppy", "Because all animals take \"are\"", "Because sleeping words need \"are\"", "Because puppies are always in groups"],
+                answer: 0,
+                explanation: "'Puppies' is plural, and plural subjects always match with the helping verb 'are' in the present tense."
+            },
+            {
+                type: "Reasoning MCQ",
+                context: "Sentence: 'The peacock is spreading its feathers.'",
+                question: "Why is \"is\" used in this sentence?",
+                options: ["Because \"peacock\" refers to one bird", "Because all birds use \"is\"", "Because feathers are colourful", "Because the sentence is about nature"],
+                answer: 0,
+                explanation: "We use 'is' because the sentence refers specifically to a single ('one') singular peacock."
+            },
+            {
+                type: "Purpose-Based Reasoning MCQ",
+                question: "Which sentence shows correct understanding of helping verbs?",
+                options: ["I would use \"am\" when talking about myself.", "I would use \"are\" for one book on my desk.", "I would use \"is\" for my friends.", "I would use \"am\" for my cousins."],
+                answer: 0,
+                explanation: "The helping verb 'am' is uniquely paired with the pronoun 'I' when talking about yourself."
+            },
+            {
+                type: "Assertion–Reason MCQ",
+                context: "Statement: We use \"am\" with \"I\".\nReason: \"Am\" is the helping verb used when the speaker talks about themselves.",
+                question: "Choose the correct evaluation:",
+                options: ["The reason is correct and explains the statement", "The reason is correct but does not explain the statement", "The reason is wrong but the statement is correct", "Both the reason and the statement are wrong"],
+                answer: 0,
+                explanation: "The pronoun 'I' represents the speaker, and 'am' is specifically reserved to pair exclusively with it."
+            },
+            {
+                type: "Assertion–Reason MCQ",
+                context: "Statement: \"The children are practising for the dance performance\" is correct.\nReason: \"Children\" refers to more than one person, so \"are\" is used.",
+                question: "Choose the correct evaluation:",
+                options: ["Both are correct and the reason explains the statement", "Both are correct but not related", "Statement is correct, reason is wrong", "Statement is wrong, reason is correct"],
+                answer: 0,
+                explanation: "'Children' is the plural form of child. Because it represents a group, the plural helping verb 'are' is perfectly justified."
+            },
+            {
+                type: "NOT Correct Understanding (Sports Day)",
+                question: "Which sentence shows incorrect understanding of helping verbs?",
+                options: ["I am waiting for my race to begin.", "The runners are getting ready.", "The coach is giving instructions.", "The medals are kept safely and the trophy are shining."],
+                answer: 3,
+                explanation: "'Trophy' is singular, so it should match with 'is shining'. Using 'the trophy are' is incorrect."
+            },
+            {
+                type: "Error Detection MCQ",
+                question: "Which sentence contains an error?",
+                options: ["The monkeys are climbing the trees.", "I am carrying my water bottle.", "My grandmother is making tea.", "The buses is waiting outside the depot."],
+                answer: 3,
+                explanation: "'Buses' is plural, so it requires 'are' instead of 'is'. The correct form is 'The buses are waiting'."
+            },
+            {
+                type: "Case-Based MCQ",
+                context: "A student writes: 'I are excited about the school picnic.'",
+                question: "What should be corrected?",
+                options: ["I → We", "are → am", "excited → excitement", "picnic → picnics"],
+                answer: 1,
+                explanation: To fix the sentence while keeping 'I', 'are' must change to 'am' because 'I' always pairs with 'am'."
+            }
+        ];
+
+        // State Machine Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval = null;
+        let timeRemaining = 60; // Grade 2 rule: 60 seconds
+        let attemptsMade = 0;
+        let finalChallengeActive = false;
+
+        // Sound Player Wrapper with defensive failure mitigation
+        function safePlayAudio(elementId) {
+            const audio = document.getElementById(elementId);
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log("Audio playback managed safely:", e));
+            }
+        }
+
+        // Window Initializer Orchestration
+        window.addEventListener('DOMContentLoaded', () => {
+            // Display Splash Branding Screen for exactly 5 seconds, then transition to Intro
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = 0;
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    document.getElementById('intro-card').classList.add('active');
+                }, 500);
+            }, 5000);
+        });
+
+        // Initialize and Start Quiz
+        function startQuiz() {
+            document.getElementById('intro-card').classList.remove('active');
+            document.getElementById('quiz-card').classList.add('active');
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        // Build Question Template Card dynamically
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            timeRemaining = 60;
+            attemptsMade = 0;
+            finalChallengeActive = (currentQuestionIndex === quizDatabase.length - 1);
+            
+            document.getElementById('timer-countdown').innerText = timeRemaining;
+            document.getElementById('question-index-counter').innerText = `Question ${currentQuestionIndex + 1} of ${quizDatabase.length} ${finalChallengeActive ? '🔥 FINAL CHALLENGE' : ''}`;
+            
+            // Advance Progress UI line
+            const percentage = ((currentQuestionIndex) / quizDatabase.length) * 100;
+            document.getElementById('progress-indicator-line').style.width = `${percentage}%`;
+
+            const currentData = quizDatabase[currentQuestionIndex];
+            
+            // Context conditional renderer
+            const contextEl = document.getElementById('context-wrapper');
+            if (currentData.context) {
+                contextEl.innerText = currentData.context;
+                contextEl.style.display = 'block';
+            } else {
+                contextEl.style.display = 'none';
+            }
+
+            document.getElementById('question-text-field').innerText = currentData.question;
+            
+            // Generate clean selection cards
+            const optionsWrapper = document.getElementById('options-wrapper-element');
+            optionsWrapper.innerHTML = '';
+            
+            currentData.options.forEach((option, index) => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.innerHTML = `<span>${option}</span><span class="indicator-icon" id="ind-${index}"></span>`;
+                card.onclick = () => selectOption(index);
+                optionsWrapper.appendChild(card);
+            });
+
+            // Clean up interaction drawers
+            document.getElementById('feedback-panel-element').style.display = 'none';
+            document.getElementById('action-control-button').style.display = 'none';
+
+            // Start countdown timer ticker
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                document.getElementById('timer-countdown').innerText = timeRemaining;
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeoutBreakdown();
+                }
+            }, 1000);
+        }
+
+        // Process Interactive Selection Core Logic
+        function selectOption(selectedIndex) {
+            const currentData = quizDatabase[currentQuestionIndex];
+            const cards = document.getElementsByClassName('option-card');
+            
+            // Correct Track Sequence Match
+            if (selectedIndex === currentData.answer) {
+                clearInterval(timerInterval);
+                safePlayAudio('audio-correct');
+                cards[selectedIndex].classList.add('revealed-correct');
+                document.getElementById(`ind-${selectedIndex}`).innerHTML = '★';
+                triggerConfettiBurst(cards[selectedIndex]);
+                
+                // Add points based on dynamic retry penalty evaluation
+                if (attemptsMade === 0) {
+                    score++;
+                }
+                
+                displaySystemFeedback(true);
+            } 
+            // Incorrect Track Sequence Match
+            else {
+                attemptsMade++;
+                safePlayAudio('audio-wrong');
+                cards[selectedIndex].classList.add('selected-wrong');
+                document.getElementById(`ind-${selectedIndex}`).innerHTML = '❌';
+                cards[selectedIndex].classList.add('disabled'); // Disable this broken choice
+
+                if (attemptsMade === 1) {
+                    // Give student 1 dynamic second try
+                    alert("Oops! That's not quite right. Look at whether the sentence talks about one or more than one, then try again!");
+                    cards[selectedIndex].classList.remove('selected-wrong');
+                } else {
+                    // Out of opportunities for this current index
+                    clearInterval(timerInterval);
+                    cards[currentData.answer].classList.add('revealed-correct');
+                    document.getElementById(`ind-${currentData.answer}`).innerHTML = '★';
+                    displaySystemFeedback(false);
+                }
+            }
+        }
+
+        // Handle structural timeouts
+        function handleTimeoutBreakdown() {
+            const currentData = quizDatabase[currentQuestionIndex];
+            const cards = document.getElementsByClassName('option-card');
+            
+            // Lock active selection interactions
+            for(let card of cards) { card.classList.add('disabled'); }
+            
+            cards[currentData.answer].classList.add('revealed-correct');
+            document.getElementById(`ind-${currentData.answer}`).innerHTML = '★';
+            
+            safePlayAudio('audio-wrong');
+            
+            const titleEl = document.getElementById('feedback-title-text');
+            const panelEl = document.getElementById('feedback-panel-element');
+            const bodyEl = document.getElementById('feedback-explanation-body');
+            
+            titleEl.className = "feedback-title wrong-info";
+            titleEl.innerText = "⏳ Time Expired!";
+            bodyEl.innerText = currentData.explanation;
+            panelEl.style.display = 'block';
+            
+            configureActionControlState();
+        }
+
+        // Render Panel feedback explanations nicely
+        function displaySystemFeedback(isCorrect) {
+            const currentData = quizDatabase[currentQuestionIndex];
+            const titleEl = document.getElementById('feedback-title-text');
+            const panelEl = document.getElementById('feedback-panel-element');
+            const bodyEl = document.getElementById('feedback-explanation-body');
+            const cards = document.getElementsByClassName('option-card');
+
+            for(let card of cards) { card.classList.add('disabled'); }
+
+            if (isCorrect) {
+                titleEl.className = "feedback-title correct-info";
+                titleEl.innerText = "🎉 Brilliant Choice!";
+            } else {
+                titleEl.className = "feedback-title wrong-info";
+                titleEl.innerText = "💡 Keep Learning!";
+            }
+
+            bodyEl.innerText = currentData.explanation;
+            panelEl.style.display = 'block';
+            
+            configureActionControlState();
+        }
+
+        // Toggle button states to control pagination steps
+        function configureActionControlState() {
+            const btn = document.getElementById('action-control-button');
+            if (finalChallengeActive) {
+                btn.innerText = "Finish Quest & View Results";
+            } else {
+                btn.innerText = "Advance to Next Challenge ➡️";
+            }
+            btn.style.display = 'block';
+        }
+
+        // Route actions depending on state sequence positioning
+        function handleActionClick() {
+            if (finalChallengeActive) {
+                renderResultsScreen();
+            } else {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        // Star confetti visual effects layer
+        function triggerConfettiBurst(targetElement) {
+            const bounds = targetElement.getBoundingClientRect();
+            for (let i = 0; i < 12; i++) {
+                const star = document.createElement('div');
+                star.className = 'confetti-star';
+                star.innerHTML = '★';
+                star.style.left = `${bounds.left + (bounds.width / 2)}px`;
+                star.style.top = `${bounds.top + (bounds.height / 2)}px`;
+                
+                // Set custom expansion direction variations
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 40 + Math.random() * 80;
+                star.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+                star.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+                
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), 800);
+            }
+        }
+
+        // Final score calculation view rendering
+        function renderResultsScreen() {
+            document.getElementById('quiz-card').classList.remove('active');
+            document.getElementById('result-card').classList.add('active');
+            
+            document.getElementById('progress-indicator-line').style.width = `100%`;
+            document.getElementById('final-score-display').innerText = `${score}/${quizDatabase.length}`;
+            
+            const messageEl = document.getElementById('performance-feedback-text');
+            const headingEl = document.getElementById('completion-greeting');
+            
+            if (score === quizDatabase.length) {
+                headingEl.innerText = "🏆 Perfect Score! Master Builder!";
+                messageEl.innerText = "Exceptional performance! You perfectly connected subjects and action verbs across all real-world sentence setups.";
+                safePlayAudio('audio-applause');
+            } else if (score >= 11) {
+                headingEl.innerText = "🌟 Fantastic Job!";
+                messageEl.innerText = "Great job! You have a solid understanding of 'is', 'am', and 'are'. A little more practice and you will be a complete master.";
+                safePlayAudio('audio-applause');
+            } else {
+                headingEl.innerText = "👍 Nice Effort!";
+                messageEl.innerText = "You successfully tackled many verb pairing concepts today. Reviewing subject rules will help build your sentence structures stronger!";
+            }
+        }
+
+        // Reset runtime matrices for fresh attempts
+        function restartQuiz() {
+            document.getElementById('result-card').classList.remove('active');
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
