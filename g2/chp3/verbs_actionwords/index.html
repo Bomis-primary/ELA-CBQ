@@ -1,1 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Verbs: Action Words Challenge</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    overflow-x: hidden;
+    background: linear-gradient(135deg,#1b5e3a,#2e8b57,#134e2c,#1b5e3a);
+    background-size: 400% 400%;
+    animation: bgShift 16s ease infinite;
+  }
+  @keyframes bgShift {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
 
+  /* field lines */
+  #fieldLines {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.15;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 60px, #fff 60px, #fff 62px);
+  }
+
+  /* bouncing balls background */
+  .ball {
+    position: fixed;
+    border-radius: 50%;
+    opacity: 0.5;
+    z-index: 0;
+    pointer-events: none;
+    animation: bounceMove linear infinite;
+  }
+  @keyframes bounceMove {
+    0% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-40vh) translateX(10px); }
+    50% { transform: translateY(-10vh) translateX(-15px); }
+    75% { transform: translateY(-55vh) translateX(15px); }
+    100% { transform: translateY(-100vh) translateX(-10px); }
+  }
+
+  /* motion streaks */
+  .streak {
+    position: fixed;
+    height: 4px;
+    border-radius: 4px;
+    opacity: 0.4;
+    z-index: 0;
+    pointer-events: none;
+    animation: streakMove linear infinite;
+  }
+  @keyframes streakMove {
+    0% { transform: translateX(-120vw); }
+    100% { transform: translateX(120vw); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  /* Logo intro screen */
+  #logoScreen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg,#134e2c,#1b5e3a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    transition: opacity 0.6s ease;
+  }
+  #logoScreen img {
+    width: 160px;
+    max-width: 60vw;
+    animation: pop 1s ease;
+    background: #fff;
+    border-radius: 16px;
+    padding: 10px;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  #logoScreen.hide { opacity: 0; pointer-events: none; }
+
+  .card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    padding: 28px 22px;
+    width: 100%;
+    text-align: center;
+    border: 3px solid #ffcc00;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    color: #1b5e3a;
+    margin-bottom: 6px;
+  }
+  .meta {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 18px;
+  }
+  .btn {
+    background: linear-gradient(135deg,#ffcc00,#ff9900);
+    border: none;
+    color: #1b3a1b;
+    font-weight: bold;
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(255,153,0,0.4);
+    transition: transform 0.15s ease;
+  }
+  .btn:active { transform: scale(0.95); }
+
+  .hidden { display: none !important; }
+
+  /* Scoreboard header bar */
+  .topbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #fff;
+    background: #1b3a1b;
+    padding: 10px 14px;
+    border-radius: 14px;
+  }
+  .score-pill, .timer-pill {
+    background: #14291f;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 2px solid #ffcc00;
+  }
+  .timer-pill.warn { color: #ff5c5c; border-color: #ff5c5c; }
+
+  .final-banner {
+    background: linear-gradient(135deg,#ffcc00,#ff9900);
+    color: #1b3a1b;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+  }
+
+  .qtext {
+    font-size: 1.08rem;
+    color: #333;
+    margin-bottom: 18px;
+    line-height: 1.4;
+    text-align: left;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .option {
+    background: #f4fff6;
+    border: 2px solid #bfe8c7;
+    border-radius: 14px;
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 0.98rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: #333;
+  }
+  .option:hover { border-color: #2e8b57; }
+  .option.correct {
+    background: #d9ffe0;
+    border-color: #2e8b57;
+    color: #12401f;
+    font-weight: bold;
+  }
+  .option.wrong {
+    background: #ffe1e1;
+    border-color: #ff5c5c;
+    color: #a80000;
+  }
+  .option.disabled { pointer-events: none; opacity: 0.75; }
+
+  .feedback {
+    margin-top: 14px;
+    font-size: 0.92rem;
+    color: #333;
+    background: #fff7d6;
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: left;
+    display: none;
+    border-left: 4px solid #ffcc00;
+  }
+  .feedback.show { display: block; }
+
+  .nextBtn { margin-top: 16px; display:none; }
+
+  /* red cross overlay */
+  #crossOverlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    pointer-events: none;
+  }
+  #crossOverlay svg {
+    width: 90px;
+    height: 90px;
+    opacity: 0;
+  }
+  #crossOverlay.show svg {
+    animation: crossPop 0.6s ease forwards;
+  }
+  @keyframes crossPop {
+    0% { opacity: 0; transform: scale(0.4); }
+    50% { opacity: 1; transform: scale(1.15); }
+    100% { opacity: 0; transform: scale(1); }
+  }
+
+  /* star confetti */
+  .star {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    background: #ffcc00;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    z-index: 500;
+    pointer-events: none;
+  }
+
+  .result-emoji { font-size: 3rem; margin-bottom: 6px; }
+  .result-score { font-size: 1.4rem; color: #1b5e3a; font-weight: bold; margin: 10px 0; }
+  .result-msg { color: #555; margin-bottom: 18px; }
+</style>
+</head>
+<body>
+
+<!-- Logo intro -->
+<div id="logoScreen">
+  <img src="assets/logo.png" alt="Innovine">
+</div>
+
+<div id="fieldLines"></div>
+<div id="bgLayer"></div>
+
+<div id="crossOverlay">
+  <svg viewBox="0 0 100 100">
+    <line x1="15" y1="15" x2="85" y2="85" stroke="#ff3b3b" stroke-width="12" stroke-linecap="round"/>
+    <line x1="85" y1="15" x2="15" y2="85" stroke="#ff3b3b" stroke-width="12" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<div class="container">
+
+  <!-- Intro / Start screen -->
+  <div class="card" id="startScreen">
+    <h1>🏆 Verbs: Action Words Challenge</h1>
+    <div class="meta">Grade 2 &nbsp;|&nbsp; English &nbsp;|&nbsp; Topic: Verbs — Action Words</div>
+    <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">
+      15 questions &nbsp;•&nbsp; 60 seconds each &nbsp;•&nbsp; One retry if you get it wrong!
+    </p>
+    <button class="btn" onclick="startGame()">Start Challenge ⚽</button>
+  </div>
+
+  <!-- Question screen -->
+  <div class="card hidden" id="gameScreen">
+    <div class="topbar">
+      <div class="score-pill" id="scorePill">Score: 0 / 15</div>
+      <div class="timer-pill" id="timerPill">⏱ 60s</div>
+    </div>
+    <div id="finalBanner" class="final-banner hidden">🏅 Final Challenge!</div>
+    <div class="qtext" id="qText"></div>
+    <div class="options" id="optionsBox"></div>
+    <div class="feedback" id="feedbackBox"></div>
+    <button class="btn nextBtn" id="nextBtn" onclick="nextQuestion()">Next ➜</button>
+  </div>
+
+  <!-- Result screen -->
+  <div class="card hidden" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🏆</div>
+    <h1>Challenge Complete!</h1>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-msg" id="resultMsg"></div>
+    <button class="btn" onclick="restartGame()">Play Again 🔄</button>
+  </div>
+
+</div>
+
+<!-- Audio -->
+<audio id="correctSound" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+<script>
+/* ---------------- Background balls & streaks ---------------- */
+const bgLayer = document.getElementById('bgLayer');
+const ballColors = ['#ffcc00','#ff9900','#ffffff','#ffd966'];
+for (let i=0;i<8;i++){
+  const b = document.createElement('div');
+  b.className='ball';
+  const size = 16 + Math.random()*14;
+  b.style.width = size+'px';
+  b.style.height = size+'px';
+  b.style.left = Math.random()*100+'vw';
+  b.style.top = (60+Math.random()*30)+'vh';
+  b.style.background = ballColors[i % ballColors.length];
+  b.style.animationDuration = (12+Math.random()*8)+'s';
+  b.style.animationDelay = (Math.random()*8)+'s';
+  bgLayer.appendChild(b);
+}
+for (let i=0;i<5;i++){
+  const s = document.createElement('div');
+  s.className='streak';
+  s.style.width = (60+Math.random()*60)+'px';
+  s.style.top = Math.random()*100+'vh';
+  s.style.background = ballColors[i % ballColors.length];
+  s.style.animationDuration = (6+Math.random()*6)+'s';
+  s.style.animationDelay = (Math.random()*6)+'s';
+  bgLayer.appendChild(s);
+}
+
+/* ---------------- Logo intro (5 seconds) ---------------- */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('logoScreen').classList.add('hide');
+  }, 5000);
+});
+
+/* ---------------- Question data ---------------- */
+const questions = [
+{ q:"During cricket practice, the coach asked the players to move quickly between the wickets to score runs. Which action word best completes: \"The players ______ between the wickets.\"",
+  options:["run","bat","ground","player"],
+  answer:0, explain:"'Run' tells what the players do — it's the action word." },
+{ q:"Words: jump, climb, basket, swim. Which word does NOT belong with the others?",
+  options:["jump","climb","basket","swim"],
+  answer:2, explain:"Jump, climb, and swim are actions. 'Basket' is a thing (noun), not an action." },
+{ q:"A student says: \"I chose 'garden' as an action word because people go there every day.\" Why is this not correct?",
+  options:["Because \"garden\" names a place, not an action","Because gardens cannot be visited","Because action words must be long words","Because \"garden\" is a describing word"],
+  answer:0, explain:"'Garden' is the name of a place, so it is a noun, not an action word." },
+{ q:"At a family gathering, everyone stood together and sang a welcome song. Which word tells what everyone did together?",
+  options:["family","song","sang","gathering"],
+  answer:2, explain:"'Sang' tells the action everyone performed together." },
+{ q:"Statement: \"Dance\" is an action word. Reason: It tells what a person is doing.",
+  options:["The reason is correct and explains the statement","The reason is correct but does not explain the statement","The reason is wrong but the statement is correct","Both the reason and the statement are wrong"],
+  answer:0, explain:"'Dance' shows what a person does, so the reason correctly explains why it is an action word." },
+{ q:"Which sentence shows incorrect understanding of action words?",
+  options:["Vendors sell vegetables in the market.","Children carry shopping bags.","Families market together on Sundays.","People walk through the market."],
+  answer:2, explain:"'Market' here is used as if it were an action, but it is normally a place (noun), not a verb in this context." },
+{ q:"Which sentence shows correct understanding of action words?",
+  options:["I would choose \"write\" because it shows something a person can do.","I would choose \"notebook\" because it is used while writing.","I would choose \"library\" because people visit it.","I would choose \"colourful\" because it gives information."],
+  answer:0, explain:"'Write' is something a person does, making it a true action word." },
+{ q:"Which sentence is incorrect?",
+  options:["The children played football after school.","My uncle drives to work every day.","The birds fly across the lake.","The musicians song on the stage."],
+  answer:3, explain:"'Song' is a noun, not an action word. The correct verb would be 'sang' or 'sing'." },
+{ q:"During a nature walk, students watched monkeys moving from one branch to another. Which action word best completes: \"The monkeys ______ from branch to branch.\"",
+  options:["swing","forest","branches","leaves"],
+  answer:0, explain:"'Swing' describes the action the monkeys perform." },
+{ q:"A student writes: \"The chef kitchen delicious meals for the guests.\" What should be corrected?",
+  options:["chef → chefs","kitchen → cooks","meals → meal","guests → guest"],
+  answer:1, explain:"'Kitchen' is a noun and cannot show action. It should be replaced with the verb 'cooks'." },
+{ q:"During a library visit, students sat quietly and ______ a storybook.",
+  options:["read","shelf","storybook","library"],
+  answer:0, explain:"'Read' is the action word that completes the sentence correctly." },
+{ q:"Words: paint, sketch, draw, artist. Which word does not belong with the others?",
+  options:["paint","sketch","draw","artist"],
+  answer:3, explain:"Paint, sketch, and draw are actions. 'Artist' is a person (noun), not an action." },
+{ q:"Why is \"whisper\" an action word?",
+  options:["Because it tells what someone does with their voice","Because it names a person","Because it tells where something happens","Because it describes a thing"],
+  answer:0, explain:"'Whisper' tells what a person does with their voice, making it an action word." },
+{ q:"Statement: \"Deliver\" is an action word. Reason: It tells what someone is doing.",
+  options:["Both are correct and the reason explains the statement","Both are correct but not related","Statement is correct, reason is wrong","Statement is wrong, reason is correct"],
+  answer:0, explain:"'Deliver' shows what someone does, so the reason correctly explains the statement." },
+{ q:"Students participated in a cleanliness drive and collected litter from the playground. Which sentence best describes their action?",
+  options:["The students collected litter from the playground.","The students playground litter.","The students cleanliness the playground.","The students litter the collected playground."],
+  answer:0, explain:"'Collected' is the correctly used action word describing what the students did." }
+];
+
+/* ---------------- Game state ---------------- */
+let current = 0;
+let score = 0;
+let attempts = 0;
+let timer = null;
+let timeLeft = 60;
+const TIME_PER_Q = 60; // Grade 2 -> 60 seconds
+
+const startScreen = document.getElementById('startScreen');
+const gameScreen = document.getElementById('gameScreen');
+const resultScreen = document.getElementById('resultScreen');
+const qText = document.getElementById('qText');
+const optionsBox = document.getElementById('optionsBox');
+const scorePill = document.getElementById('scorePill');
+const timerPill = document.getElementById('timerPill');
+const feedbackBox = document.getElementById('feedbackBox');
+const nextBtn = document.getElementById('nextBtn');
+const finalBanner = document.getElementById('finalBanner');
+
+function startGame(){
+  startScreen.classList.add('hidden');
+  gameScreen.classList.remove('hidden');
+  current = 0; score = 0;
+  loadQuestion();
+}
+
+function loadQuestion(){
+  attempts = 0;
+  feedbackBox.classList.remove('show');
+  feedbackBox.innerHTML = '';
+  nextBtn.style.display = 'none';
+  scorePill.textContent = `Score: ${score} / ${questions.length}`;
+  finalBanner.classList.toggle('hidden', current !== questions.length - 1);
+
+  const q = questions[current];
+  qText.textContent = `Q${current+1}. ${q.q}`;
+  optionsBox.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.textContent = opt;
+    div.onclick = () => selectOption(idx, div);
+    optionsBox.appendChild(div);
+  });
+
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timer);
+  timeLeft = TIME_PER_Q;
+  timerPill.textContent = `⏱ ${timeLeft}s`;
+  timerPill.classList.remove('warn');
+  timer = setInterval(() => {
+    timeLeft--;
+    timerPill.textContent = `⏱ ${timeLeft}s`;
+    if (timeLeft <= 10) timerPill.classList.add('warn');
+    if (timeLeft <= 0){
+      clearInterval(timer);
+      handleTimeout();
+    }
+  }, 1000);
+}
+
+function handleTimeout(){
+  processAnswer(-1, null);
+}
+
+function selectOption(idx, el){
+  clearInterval(timer);
+  const opts = optionsBox.querySelectorAll('.option');
+  opts.forEach(o => o.classList.add('disabled'));
+  processAnswer(idx, el);
+}
+
+function processAnswer(idx, el){
+  const q = questions[current];
+  const isCorrect = idx === q.answer;
+
+  if (isCorrect){
+    if (el) el.classList.add('correct');
+    score++;
+    scorePill.textContent = `Score: ${score} / ${questions.length}`;
+    playSound('correctSound');
+    burstStars();
+    setTimeout(nextQuestion, 1200);
+    return;
+  }
+
+  attempts++;
+  if (el) el.classList.add('wrong');
+  playSound('wrongSound');
+  showCross();
+
+  if (attempts === 1){
+    feedbackBox.innerHTML = "Not quite — take another shot! ⚽";
+    feedbackBox.classList.add('show');
+    const opts = optionsBox.querySelectorAll('.option');
+    opts.forEach((o,i) => {
+      if (i !== idx) o.classList.remove('disabled');
+    });
+    startTimer();
+  } else {
+    const opts = optionsBox.querySelectorAll('.option');
+    opts.forEach((o,i) => {
+      o.classList.add('disabled');
+      if (i === q.answer) o.classList.add('correct');
+    });
+    feedbackBox.innerHTML = `<strong>Correct answer:</strong> ${q.options[q.answer]}<br><br>${q.explain}`;
+    feedbackBox.classList.add('show');
+    nextBtn.style.display = 'inline-block';
+  }
+}
+
+function nextQuestion(){
+  current++;
+  if (current >= questions.length){
+    showResult();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showResult(){
+  gameScreen.classList.add('hidden');
+  resultScreen.classList.remove('hidden');
+  document.getElementById('resultScore').textContent = `${score} / ${questions.length}`;
+  let msg = '';
+  let emoji = '🏆';
+  const pct = score / questions.length;
+  if (pct >= 0.8){ msg = "Champion performance! You know your action words!"; emoji='🏆'; }
+  else if (pct >= 0.5){ msg = "Good game! A bit more practice and you'll be a pro."; emoji='🥈'; }
+  else { msg = "Nice effort! Keep practicing and you'll score big next time."; emoji='⚽'; }
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('resultEmoji').textContent = emoji;
+  playSound('clapSound');
+}
+
+function restartGame(){
+  resultScreen.classList.add('hidden');
+  startScreen.classList.remove('hidden');
+}
+
+function playSound(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.currentTime = 0;
+  el.play().catch(()=>{});
+}
+
+/* ---------------- Star confetti ---------------- */
+function burstStars(){
+  for (let i=0;i<14;i++){
+    const star = document.createElement('div');
+    star.className = 'star';
+    const angle = Math.random()*2*Math.PI;
+    const dist = 80 + Math.random()*120;
+    const dx = Math.cos(angle)*dist;
+    const dy = Math.sin(angle)*dist;
+    star.style.background = ballColors[i % ballColors.length];
+    document.body.appendChild(star);
+    star.animate([
+      { transform: 'translate(-50%,-50%) scale(0.5)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1.1) rotate(180deg)`, opacity: 0 }
+    ], { duration: 900, easing: 'ease-out' });
+    setTimeout(() => star.remove(), 900);
+  }
+}
+
+/* ---------------- Red cross overlay ---------------- */
+function showCross(){
+  const overlay = document.getElementById('crossOverlay');
+  overlay.classList.add('show');
+  setTimeout(() => overlay.classList.remove('show'), 650);
+}
+</script>
+</body>
+</html>
