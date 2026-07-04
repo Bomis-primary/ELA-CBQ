@@ -1,1 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Punctuation Interactive</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --success: #2ECC71;
+            --danger: #E74C3C;
+            --warning: #F1C40F;
+            --dark: #2C3E50;
+            --light: #F8F9FA;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #E6F0FA;
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Logo Screen */
+        #logo-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        #logo-screen img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        /* Utility Classes */
+        .hide { display: none !important; }
+
+        /* Screens layout */
+        .screen {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        p.intro-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-height: 50px;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn:hover { background: #357ABD; }
+
+        /* Header info */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+            font-weight: bold;
+        }
+
+        .timer-box {
+            background: var(--light);
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+        }
+
+        .timer-low {
+            border-color: var(--danger);
+            color: var(--danger);
+            animation: blink 1s infinite;
+        }
+
+        /* Question & Options */
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: var(--light);
+            border: 2px solid #DCE4EC;
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 50px;
+            width: 100%;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            border-color: var(--primary);
+            background: #EDF4FC;
+        }
+
+        .option-btn.correct {
+            background: #E8F8F0 !important;
+            border-color: var(--success) !important;
+            color: #1E6B43;
+            font-weight: bold;
+        }
+
+        .option-btn.wrong {
+            background: #FDE8E8 !important;
+            border-color: var(--danger) !important;
+            color: #9B2C2C;
+        }
+
+        /* Feedback Section */
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .feedback-box.hint {
+            background: #FFF9E6;
+            border: 1px solid var(--warning);
+            color: #8A6D3B;
+        }
+
+        .feedback-box.explanation {
+            background: #EDF4FC;
+            border: 1px solid var(--primary);
+            color: var(--dark);
+        }
+
+        /* Audio controls */
+        .audio-control {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        /* Result layout */
+        .result-score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <audio id="snd-correct" src="assets/claps.mp3"></audio>
+        <audio id="snd-wrong" src="assets/wrong.mp3"></audio>
+
+        <button id="mute-btn" class="audio-control" onclick="toggleMute()">🔊</button>
+
+        <canvas id="confetti-canvas" class="hide"></canvas>
+
+        <div id="logo-screen">
+            <img src="assets/logo.png" alt="Innovine Logo">
+        </div>
+
+        <div id="intro-screen" class="screen hide">
+            <h2>Punctuation Adventure!</h2>
+            <p class="intro-text">Help our friends fix their sentences using Full Stops (.), Question Marks (?), and Commas (,). Read each situation carefully!</p>
+            <button class="btn" onclick="startGame()">Start Quiz</button>
+        </div>
+
+        <div id="quiz-screen" class="screen hide">
+            <div class="game-header">
+                <span id="progress-text">Question 1/15</span>
+                <span id="score-text">Score: 0</span>
+                <div id="timer" class="timer-box">60s</div>
+            </div>
+            
+            <div id="question-container">
+                <div id="question-el" class="question-text"></div>
+                <div id="options-el" class="options-grid"></div>
+            </div>
+
+            <div id="feedback-el" class="feedback-box hide"></div>
+            <button id="next-btn" class="btn hide" onclick="nextQuestion()">Next Question</button>
+        </div>
+
+        <div id="result-screen" class="screen hide">
+            <h2>Adventure Complete!</h2>
+            <div id="final-score" class="result-score">0/15</div>
+            <p id="result-message" class="intro-text"></p>
+            <button class="btn" onclick="restartGame()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "Your friend has hidden a surprise and wants to know if you found it. Which sentence would your friend most likely say?",
+                options: ["Did you find the surprise?", "Did you find the surprise.", "Did you find the surprise,", "Did you find the surprise"],
+                answer: 0,
+                hint: "Think about whether your friend is telling you a fact or asking you a question!",
+                explain: "We use a question mark (?) at the end of sentences that ask something."
+            },
+            {
+                q: "Which sentence uses punctuation for a different purpose from the others?",
+                options: ["We packed sandwiches, fruits and juice for the trip.", "My pencil box has crayons, pencils and erasers.", "The garden has roses, lilies and marigolds.", "Where did you keep the library book?"],
+                answer: 3,
+                hint: "Look closely at the punctuation marks at the ends of all four options.",
+                explain: "The first three sentences use commas and end in full stops to share lists of items. The last sentence asks a question."
+            },
+            {
+                q: "A child says: 'I ended my sentence with a question mark because I was asking my grandfather something.' Why is this a good choice?",
+                options: ["Because question marks are used when asking something", "Because question marks are used for every long sentence", "Because question marks are used for lists", "Because question marks replace commas"],
+                answer: 0,
+                hint: "What is the true job of a question mark?",
+                explain: "A question mark always indicates that a question is being asked."
+            },
+            {
+                q: "You cannot find your water bottle and want to ask your friend about it. Which sentence would you most likely use?",
+                options: ["Have you seen my water bottle?", "Have you seen my water bottle.", "Have you seen my water bottle,", "Have you seen my water bottle"],
+                answer: 0,
+                hint: "When you need information about a lost item, are you stating a fact or asking?",
+                explain: "Asking your friend if they have seen your bottle requires an ending question mark (?)."
+            },
+            {
+                q: "Statement: A comma helps separate items in a list.\nReason: A comma makes it easier for the reader to understand different items.",
+                options: ["The reason is correct and explains the statement.", "The reason is correct but does not explain the statement.", "The reason is wrong but the statement is correct.", "Both the reason and the statement are wrong."],
+                answer: 0,
+                hint: "Read both sentences. Does separating items make lists clearer to read?",
+                explain: "Commas break up items in lists so they don't blend awkwardly together, making it easier to read!"
+            },
+            {
+                q: "Which sentence shows incorrect understanding of punctuation?",
+                options: ["Please bring balloons, ribbons and party hats.", "Are you coming to my birthday party?", "The cake is on the table.", "What a fun day."],
+                answer: 3,
+                hint: "Look for an ending mark that doesn't fit the feeling of the sentence.",
+                explain: "'What a fun day.' shows lots of excitement and should naturally end with an exclamation mark, not a standard full stop."
+            },
+            {
+                q: "Which sentence shows correct understanding of commas?",
+                options: ["I would use commas while listing colours, shapes and numbers.", "I would use commas at the end of every sentence.", "I would use commas instead of question marks.", "I would use commas only in questions."],
+                answer: 0,
+                hint: "When do we take brief pauses inside a sentence to separate multiple objects?",
+                explain: "Commas are ideal for separating items listed in groups, such as sequences of colours or shapes."
+            },
+            {
+                q: "A child writes about helping in the kitchen. Which sentence is incorrect?",
+                options: ["We washed the apples, oranges and bananas.", "I helped my mother set the table.", "Did the guests enjoy the meal?", "We served juice, snacks."],
+                answer: 3,
+                hint: "Look for a sentence where a listed group just suddenly cuts off with incorrect formatting.",
+                explain: "'We served juice, snacks.' is incomplete and cuts off awkwardly with a comma instead of a full list configuration."
+            },
+            {
+                q: "The teacher wants to know whether everyone has packed their lunch. Which sentence would she most likely say?",
+                options: ["Did everyone bring their lunch?", "Did everyone bring their lunch.", "Did everyone bring their lunch,", "Did everyone bring their lunch"],
+                answer: 0,
+                hint: "The teacher wants an answer from the students. What punctuation shows this?",
+                explain: "Sentences starting with words like 'Did' that expect an answer must end with a question mark (?)."
+            },
+            {
+                q: "You are writing about something you observed during a nature walk. Which sentence would be most suitable?",
+                options: ["I saw butterflies near the pond.", "I saw butterflies near the pond?", "I saw butterflies near the pond,", "I saw butterflies near the pond"],
+                answer: 0,
+                hint: "You are sharing a complete, normal piece of information. How should it end?",
+                explain: "A plain statement sharing information should always conclude cleanly with a full stop (.)."
+            },
+            {
+                q: "Which sentence does not belong with the others?",
+                options: ["We bought notebooks, folders and labels.", "My basket contains mangoes, guavas and apples.", "The shelf holds storybooks, atlases and dictionaries.", "Can you help me carry these books?"],
+                answer: 3,
+                hint: "Check the punctuation mark standing out at the very end of one specific sentence.",
+                explain: "The first three options write lists ending with full stops. The last option is an active question requiring help."
+            },
+            {
+                q: "Why is a full stop used in this sentence?\n'The library opens at eight o'clock.'",
+                options: ["Because the sentence gives information and is complete", "Because the sentence asks something", "Because the sentence lists items", "Because the sentence gives a choice"],
+                answer: 0,
+                hint: "Is this sentence asking something, or telling us a clear fact?",
+                explain: "Full stops indicate that a standard statement of fact or information is finished."
+            },
+            {
+                q: "Statement: 'Where is my raincoat?' ends with a question mark.\nReason: The sentence asks for information.",
+                options: ["Both are correct and the reason explains the statement.", "Both are correct but not related.", "Statement is correct, reason is wrong.", "Statement is wrong, reason is correct."],
+                answer: 0,
+                hint: "Does looking for a raincoat count as asking for information?",
+                explain: "Yes! The sentence is asking where something is, so it requires a question mark."
+            },
+            {
+                q: "A camp leader reads a packing list to students. Which sentence would be most suitable?",
+                options: ["Bring a torch, water bottle and notebook.", "Bring a torch? water bottle and notebook.", "Bring a torch. water bottle and notebook.", "Bring a torch water bottle and notebook?"],
+                answer: 0,
+                hint: "How should items in a list be neatly divided so they are easy to read?",
+                explain: "A comma cleanly separates 'torch' and 'water bottle' without breaking the sentence completely apart."
+            },
+            {
+                q: "A child writes: 'For the picnic we packed sandwiches fruits and juice.' What would improve the sentence most?",
+                options: ["Add commas between the listed items", "Remove the word 'picnic'", "Change 'packed' to 'pack'", "Change 'juice' to 'juices'"],
+                answer: 0,
+                hint: "Look at 'sandwiches fruits and juice'. What is missing between the fast items?",
+                explain: "Adding commas lets the reader separate 'sandwiches' and 'fruits' comfortably while reading the list."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let attempts = 0;
+        let timerInterval;
+        let timeLeft = 60;
+        let isMuted = false;
+
+        // Hide Logo Screen after 5 seconds
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.getElementById('logo-screen').classList.add('hide');
+                document.getElementById('intro-screen').classList.remove('hide');
+            }, 5000);
+        });
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.getElementById('mute-btn').innerText = isMuted ? "🔇" : "🔊";
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            const sound = document.getElementById(type === 'correct' ? 'snd-correct' : 'snd-wrong');
+            sound.currentTime = 0;
+            sound.play().catch(e => console.log("Audio play prevented"));
+        }
+
+        function startGame() {
+            document.getElementById('intro-screen').classList.add('hide');
+            document.getElementById('quiz-screen').classList.remove('hide');
+            currentQuestionIdx = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            attempts = 0;
+            timeLeft = 60;
+            document.getElementById('next-btn').classList.add('hide');
+            document.getElementById('feedback-el').classList.add('hide');
+            
+            document.getElementById('progress-text').innerText = `Question ${currentQuestionIdx + 1}/15`;
+            document.getElementById('score-text').innerText = `Score: ${score}`;
+            
+            const currentQ = questions[currentQuestionIdx];
+            document.getElementById('question-el').innerText = currentQ.q;
+            
+            const optionsEl = document.getElementById('options-el');
+            optionsEl.innerHTML = '';
+            
+            currentQ.options.forEach((opt, idx) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerText = opt;
+                button.onclick = () => handleAnswer(idx, button);
+                optionsEl.appendChild(button);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            const timerEl = document.getElementById('timer');
+            timerEl.classList.remove('timer-low');
+            timerEl.innerText = `${timeLeft}s`;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = `${timeLeft}s`;
+
+                if(timeLeft <= 10) {
+                    timerEl.classList.add('timer-low');
+                }
+
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    lockOptionsDueToTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleAnswer(selectedIdx, selectedButton) {
+            const currentQ = questions[currentQuestionIdx];
+            const feedbackEl = document.getElementById('feedback-el');
+            
+            if (selectedIdx === currentQ.answer) {
+                // Correct answer
+                clearInterval(timerInterval);
+                selectedButton.classList.add('correct');
+                feedbackEl.className = "feedback-box explanation";
+                feedbackEl.innerText = "🌟 Correct! " + currentQ.explain;
+                feedbackEl.classList.remove('hide');
+                playSound('correct');
+                triggerConfetti();
+                
+                if (attempts === 0) score++;
+                document.getElementById('score-text').innerText = `Score: ${score}`;
+                disableAllOptions();
+                document.getElementById('next-btn').classList.remove('hide');
+            } else {
+                // Wrong answer
+                attempts++;
+                selectedButton.classList.add('wrong');
+                selectedButton.disabled = true;
+                playSound('wrong');
+
+                if (attempts === 1) {
+                    feedbackEl.className = "feedback-box hint";
+                    feedbackEl.innerText = "🔍 Try Again! Hint: " + currentQ.hint;
+                    feedbackEl.classList.remove('hide');
+                } else {
+                    clearInterval(timerInterval);
+                    feedbackEl.className = "feedback-box explanation";
+                    feedbackEl.innerText = "❌ Incorrect. " + currentQ.explain;
+                    feedbackEl.classList.remove('hide');
+                    highlightCorrectAnswer();
+                    disableAllOptions();
+                    document.getElementById('next-btn').classList.remove('hide');
+                }
+            }
+        }
+
+        function highlightCorrectAnswer() {
+            const correctIdx = questions[currentQuestionIdx].answer;
+            const buttons = document.getElementById('options-el').children;
+            buttons[correctIdx].classList.add('correct');
+        }
+
+        function disableAllOptions() {
+            const buttons = document.getElementById('options-el').children;
+            for(let btn of buttons) {
+                btn.disabled = true;
+            }
+        }
+
+        function lockOptionsDueToTimeout() {
+            disableAllOptions();
+            const feedbackEl = document.getElementById('feedback-el');
+            feedbackEl.className = "feedback-box explanation";
+            feedbackEl.innerText = "⏰ Time's up! " + questions[currentQuestionIdx].explain;
+            feedbackEl.classList.remove('hide');
+            highlightCorrectAnswer();
+            document.getElementById('next-btn').classList.remove('hide');
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            if(currentQuestionIdx < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-screen').classList.add('hide');
+            document.getElementById('result-screen').classList.remove('hide');
+            
+            document.getElementById('final-score').innerText = `${score}/15`;
+            
+            const percentage = (score / questions.length) * 100;
+            const msgEl = document.getElementById('result-message');
+            
+            if (percentage >= 75) {
+                msgEl.innerText = "Good job! 🌟 You understand how to use punctuation marks carefully in your writing.";
+            } else if (percentage >= 40) {
+                msgEl.innerText = "Review this chapter and try again! 👍 A little more practice will make your sentences perfect.";
+            } else {
+                msgEl.innerText = "Let’s practise more! 💪 Pay close attention to when sentences ask questions or tell statements.";
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('result-screen').classList.add('hide');
+            startGame();
+        }
+
+        /* Basic Canvas Confetti Effect */
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.classList.remove('hide');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            let particles = [];
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 6 + 2,
+                    d: Math.random() * canvas.height,
+                    color: `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, 0.8)`,
+                    tilt: Math.random() * 10 - 5
+                });
+            }
+
+            let animationFrame;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let processing = false;
+                
+                particles.forEach((p) => {
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r/2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r/2);
+                    ctx.stroke();
+
+                    p.y += Math.cos(p.d) + 2;
+                    p.x += Math.sin(p.d) * 0.5;
+                    
+                    if (p.y <= canvas.height) {
+                        processing = true;
+                    }
+                });
+
+                if (processing) {
+                    animationFrame = requestAnimationFrame(draw);
+                } else {
+                    canvas.classList.add('hide');
+                    cancelAnimationFrame(animationFrame);
+                }
+            }
+            draw();
+        }
+    </script>
+</body>
+</html>
