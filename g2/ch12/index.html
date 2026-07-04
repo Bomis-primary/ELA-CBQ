@@ -72,6 +72,20 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
+        /* Instructions Screen styling */
+        #instructions-screen {
+            text-align: left;
+        }
+        .instruction-list {
+            margin: 20px 0;
+            padding-left: 20px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        .instruction-list li {
+            margin-bottom: 10px;
+        }
+
         /* Game UI Elements */
         h2 { font-size: 20px; margin-bottom: 24px; line-height: 1.5; color: var(--text); }
         
@@ -116,13 +130,14 @@
             font-weight: 500;
         }
 
-        /* Action/Restart buttons */
+        /* Action/Restart/Start buttons */
         .btn-action {
             background: var(--primary);
             color: white;
             text-align: center;
             border: none;
             font-weight: 600;
+            margin-top: 15px;
         }
         .btn-action:hover { background: var(--primary-hover); }
 
@@ -151,6 +166,17 @@
         <h2 style="margin-bottom: 5px;">Loading Prepositions Challenge</h2>
         <p style="color: var(--text-muted)">Get ready...</p>
         <div class="spinner"></div>
+    </div>
+
+    <div id="instructions-screen" class="hidden">
+        <h2 style="text-align: center;">How to Play</h2>
+        <ul class="instruction-list">
+            <li>Read each application scenario carefully.</li>
+            <li>Select the correct preposition that describes the position or relationship accurately.</li>
+            <li>You have a maximum of <strong>2 attempts</strong> per question.</li>
+            <li>Try to score perfectly on your first attempt to maximize points!</li>
+        </ul>
+        <button class="btn-action" onclick="startGame()">Start Challenge</button>
     </div>
 
     <div id="game-ui" class="hidden">
@@ -199,16 +225,23 @@
     let isInteractionLocked = false; 
 
     const splash = document.getElementById('splash-screen');
+    const instructionsScreen = document.getElementById('instructions-screen');
     const gameUI = document.getElementById('game-ui');
     const qText = document.getElementById('question-text');
     const optsDiv = document.getElementById('options');
 
-    // Splash screen configuration set exactly to 5000 milliseconds (5 seconds)
+    // 1. Splash Screen runs for exactly 5000ms, then shows Instructions
     setTimeout(() => { 
         splash.classList.add('hidden'); 
-        gameUI.classList.remove('hidden'); 
-        loadQuestion(); 
+        instructionsScreen.classList.remove('hidden'); 
     }, 5000);
+
+    // 2. Transition from Instructions to Game Loop
+    function startGame() {
+        instructionsScreen.classList.add('hidden');
+        gameUI.classList.remove('hidden');
+        loadQuestion();
+    }
 
     function loadQuestion() {
         if(currentQ >= questions.length) { endScreen(); return; }
@@ -217,6 +250,7 @@
         document.getElementById('attempts').innerText = attempts;
         
         const q = questions[currentQ];
+        // Modified to template literal to prevent nested quote breaking string concatenation
         qText.innerText = `Question ${currentQ + 1} of ${questions.length}: ${q.q}`;
         optsDiv.innerHTML = '';
         
@@ -244,7 +278,7 @@
     function playAudioSilently(src) {
         const audio = new Audio(src);
         audio.play().catch(() => {
-            console.log(`Audio notification triggered: ${src}`);
+            console.log(`Audio fallback triggered/blocked by browser sandbox: ${src}`);
         });
     }
 
@@ -259,6 +293,7 @@
             
             if (attempts === 1) { score++; } 
             
+            // Standard compliance paths
             playAudioSilently('assets/claps.mp3'); 
             triggerConfetti();
             
@@ -289,7 +324,7 @@
                     alert(`Moving on! The correct answer was: \n"${currentQuestionData.options[currentQuestionData.a]}"`);
                     currentQ++; 
                     loadQuestion();
-                }, 600);
+                }, 1500);
             }
         }
     }
