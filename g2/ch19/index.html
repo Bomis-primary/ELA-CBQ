@@ -1,1 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Silent Letters Interactive</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --background: #F5F7FA;
+            --surface: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Bar Indicators */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .hud-item {
+            background: #EDF2F7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .timer-badge {
+            background: #FFEBEB;
+            color: var(--error);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Intro Screen */
+        #intro-screen {
+            text-align: center;
+            padding: 50px 10px;
+        }
+
+        .logo-placeholder {
+            width: 180px;
+            height: auto;
+            max-height: 80px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        /* Question Layout */
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: var(--surface);
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (min-width: 768px) {
+            .option-btn:hover:not(:disabled) {
+                border-color: var(--primary);
+                background: #F0F7FF;
+            }
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.correct {
+            background: #E6FFFA;
+            border-color: var(--success);
+            color: #234E52;
+        }
+
+        .option-btn.wrong {
+            background: #FFF5F5;
+            border-color: var(--error);
+            color: #742A2A;
+        }
+
+        /* Controls / Feedback Panel */
+        .feedback-panel {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .feedback-panel.hint {
+            background: #FEFCBF;
+            border-left: 5px solid #D69E2E;
+            color: #744210;
+            display: block;
+        }
+
+        .feedback-panel.explanation {
+            background: #EBF8FF;
+            border-left: 5px solid var(--primary);
+            color: #2B6CB0;
+            display: block;
+        }
+
+        .action-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .next-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .next-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Results Screen */
+        #result-screen {
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .restart-btn {
+            background: var(--text);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* Utilities */
+        .audio-ctrl {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Confetti Effect Overlays */
+        .confetti-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <canvas id="canvas" class="confetti-canvas"></canvas>
+
+    <div class="top-bar" id="hud" style="display: none;">
+        <div class="hud-item" id="score-tracker">Score: 0</div>
+        <button class="audio-ctrl" id="mute-btn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+        <div class="hud-item timer-badge" id="timer">⏱️ 60s</div>
+    </div>
+
+    <div class="progress-container" id="progress-container" style="display: none;">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="intro-screen" class="screen active">
+        <img src="assets/logo.png" alt="Innovine Logo" class="logo-placeholder" onerror="this.style.display='none'">
+        <h2 style="font-size: 1.6rem;">English Grammar Interactive: Silent Letters (k, b, w, e)</h2>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div id="question" class="question-text"></div>
+        <div id="options" class="options-grid"></div>
+        
+        <div id="feedback" class="feedback-panel"></div>
+        
+        <div class="action-container">
+            <button id="next-btn" class="next-btn" onclick="handleNext()">Next Question</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <div class="result-title" id="result-title"></div>
+        <p id="result-eval" style="font-size: 1.1rem; color: var(--text-light);"></p>
+        <div class="score-display" id="final-score">0/15</div>
+        <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+    </div>
+</div>
+
+<audio id="snd-correct" src="assets/claps.mp3" preload="auto"></audio>
+<audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+<script>
+    const questions = [
+        {
+            q: "Your teacher asks everyone to bring something to cut coloured paper for a craft project. Which word would most likely appear on the materials list?",
+            options: ["knife", "nife", "knif", "kknife"],
+            answer: 0,
+            hint: "This cutting tool starts with a quiet, hidden letter that makes no sound before the 'n'.",
+            exp: "'Knife' is the proper spelling. The letter 'k' remains completely hidden and silent when spoken aloud."
+        },
+        {
+            q: "Which word does NOT belong with the others?",
+            options: ["knife", "knee", "knock", "cake"],
+            answer: 3,
+            hint: "Three of these choices begin with a silent letter pattern where 'k' isn't heard.",
+            exp: "'Knife', 'knee', and 'knock' all begin with a silent 'k'. 'Cake' features an 'e' at the very end instead."
+        },
+        {
+            q: "A child says: 'I wrote \"knife\" on my camping checklist.' Why is this the correct spelling?",
+            options: [
+                "Because some words keep the letter \"k\" even though we do not hear it",
+                "Because every word begins with \"k\"",
+                "Because the letter \"k\" is always pronounced",
+                "Because camping words need extra letters"
+            ],
+            answer: 0,
+            hint: "Do we voice the sound of 'k' when talking about a knife?",
+            exp: "English holds special historical words that retain a silent letter like 'k' in their modern structural layout."
+        },
+        {
+            q: "A student falls during a race and hurts a body part. Which sentence would most likely be written in the first-aid report?",
+            options: ["He hurt his wrist.", "He hurt his rist.", "He hurt his wrisst.", "He hurt his wristt."],
+            answer: 0,
+            hint: "The body part connecting your hand and arm uses a hidden letter at the very start.",
+            exp: "'Wrist' uses a silent 'w' at the beginning. We start saying the word directly from the sound of 'r'."
+        },
+        {
+            q: "Statement: The word \"write\" begins with a silent letter.<br><br>Reason: The letter \"w\" is written but not heard when the word is spoken.",
+            options: [
+                "The reason is correct and explains the statement.",
+                "The reason is correct but does not explain the statement.",
+                "The reason is wrong but the statement is correct.",
+                "Both the reason and the statement are wrong."
+            ],
+            answer: 0,
+            hint: "Can you hear a distinct 'w' sound when saying 'write', or do you jump straight to 'r'?",
+            exp: "Both parts are correct. The letter 'w' is completely silent in 'write', directly explaining why it's called a silent-letter word."
+        },
+        {
+            q: "Which sentence shows incorrect understanding of silent-letter words?",
+            options: [
+                "We saw a lamb in the field.",
+                "The lamb followed its mother.",
+                "The farmer fed the lamb.",
+                "The farmer fed the lam."
+            ],
+            answer: 3,
+            hint: "Look for the spelling of a baby sheep that is missing its unvoiced end letter.",
+            exp: "'Lam' is incorrect here. The correct spelling is 'lamb', where the 'b' at the end remains unvoiced and quiet."
+        },
+        {
+            q: "Which sentence shows correct understanding of silent-letter words?",
+            options: [
+                "I would write \"thumb\" when talking about a finger on my hand.",
+                "I would write \"thumb\" when talking about a farm animal.",
+                "I would write \"thumb\" when talking about a school bag.",
+                "I would write \"thumb\" when talking about a vehicle."
+            ],
+            answer: 0,
+            hint: "Look at your hand. Which thick finger matches this specific hidden-letter word?",
+            exp: "A 'thumb' is the thick first finger on your hand. It uses a silent 'b' at the end."
+        },
+        {
+            q: "A child writes about a birthday party. Which sentence is incorrect?",
+            options: [
+                "We cut the cake together.",
+                "My cousin made a wish before blowing the candles.",
+                "Everyone enjoyed the chocolate cake.",
+                "We ate a cakke after the games."
+            ],
+            answer: 3,
+            hint: "Look at the spelling of the sweet baked treat in the last sentence. It shouldn't double its middle consonant.",
+            exp: "'Cakke' is an incorrect spelling. The word for this sweet dessert is spelled 'cake', featuring a silent magic 'e'."
+        },
+        {
+            q: "Your mother reminds you to finish your English assignment. Which sentence would she most likely say?",
+            options: ["Please write neatly.", "Please rite neatly.", "Please wright neatly.", "Please writ neatly."],
+            answer: 0,
+            hint: "Think about the correct layout for forming words with a pencil, which hides a starting letter.",
+            exp: "'Write' is the proper structural setup. It uses a silent 'w' at the very beginning."
+        },
+        {
+            q: "A child writes: 'I climbed the hill and used my thum to point at the view.' What should be corrected?",
+            options: ["climbed → climb", "hill → hills", "thum → thumb", "view → views"],
+            answer: 2,
+            hint: "Find the word for your short finger that is missing its quiet ending letter.",
+            exp: "'Thum' must be corrected to 'thumb'. It requires a quiet, unvoiced letter 'b' at the end."
+        },
+        {
+            q: "You are helping your grandparents harvest vegetables. Which sentence would be most suitable?",
+            options: [
+                "I hope we find ripe tomatoes today.",
+                "I hop we find ripe tomatoes today.",
+                "I hoope we find ripe tomatoes today.",
+                "I hoppe we find ripe tomatoes today."
+            ],
+            answer: 0,
+            hint: "The word meaning a wish or desire requires a single quiet 'e' at the end to make the 'o' sound long.",
+            exp: "'Hope' uses a silent 'e' at the end, which changes how the vowel 'o' is pronounced. Without it, the word becomes 'hop'."
+        },
+        {
+            q: "Which word follows a different silent-letter pattern from the others?",
+            options: ["wrist", "wrong", "wrap", "comb"],
+            answer: 3,
+            hint: "Look at where the quiet, unvoiced letters are placed in each option.",
+            exp: "'Wrist', 'wrong', and 'wrap' all use a silent 'w' at the start. 'Comb' features a silent 'b' at the end."
+        },
+        {
+            q: "Why is 'comb' written with a 'b' even though we do not hear it?",
+            options: [
+                "Because some words keep silent letters in their spelling",
+                "Because every word must end in \"b\"",
+                "Because the letter \"b\" changes the meaning of all words",
+                "Because hair-care words need extra letters"
+            ],
+            answer: 0,
+            hint: "Think about standard English spelling rules regarding historical silent remnants.",
+            exp: "Many historical English terms preserve their traditional letter frameworks, including the silent 'b' in 'comb'."
+        },
+        {
+            q: "Statement: The letter \"e\" is silent in the word \"cake.\"\br><br>Reason: The silent \"e\" helps change the way the vowel is pronounced.",
+            options: [
+                "Both are correct and the reason explains the statement.",
+                "Both are correct but not related.",
+                "Statement is correct, reason is wrong.",
+                "Statement is wrong, reason is correct."
+            ],
+            answer: 0,
+            hint: "Does the ending 'e' sound out loud, or does it quietly step in to make the 'a' say its own name?",
+            exp: "Both parts match. The silent 'e' at the end of 'cake' serves as a 'magic e', making the long 'a' vowel sound clear."
+        },
+        {
+            q: "During a nature trek, a guide asks everyone to move carefully while going uphill. Which sentence would most likely appear in the trip journal?",
+            options: [
+                "We climbed the rocky path.",
+                "We climed the rocky path.",
+                "We clibmed the rocky path.",
+                "We climbd the rocky path."
+            ],
+            answer: 0,
+            hint: "The past tense of moving upward keeps a quiet middle letter before the '-ed' ending.",
+            exp: "'Climbed' is correct. It retains the silent root letter 'b' from the base word 'climb'."
+        }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let attempts = 0;
+    let timerInterval = null;
+    let timeLeft = 60;
+    let isMuted = false;
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const hud = document.getElementById('hud');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const scoreTracker = document.getElementById('score-tracker');
+    const timerElement = document.getElementById('timer');
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const feedbackElement = document.getElementById('feedback');
+    const nextBtn = document.getElementById('next-btn');
+
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            introScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            hud.style.display = 'flex';
+            progressContainer.style.display = 'block';
+            loadQuestion();
+        }, 5000);
+    });
+
+    function loadQuestion() {
+        clearInterval(timerInterval);
+        timeLeft = 60; 
+        timerElement.textContent = `⏱️ ${timeLeft}s`;
+        attempts = 0;
+        
+        feedbackElement.style.display = 'none';
+        feedbackElement.className = 'feedback-panel';
+        nextBtn.style.display = 'none';
+        
+        const qData = questions[currentIdx];
+        questionElement.innerHTML = qData.q;
+        optionsElement.innerHTML = '';
+        
+        progressBar.style.width = `${(currentIdx / questions.length) * 100}%`;
+        scoreTracker.textContent = `Score: ${score}`;
+
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = opt;
+            btn.onclick = () => selectOption(idx, btn);
+            optionsElement.appendChild(btn);
+        });
+
+        startTimer();
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = `⏱️ ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                lockOptionsDueToTimeout();
+            }
+        }, 1000);
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        document.getElementById('mute-btn').textContent = isMuted ? "🔇" : "🔊";
+    }
+
+    function playSound(type) {
+        if (isMuted) return;
+        const sound = document.getElementById(type === 'correct' ? 'snd-correct' : 'snd-wrong');
+        if(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
+    }
+
+    function selectOption(selectedIdx, clickedBtn) {
+        const qData = questions[currentIdx];
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+
+        if (selectedIdx === qData.answer) {
+            clearInterval(timerInterval);
+            clickedBtn.classList.add('correct');
+            playSound('correct');
+            if (attempts === 0) score++;
+            scoreTracker.textContent = `Score: ${score}`;
+            
+            triggerConfetti();
+
+            feedbackElement.innerHTML = `<strong>Correct!</strong> ${qData.exp}`;
+            feedbackElement.className = 'feedback-panel explanation';
+            
+            disableAllOptions();
+            nextBtn.style.display = 'block';
+        } else {
+            attempts++;
+            clickedBtn.classList.add('wrong');
+            clickedBtn.disabled = true;
+            playSound('wrong');
+
+            if (attempts === 1) {
+                feedbackElement.innerHTML = `<strong>Try Again!</strong> Hint: ${qData.hint}`;
+                feedbackElement.className = 'feedback-panel hint';
+            } else {
+                clearInterval(timerInterval);
+                feedbackElement.innerHTML = `<strong>Incorrect.</strong> The correct answer was: <em>${qData.options[qData.answer]}</em>.<br><br>${qData.exp}`;
+                feedbackElement.className = 'feedback-panel explanation';
+                
+                optionButtons[qData.answer].classList.add('correct');
+                disableAllOptions();
+                nextBtn.style.display = 'block';
+            }
+        }
+    }
+
+    function lockOptionsDueToTimeout() {
+        const qData = questions[currentIdx];
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+        feedbackElement.innerHTML = `<strong>Time's up!</strong> The correct answer was: <em>${qData.options[qData.answer]}</em>.<br><br>${qData.exp}`;
+        feedbackElement.className = 'feedback-panel explanation';
+        optionButtons[qData.answer].classList.add('correct');
+        disableAllOptions();
+        nextBtn.style.display = 'block';
+    }
+
+    function disableAllOptions() {
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+        optionButtons.forEach(btn => btn.disabled = true);
+    }
+
+    function handleNext() {
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        clearInterval(timerInterval);
+        quizScreen.classList.remove('active');
+        resultScreen.classList.add('active');
+        hud.style.display = 'none';
+        progressContainer.style.display = 'none';
+
+        const finalScoreElement = document.getElementById('final-score');
+        const titleElement = document.getElementById('result-title');
+        const evalElement = document.getElementById('result-eval');
+
+        finalScoreElement.textContent = `${score}/${questions.length}`;
+        const percentage = (score / questions.length) * 100;
+
+        if (percentage >= 75) {
+            titleElement.textContent = "Good job! 🎉";
+            evalElement.textContent = "You have an excellent grasp of silent letters and their hidden spots in words.";
+            triggerConfettiLoop();
+        } else if (percentage >= 40) {
+            titleElement.textContent = "Review this chapter and try again 📖";
+            evalElement.textContent = "You're getting close! Practice a bit more to identify quiet letters like k, b, w, and e.";
+        } else {
+            titleElement.textContent = "Let’s practise more 💪";
+            evalElement.textContent = "Review how hidden letters stay silent during speech, then come check back!";
+        }
+    }
+
+    function restartQuiz() {
+        currentIdx = 0;
+        score = 0;
+        resultScreen.classList.remove('active');
+        quizScreen.classList.add('active');
+        hud.style.display = 'flex';
+        progressContainer.style.display = 'block';
+        loadQuestion();
+    }
+
+    // Canvas Confetti Overlays
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let confetti = [];
+    let confettiTimer = null;
+
+    function triggerConfetti() {
+        initConfetti();
+        canvas.style.display = 'block';
+        setTimeout(() => {
+            canvas.style.display = 'none';
+            confetti = [];
+        }, 2500);
+    }
+
+    function triggerConfettiLoop() {
+        initConfetti();
+        canvas.style.display = 'block';
+    }
+
+    function initConfetti() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+        confetti = [];
+        for (let i = 0; i < 60; i++) {
+            confetti.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                r: Math.random() * 6 + 4,
+                d: Math.random() * canvas.height,
+                colorHex: ['#4A90E2', '#2ECC71', '#F1C40F', '#E74C3C'][Math.floor(Math.random()*4)],
+                tilt: Math.random() * 10 - 5
+            });
+        }
+        if(!confettiTimer) {
+            confettiTimer = requestAnimationFrame(drawConfetti);
+        }
+    }
+
+    function drawConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confetti.forEach((p) => {
+            p.y += Math.cos(p.d) + 1 + p.r / 2;
+            p.x += Math.sin(p.tilt);
+            
+            ctx.beginPath();
+            ctx.lineWidth = p.r;
+            ctx.strokeStyle = p.colorHex;
+            ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+            ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+            ctx.stroke();
+        });
+
+        if(canvas.style.display === 'block') {
+            requestAnimationFrame(drawConfetti);
+        } else {
+            confettiTimer = null;
+        }
+    }
+</script>
+
+</body>
+</html>
