@@ -1,1 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Articles Interactive Quest</title>
+    <style>
+        /* CSS Reset & Variables - Brand New Island Adventure Palette */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', 'Segoe UI', Tahoma, sans-serif;
+        }
 
+        :root {
+            --primary: #1C4E3A; /* Deep Jungle Emerald */
+            --primary-light: #F4F7F1; /* Soft Parchment Sand */
+            --secondary: #D4AF37; /* Lost Temple Gold */
+            --correct: #E67E22; /* Expedition Orange */
+            --wrong: #C0392B; /* Lava Red */
+            --text-dark: #2C3E50;
+            --text-light: #7F8C8D;
+            --bg-gradient: linear-gradient(135deg, #E8F5E9 0%, #FFF8E1 100%);
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Dynamic Background elements */
+        .ambient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .ambient-symbol {
+            position: absolute;
+            color: rgba(28, 78, 58, 0.06);
+            font-size: 4rem;
+            font-weight: bold;
+            animation: float 16s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); }
+            50% { transform: translateY(-30px) translateX(15px) rotate(20deg); }
+        }
+
+        /* Branding Splash Overlay (Only place where logo appears) */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .branding-logo {
+            max-width: 220px;
+            height: auto;
+            animation: pulseLogo 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Game Containers - Styled like an Explorer's Journal Chart */
+        .game-container {
+            width: 90%;
+            max-width: 650px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 12px 30px rgba(28, 78, 58, 0.08);
+            z-index: 10;
+            position: relative;
+            display: none;
+            border: 3px solid var(--primary);
+        }
+
+        .game-container.active {
+            display: block;
+            animation: slideInUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header UI Components */
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .timer-box {
+            background: #FFF3CD;
+            color: #856404;
+            padding: 6px 14px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border: 1px solid #ffeeba;
+        }
+
+        /* Progress Bar - Vine/Jungle Trail Simulation */
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: #e8f5e9;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid #c8e6c9;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            transition: width 0.4s ease;
+        }
+
+        /* Question and Options layouts */
+        .question-text {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 25px;
+            line-height: 1.5;
+            font-weight: bold;
+        }
+
+        .context-box {
+            background: var(--primary-light);
+            border-left: 5px solid var(--secondary);
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-style: italic;
+            font-size: 1.05rem;
+            color: #2E7D32;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+
+        .option-card {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 18px 22px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .option-card:hover:not(.disabled) {
+            border-color: var(--secondary);
+            background: #FFFDF3;
+            transform: scale(1.02);
+        }
+
+        .option-card.selected-wrong {
+            border-color: var(--wrong);
+            background: #FDEDEC;
+            color: var(--wrong);
+            animation: extremeShake 0.4s ease-in-out;
+        }
+
+        .option-card.revealed-correct {
+            border-color: #2ECC71;
+            background: #E8F8F5;
+            color: #117A65;
+        }
+
+        .option-card.disabled {
+            pointer-events: none;
+        }
+
+        /* Indicators */
+        .indicator-icon {
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        /* Feedback and Action panel */
+        .feedback-panel {
+            background: #FCF3CF;
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            border: 2px dashed var(--secondary);
+            display: none;
+        }
+
+        .feedback-title {
+            font-weight: 900;
+            font-size: 1.15rem;
+            margin-bottom: 5px;
+        }
+
+        .feedback-title.wrong-info { color: var(--wrong); }
+        .feedback-title.correct-info { color: #117A65; }
+
+        .action-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .action-btn:hover {
+            background: #113024;
+            transform: translateY(-2px);
+        }
+
+        /* Screens specific configs */
+        .intro-screen, .result-screen {
+            text-align: center;
+        }
+
+        .intro-title {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 900;
+        }
+
+        .intro-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-light);
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .badge-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        /* Animations */
+        @keyframes extremeShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .confetti-star {
+            position: absolute;
+            color: var(--secondary);
+            font-size: 1.8rem;
+            pointer-events: none;
+            animation: burst 0.8s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            z-index: 100;
+        }
+
+        @keyframes burst {
+            0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0) rotate(360deg); opacity: 0; }
+        }
+
+        /* Result Styles */
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 25px auto;
+            font-size: 2.2rem;
+            font-weight: 900;
+            border: 5px solid var(--secondary);
+        }
+
+        .score-lbl { font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; margin-top: 2px; font-weight: bold;}
+
+        /* Mobile Adjustments */
+        @media(max-width: 600px) {
+            .game-container { padding: 25px 15px; width: 95%; }
+            .question-text { font-size: 1.15rem; }
+            .option-card { font-size: 1rem; padding: 14px 16px; }
+            .intro-title { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="ambient-symbol" style="top: 10%; left: 6%; animation-delay: 0s;">A</div>
+        <div class="ambient-symbol" style="top: 65%; left: 10%; animation-delay: 3s;">An</div>
+        <div class="ambient-symbol" style="top: 20%; right: 8%; animation-delay: 2s;">The</div>
+        <div class="ambient-symbol" style="top: 75%; right: 14%; animation-delay: 5s;">A</div>
+        <div class="ambient-symbol" style="top: 40%; left: 50%; animation-delay: 1s;">An</div>
+    </div>
+
+    <div id="splash-screen">
+        <img src="g2/chp10/articles/assets/logo.png" alt="Innovine Logo" class="branding-logo" onerror="this.style.display='none';">
+    </div>
+
+    <div id="intro-card" class="game-container">
+        <div class="intro-screen">
+            <h1 class="intro-title">Articles Safari Quest</h1>
+            <p class="intro-subtitle">Hunt down the correct map paths using the pointing markers: A, An, and The!</p>
+            
+            <div class="badge-grid">
+                <span class="badge">Grade 2</span>
+                <span class="badge">English Grammar</span>
+                <span class="badge">15 Level Map</span>
+            </div>
+
+            <button class="action-btn" style="display: block; background-color: var(--primary);" onclick="startQuiz()">Launch Expedition</button>
+        </div>
+    </div>
+
+    <div id="quiz-card" class="game-container">
+        <div class="quiz-meta">
+            <span id="question-index-counter">Level 1 of 15</span>
+            <div class="timer-box">
+                ⏱️ <span id="timer-countdown">60</span>s
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div id="progress-indicator-line" class="progress-bar"></div>
+        </div>
+
+        <div id="context-wrapper" class="context-box" style="display: none;"></div>
+        <div id="question-text-field" class="question-text"></div>
+
+        <div id="options-wrapper-element" class="options-grid"></div>
+
+        <div id="feedback-panel-element" class="feedback-panel">
+            <div id="feedback-title-text" class="feedback-title"></div>
+            <div id="feedback-explanation-body"></div>
+        </div>
+
+        <button id="action-control-button" class="action-btn" onclick="handleActionClick()"></button>
+    </div>
+
+    <div id="result-card" class="game-container">
+        <div class="result-screen">
+            <h1 class="intro-title" id="completion-greeting">Safari Complete!</h1>
+            <p class="intro-subtitle">You mapped out all article structures perfectly across the landscape.</p>
+            
+            <div class="score-circle">
+                <span id="final-score-display">0/15</span>
+                <div class="score-lbl">Map Points</div>
+            </div>
+
+            <p id="performance-feedback-text" style="margin-bottom: 25px; color: var(--text-dark); font-weight: bold;"></p>
+
+            <button class="action-btn" style="display: block; background-color: var(--secondary); color: var(--primary);" onclick="restartQuiz()">Re-run Safari Trail</button>
+        </div>
+    </div>
+
+    <audio id="audio-correct" src="g2/chp10/articles/assets/correct.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="g2/chp10/articles/assets/wrong.mp3" preload="auto"></audio>
+    <audio id="audio-applause" src="g2/chp10/articles/assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+    <script>
+        // Competency Curated Articles Database (A / An / The Matrix)
+        const quizDatabase = [
+            {
+                type: "Experience-Based MCQ (School Picnic)",
+                context: "You are telling your friend about something exciting that happened during a picnic.",
+                question: "Which sentence sounds most appropriate?",
+                options: ["We saw an elephant near the river.", "We saw a elephant near the river.", "We saw the elephant near any river.", "We saw elephant near the river."],
+                answer: 0,
+                explanation: "'Elephant' starts with an 'E' vowel sound, so it must pair with 'an' when introducing it for the first time."
+            },
+            {
+                type: "Odd One Out (Article Use)",
+                question: "Which sentence uses its article differently from the others?",
+                options: ["I carried a water bottle to school.", "My brother bought a cricket bat.", "We planted a sapling during Earth Day.", "The Sun was shining brightly."],
+                answer: 3,
+                explanation: "Options a, b, and c use general articles ('a') for common items. Option d uses 'The' because the Sun is a unique object."
+            },
+            {
+                type: "Reasoning MCQ",
+                context: "A child says: 'I wrote \"an umbrella\" in my rainy-day diary.'",
+                question: "Why is this a good choice?",
+                options: ["Because \"umbrella\" begins with a vowel sound", "Because all weather words take \"an\"", "Because umbrellas are always singular", "Because \"an\" is used for things used outdoors"],
+                answer: 0,
+                explanation: "The word 'umbrella' starts with a short 'U' vowel sound, making 'an' the correct structural helper."
+            },
+            {
+                type: "Experience-Based MCQ (Birthday Celebration)",
+                context: "You are showing guests a special cake made for your birthday.",
+                question: "Which sentence would you most likely say?",
+                options: ["Look at a cake!", "Look at the cake!", "Look at an cake!", "Look at cake!"],
+                answer: 1,
+                explanation: "You are drawing attention to one specific, unique birthday cake right in front of everyone, which requires 'the'."
+            },
+            {
+                type: "Assertion–Reason MCQ",
+                context: "Statement: We write \"an orange\".\nReason: \"Orange\" begins with a vowel sound.",
+                question: "Choose the correct option:",
+                options: ["The reason is correct and explains the statement", "The reason is correct but does not explain the statement", "The reason is wrong but the statement is correct", "Both the reason and the statement are wrong"],
+                answer: 0,
+                explanation: "The statement and reason match perfectly. 'Orange' begins with an 'O' vowel sound, so 'an' is required."
+            },
+            {
+                type: "NOT Correct Understanding (Healthy Habits Context)",
+                question: "Which sentence shows incorrect understanding of articles?",
+                options: ["I drink a glass of milk every morning.", "I packed an orange in my lunch box.", "I wear a uniform to school.", "I ate a ice cream after dinner."],
+                answer: 3,
+                explanation: "'Ice cream' starts with an 'I' vowel sound, meaning it must use 'an ice cream' instead of 'a'."
+            },
+            {
+                type: "Purpose-Based Reasoning MCQ",
+                question: "Which sentence shows correct understanding of articles?",
+                options: ["I would use \"the\" when talking about a specific library that everyone knows.", "I would use \"a\" for the Moon.", "I would use \"an\" before \"book\".", "I would use \"the\" before every noun."],
+                answer: 0,
+                explanation: "We use 'the' when referencing a specific, distinct place that the listener already knows about."
+            },
+            {
+                type: "Error Detection MCQ (Personal Context)",
+                context: "A child writes about their weekend.",
+                question: "Which sentence contains an article error?",
+                options: ["I visited a museum with my cousins.", "I bought an ice cream after the visit.", "I saw the dinosaur model in the museum.", "I took an bicycle ride in the evening."],
+                answer: 3,
+                explanation: "'Bicycle' starts with a consonant 'B' sound. It should be written as 'a bicycle ride', not 'an'."
+            },
+            {
+                type: "Experience-Based MCQ (Family Trip)",
+                context: "Your family is visiting a fort. The guide points to the main entrance that everyone will use.",
+                question: "Which sentence would best fit the situation?",
+                options: ["We will enter through a gate.", "We will enter through an gate.", "We will enter through the gate.", "We will enter through gate."],
+                answer: 2,
+                explanation: "Since the guide points out one particular main entrance gate that everyone must use, 'the' is correct."
+            },
+            {
+                type: "Case-Based MCQ",
+                context: "A child writes in a journal: 'I found a interesting shell on the beach.'",
+                question: "What should be corrected?",
+                options: ["found → find", "a → an", "shell → shells", "beach → beaches"],
+                answer: 1,
+                explanation: "'Interesting' starts with an 'I' vowel sound, so the article must be changed from 'a' to 'an'."
+            },
+            {
+                type: "Experience-Based MCQ (Reading Habit)",
+                context: "You are recommending a storybook to a friend who has never seen it before.",
+                question: "Which sentence would you most likely say?",
+                options: ["You should read a wonderful storybook I found.", "You should read an wonderful storybook I found.", "You should read the wonderful storybook in the world.", "You should read wonderful storybook I found."],
+                answer: 0,
+                explanation: "You are introducing a general single recommendation to your friend, and 'wonderful' starts with a consonant 'W' sound."
+            },
+            {
+                type: "Odd One Out (Article Purpose)",
+                question: "Which sentence uses \"the\" for a different reason from the others?",
+                options: ["The Earth moves around the Sun.", "The principal addressed the assembly.", "The Taj Mahal attracts visitors from around the world.", "The pencil on my desk belongs to me."],
+                answer: 2,
+                explanation: "Options a, b, and c use 'the' for unique global entities or positions. Option d uses 'the' to pick out one specific object nearby based on context."
+            },
+            {
+                type: "Reasoning MCQ",
+                context: "Sentence: 'I saw a peacock during our village visit.'",
+                question: "Why is \"a\" used in this sentence?",
+                options: ["Because the speaker is mentioning one peacock that has not been identified before", "Because all birds take \"a\"", "Because peacock begins with a consonant sound only", "Because village visits always use \"a\""],
+                answer: 0,
+                explanation: "We use 'a' here because we are bringing up one general peacock for the first time in the conversation."
+            },
+            {
+                type: "Assertion–Reason MCQ",
+                context: "Statement: We write \"the Red Fort\".\nReason: \"The\" is often used with specific famous places that everyone can identify.",
+                question: "Choose the correct option:",
+                options: ["Both are correct and the reason explains the statement", "Both are correct but not related", "Statement is correct, reason is wrong", "Statement is wrong, reason is correct"],
+                answer: 0,
+                explanation: "Famous historical landmarks are specific and well-known, which is exactly why they require the article 'the'."
+            },
+            {
+                type: "Experience-Based MCQ (Helping Others)",
+                context: "Your neighbour asks for a bandage because they have a small cut. You hand one to them.",
+                question: "Which sentence would you most likely say?",
+                options: ["Here is bandage.", "Here is the bandage.", "Here is an bandage.", "Here is bandages."],
+                answer: 1,
+                explanation: "Since you are handing over the exact, specific bandage that your neighbor asked for, it takes 'the'."
+            }
+        ];
+
+        // State Machine Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval = null;
+        let timeRemaining = 60; 
+        let attemptsMade = 0;
+        let finalChallengeActive = false;
+
+        // Sound Player Wrapper with safety mitigation
+        function safePlayAudio(elementId) {
+            const audio = document.getElementById(elementId);
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log("Audio output handled safely."));
+            }
+        }
+
+        // Failsafe Initializer Sequence
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.opacity = 0;
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        const introCard = document.getElementById('intro-card');
+                        if (introCard) introCard.classList.add('active');
+                    }, 500);
+                }
+            }, 5000); 
+        });
+
+        // Initialize and Start Quiz
+        function startQuiz() {
+            document.getElementById('intro-card').classList.remove('active');
+            document.getElementById('quiz-card').classList.add('active');
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        // Build Question Template Card dynamically
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            timeRemaining = 60;
+            attemptsMade = 0;
+            finalChallengeActive = (currentQuestionIndex === quizDatabase.length - 1);
+            
+            document.getElementById('timer-countdown').innerText = timeRemaining;
+            document.getElementById('question-index-counter').innerText = `Level ${currentQuestionIndex + 1} of ${quizDatabase.length} ${finalChallengeActive ? '🔥 FINAL MAP' : ''}`;
+            
+            // Advance Progress UI line
+            const percentage = ((currentQuestionIndex) / quizDatabase.length) * 100;
+            document.getElementById('progress-indicator-line').style.width = `${percentage}%`;
+
+            const currentData = quizDatabase[currentQuestionIndex];
+            
+            // Context conditional renderer
+            const contextEl = document.getElementById('context-wrapper');
+            if (currentData.context) {
+                contextEl.innerText = currentData.context;
+                contextEl.style.display = 'block';
+            } else {
+                contextEl.style.display = 'none';
+            }
+
+            document.getElementById('question-text-field').innerText = currentData.question;
+            
+            // Generate clean selection cards
+            const optionsWrapper = document.getElementById('options-wrapper-element');
+            optionsWrapper.innerHTML = '';
+            
+            currentData.options.forEach((option, index) => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.innerHTML = `<span>${option}</span><span class="indicator-icon" id="ind-${index}"></span>`;
+                card.onclick = () => selectOption(index);
+                optionsWrapper.appendChild(card);
+            });
+
+            // Clean up interaction drawers
+            document.getElementById('feedback-panel-element').style.display = 'none';
+            document.getElementById('action-control-button').style.display = 'none';
+
+            // Start countdown timer ticker
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                document.getElementById('timer-countdown').innerText = timeRemaining;
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeoutBreakdown();
+                }
+            }, 1000);
+        }
+
+        // Process Interactive Selection Core Logic
+        function selectOption(selectedIndex) {
+            const currentData = quizDatabase[currentQuestionIndex];
+            const cards = document.getElementsByClassName('option-card');
+            
+            // Correct Track Sequence Match
+            if (selectedIndex === currentData.answer) {
+                clearInterval(timerInterval);
+                safePlayAudio('audio-correct');
+                cards[selectedIndex].classList.add('revealed-correct');
+                document.getElementById(`ind-${selectedIndex}`).innerHTML = '👑';
+                triggerConfettiBurst(cards[selectedIndex]);
+                
+                if (attemptsMade === 0) {
+                    score++;
+                }
+                
+                displaySystemFeedback(true);
+            } 
+            // Incorrect Track Sequence Match
+            else {
+                attemptsMade++;
+                safePlayAudio('audio-wrong');
+                cards[selectedIndex].classList.add('selected-wrong');
+                document.getElementById(`ind-${selectedIndex}`).innerHTML = '❌';
+                cards[selectedIndex].classList.add('disabled'); 
+
+                if (attemptsMade === 1) {
+                    alert("Not quite right! Listen to the starting sound of the word or check if it is a specific, special object, then try again!");
+                    cards[selectedIndex].classList.remove('selected-wrong');
+                } else {
+                    clearInterval(timerInterval);
+                    cards[currentData.answer].classList.add('revealed-correct');
+                    document.getElementById(`ind-${currentData.answer}`).innerHTML = '👑';
+                    displaySystemFeedback(false);
+                }
+            }
+        }
+
+        // Handle structural timeouts
+        function handleTimeoutBreakdown() {
+            const currentData = quizDatabase[currentQuestionIndex];
+            const cards = document.getElementsByClassName('option-card');
+            
+            for(let card of cards) { card.classList.add('disabled'); }
+            
+            cards[currentData.answer].classList.add('revealed-correct');
+            document.getElementById(`ind-${currentData.answer}`).innerHTML = '👑';
+            
+            safePlayAudio('audio-wrong');
+            
+            const titleEl = document.getElementById('feedback-title-text');
+            const panelEl = document.getElementById('feedback-panel-element');
+            const bodyEl = document.getElementById('feedback-explanation-body');
+            
+            titleEl.className = "feedback-title wrong-info";
+            titleEl.innerText = "⏳ Time Ran Out!";
+            bodyEl.innerText = currentData.explanation;
+            panelEl.style.display = 'block';
+            
+            configureActionControlState();
+        }
+
+        // Render Panel feedback explanations nicely
+        function displaySystemFeedback(isCorrect) {
+            const currentData = quizDatabase[currentQuestionIndex];
+            const titleEl = document.getElementById('feedback-title-text');
+            const panelEl = document.getElementById('feedback-panel-element');
+            const bodyEl = document.getElementById('feedback-explanation-body');
+            const cards = document.getElementsByClassName('option-card');
+
+            for(let card of cards) { card.classList.add('disabled'); }
+
+            if (isCorrect) {
+                titleEl.className = "feedback-title correct-info";
+                titleEl.innerText = "🌟 Golden Discovery!";
+            } else {
+                titleEl.className = "feedback-title wrong-info";
+                titleEl.innerText = "🗺️ Compass Correction!";
+            }
+
+            bodyEl.innerText = currentData.explanation;
+            panelEl.style.display = 'block';
+            
+            configureActionControlState();
+        }
+
+        // Toggle button states to control pagination steps
+        function configureActionControlState() {
+            const btn = document.getElementById('action-control-button');
+            if (finalChallengeActive) {
+                btn.innerText = "Claim Ultimate Treasure 🏆";
+            } else {
+                btn.innerText = "Move to Next Landmark ➡️";
+            }
+            btn.style.display = 'block';
+        }
+
+        // Route actions depending on state sequence positioning
+        function handleActionClick() {
+            if (finalChallengeActive) {
+                renderResultsScreen();
+            } else {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        // Star confetti visual effects layer
+        function triggerConfettiBurst(targetElement) {
+            const bounds = targetElement.getBoundingClientRect();
+            for (let i = 0; i < 12; i++) {
+                const star = document.createElement('div');
+                star.className = 'confetti-star';
+                star.innerHTML = '★';
+                star.style.left = `${bounds.left + (bounds.width / 2)}px`;
+                star.style.top = `${bounds.top + (bounds.height / 2)}px`;
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 50 + Math.random() * 90;
+                star.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+                star.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+                
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), 800);
+            }
+        }
+
+        // Final score calculation view rendering
+        function renderResultsScreen() {
+            document.getElementById('quiz-card').classList.remove('active');
+            document.getElementById('result-card').classList.add('active');
+            
+            document.getElementById('progress-indicator-line').style.width = `100%`;
+            document.getElementById('final-score-display').innerText = `${score}/${quizDatabase.length}`;
+            
+            const messageEl = document.getElementById('performance-feedback-text');
+            const headingEl = document.getElementById('completion-greeting');
+            
+            if (score === quizDatabase.length) {
+                headingEl.innerText = "👑 Grand Master Cartographer!";
+                messageEl.innerText = "Flawless mapping expedition! You understand the precise differences between general and specific articles completely.";
+                safePlayAudio('audio-applause');
+            } else if (score >= 11) {
+                headingEl.innerText = "🗺️ Expert Navigator!";
+                messageEl.innerText = "Incredible job! You navigated almost every vowel sound and hidden rule smoothly. You are ready for any text terrain.";
+                safePlayAudio('audio-applause');
+            } else {
+                headingEl.innerText = "⛺ Elite Camper!";
+                messageEl.innerText = "Good effort on the safari trail! Retrying the trek will help lock down those tricky vowel sound exceptions permanently.";
+            }
+        }
+
+        // Reset runtime matrices for fresh attempts
+        function restartQuiz() {
+            document.getElementById('result-card').classList.remove('active');
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
