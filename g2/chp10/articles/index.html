@@ -60,25 +60,40 @@
             50% { transform: translateY(-30px) translateX(15px) rotate(20deg); }
         }
 
-        /* Branding Logo Placement - Permanent, visible layout header asset */
-        .branding-header {
+        /* 5-Second Splash Screen Overlay */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            text-align: center;
-            margin-bottom: 20px;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.5s ease;
         }
 
         .branding-logo {
-            max-width: 160px;
+            max-width: 220px;
             height: auto;
+            animation: pulseLogo 2s infinite ease-in-out;
         }
 
-        /* Game Containers - Styled like an Explorer's Journal Chart */
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Game Containers - Explorer's Journal Chart Style */
         .game-container {
             width: 90%;
             max-width: 650px;
             background: #ffffff;
             border-radius: 24px;
-            padding: 35px 30px;
+            padding: 40px 30px;
             box-shadow: 0 12px 30px rgba(28, 78, 58, 0.08);
             z-index: 10;
             position: relative;
@@ -118,7 +133,7 @@
             border: 1px solid #ffeeba;
         }
 
-        /* Progress Bar - Vine/Jungle Trail Simulation */
+        /* Progress Bar - Jungle Trail Simulation */
         .progress-container {
             width: 100%;
             height: 12px;
@@ -340,10 +355,11 @@
         <div class="ambient-symbol" style="top: 40%; left: 50%; animation-delay: 1s;">An</div>
     </div>
 
-    <div id="intro-card" class="game-container active">
-        <div class="branding-header">
-            <img src="g2/chp10/articles/assets/logo.png" alt="Innovine Logo" class="branding-logo">
-        </div>
+    <div id="splash-screen">
+        <img src="g2/chp10/articles/assets/logo.png" alt="Innovine Logo" class="branding-logo">
+    </div>
+
+    <div id="intro-card" class="game-container">
         <div class="intro-screen">
             <h1 class="intro-title">Articles Safari Quest</h1>
             <p class="intro-subtitle">Hunt down the correct map paths using the pointing markers: A, An, and The!</p>
@@ -359,9 +375,6 @@
     </div>
 
     <div id="quiz-card" class="game-container">
-        <div class="branding-header">
-            <img src="g2/chp10/articles/assets/logo.png" alt="Innovine Logo" class="branding-logo">
-        </div>
         <div class="quiz-meta">
             <span id="question-index-counter">Level 1 of 15</span>
             <div class="timer-box">
@@ -383,13 +396,10 @@
             <div id="feedback-explanation-body"></div>
         </div>
 
-        <button id="action-control-button" class="action-btn" onclick="handleActionClick()"></button>
+        <button id="id-action-control" class="action-btn" onclick="handleActionClick()"></button>
     </div>
 
     <div id="result-card" class="game-container">
-        <div class="branding-header">
-            <img src="g2/chp10/articles/assets/logo.png" alt="Innovine Logo" class="branding-logo">
-        </div>
         <div class="result-screen">
             <h1 class="intro-title" id="completion-greeting">Safari Complete!</h1>
             <p class="intro-subtitle">You mapped out all article structures perfectly across the landscape.</p>
@@ -543,9 +553,24 @@
             const audio = document.getElementById(elementId);
             if (audio) {
                 audio.currentTime = 0;
-                audio.play().catch(e => console.log("Audio output handled safely."));
+                audio.play().catch(e => console.log("Audio play postponed pending user gesture interaction."));
             }
         }
+
+        // Failsafe 5-Second Splash Screen Sequence
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                if (splash) {
+                    splash.style.transform = 'translateY(-100%)';
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        const introCard = document.getElementById('intro-card');
+                        if (introCard) introCard.classList.add('active');
+                    }, 600);
+                }
+            }, 5000); // Strict 5-second hold countdown sequence
+        });
 
         // Initialize and Start Quiz
         function startQuiz() {
@@ -597,7 +622,7 @@
 
             // Clean up interaction drawers
             document.getElementById('feedback-panel-element').style.display = 'none';
-            document.getElementById('action-control-button').style.display = 'none';
+            document.getElementById('id-action-control').style.display = 'none';
 
             // Start countdown timer ticker
             timerInterval = setInterval(() => {
@@ -699,7 +724,7 @@
 
         // Toggle button states to control pagination steps
         function configureActionControlState() {
-            const btn = document.getElementById('action-control-button');
+            const btn = document.getElementById('id-action-control');
             if (finalChallengeActive) {
                 btn.innerText = "Claim Ultimate Treasure 🏆";
             } else {
