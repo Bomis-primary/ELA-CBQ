@@ -97,7 +97,7 @@
         /* Intro Screen */
         #intro-screen {
             text-align: center;
-            padding: 40px 10px;
+            padding: 50px 10px;
         }
 
         .logo-placeholder {
@@ -109,24 +109,12 @@
         }
 
         /* Question Layout */
-        .question-type-badge {
-            display: inline-block;
-            background: #EBF8FF;
-            color: #2B6CB0;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            padding: 4px 10px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
         .question-text {
             font-size: 1.2rem;
             line-height: 1.5;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            margin-top: 10px;
         }
 
         .options-grid {
@@ -288,12 +276,10 @@
 
     <div id="intro-screen" class="screen active">
         <img src="assets/logo.png" alt="Innovine Logo" class="logo-placeholder" onerror="this.style.display='none'">
-        <h2 style="font-size: 1.6rem; margin-bottom: 10px;">English Grammar Interactive</h2>
-        <p style="font-size: 0.9rem; color: var(--text-light);">Loading questions...</p>
+        <h2 style="font-size: 1.6rem;">English Grammar Interactive</h2>
     </div>
 
     <div id="quiz-screen" class="screen">
-        <div id="badge" class="question-type-badge"></div>
         <div id="question" class="question-text"></div>
         <div id="options" class="options-grid"></div>
         
@@ -312,13 +298,12 @@
     </div>
 </div>
 
-<audio id="snd-correct" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="snd-correct" src="assets/claps.mp3" preload="auto"></audio>
 <audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
 
 <script>
     const questions = [
         {
-            type: "Experience-Based MCQ",
             q: "Your team came first in the relay race. Later, you tell your grandparents about it. Which sentence would you most likely say?",
             options: ["Our team won the race.", "Our team one the race.", "Our team race the won.", "Our team winner the race."],
             answer: 0,
@@ -326,7 +311,6 @@
             exp: "'Won' means to achieve first place in a competition, whereas 'one' represents the number 1."
         },
         {
-            type: "Odd One Out",
             q: "Which sentence uses the highlighted word differently from the others?",
             options: ["I can see the rainbow after the rain.", "We can see the fishing boats from the beach.", "I want to see the new library.", "The sea was calm in the morning."],
             answer: 3,
@@ -334,7 +318,6 @@
             exp: "'Sea' means a body of salt water, while 'see' in the other three choices means using your sight."
         },
         {
-            type: "Reasoning MCQ",
             q: "A child says: 'I used \"pear\" when writing about the fruit in my lunch box.' Why is this a good choice?",
             options: ["Because \"pear\" names a fruit", "Because \"pear\" means two things together", "Because all fruits are called pears", "Because \"pear\" means to look at something"],
             answer: 0,
@@ -342,7 +325,6 @@
             exp: "'Pear' is correctly spelled to mean the sweet juicy fruit, while a matching set of two items is spelled 'pair'."
         },
         {
-            type: "Experience-Based MCQ",
             q: "You have finished your drawing and need to put your name on it. Which sentence would you most likely hear from your teacher?",
             options: ["Write your name neatly.", "Right your name neatly.", "Won your name neatly.", "Hear your name neatly."],
             answer: 0,
@@ -350,7 +332,6 @@
             exp: "'Write' means forming words on a page, while 'right' refers to a correct answer or a direction."
         },
         {
-            type: "Assertion–Reason MCQ",
             q: "Statement: 'Bee' and 'be' are homophones.<br><br>Reason: They sound the same but have different meanings.",
             options: ["The reason is correct and explains the statement.", "The reason is correct but does not explain the statement.", "The reason is wrong but the statement is correct.", "Both the reason and the statement are wrong."],
             answer: 0,
@@ -358,7 +339,6 @@
             exp: "Both statements are completely correct. Homophones are words that sound identical but hold different spellings and definitions."
         },
         {
-            type: "NOT Correct Understanding",
             q: "Which sentence shows incorrect understanding of homophones?",
             options: ["We went to the sea during our holiday.", "I can see the lighthouse from here.", "My father can sea the lighthouse clearly.", "The sea was full of fishing boats."],
             answer: 2,
@@ -366,7 +346,6 @@
             exp: "Using 'sea' to describe looking at a lighthouse is incorrect. The sentence should use 'see' instead."
         },
         {
-            type: "Purpose-Based Reasoning MCQ",
             q: "Which sentence shows correct understanding of homophones?",
             options: ["I would use \"here\" when talking about a place where I am standing.", "I would use \"hear\" when talking about my location.", "I would use \"sea\" when talking about looking at something.", "I would use \"write\" when talking about a direction."],
             answer: 0,
@@ -374,7 +353,6 @@
             exp: "'Here' refers to a current location or spot, whereas 'hear' means listening with your ears."
         },
         {
-            type: "Error Detection MCQ",
             q: "A child writes about helping in the kitchen. Which sentence is incorrect?",
             options: ["I ate a pear after dinner.", "My sister wore a matching pair of socks.", "We kept the fruit basket near the window.", "I packed a pair in my lunch box."],
             answer: 3,
@@ -382,7 +360,6 @@
             exp: "A delicious fruit is a 'pear'. Writing 'I packed a pair' is an incorrect framework for a fruit."
         },
         {
-            type: "Experience-Based MCQ",
             q: "The principal gives an important announcement. Which sentence would best fit the situation?",
             options: ["Please hear carefully.", "Please here carefully.", "Please hearing carefully.", "Please hears carefully."],
             answer: 0,
@@ -390,7 +367,6 @@
             exp: "'Hear' is the action of listening, while 'here' points to a physical location."
         },
         {
-            type: "Case-Based MCQ",
             q: "A child writes: 'My older son helped me solve the maths problem.' The child wants to talk about daylight and warm weather. What should be corrected?",
             options: ["older → oldest", "son → sun", "helped → helps", "problem → problems"],
             answer: 1,
@@ -398,7 +374,6 @@
             exp: "Changing 'son' (a family child) to 'sun' correctly frames the daylight and hot outdoor weather."
         },
         {
-            type: "Experience-Based MCQ",
             q: "During a treasure hunt, your friend points to the correct path. Which sentence would you most likely hear?",
             options: ["Turn right at the big tree.", "Turn write at the big tree.", "Turn won at the big tree.", "Turn pair at the big tree."],
             answer: 0,
@@ -406,7 +381,6 @@
             exp: "'Right' denotes a physical direction or correct choice, whereas 'write' implies penning words down."
         },
         {
-            type: "Odd One Out",
             q: "Which sentence does not belong with the others?",
             options: ["The bee landed on a flower.", "The bee collected nectar.", "We watched the bee near the garden gate.", "I want to be a doctor when I grow up."],
             answer: 3,
@@ -414,15 +388,13 @@
             exp: "The last choice uses 'be' as an action verb for growing up, whereas the other three refer to the buzzing insect 'bee'."
         },
         {
-            type: "Reasoning MCQ",
             q: "Why is 'two' used in this sentence: 'I bought two notebooks from the book fair.'?",
-            options: ["Because the sentence talks about the number 2", "Because the sentence talks about movement", "Because the sentence talks about a place", "Because the sentence talks about winning"],
+            options: ["Beautiful the sentence talks about the number 2", "Because the sentence talks about movement", "Because the sentence talks about a place", "Because the sentence talks about winning"],
             answer: 0,
             hint: "What does 't-w-o' specifically measure or describe?",
             exp: "'Two' represents the numerical digit 2, while 'to' denotes direction/movement and 'too' means also."
         },
         {
-            type: "Assertion–Reason MCQ",
             q: "Statement: 'Here is your water bottle' uses the correct homophone.<br><br>Reason: 'Here' refers to a place or position.",
             options: ["Both are correct and the reason explains the statement.", "Both are correct but not related.", "Statement is correct, reason is wrong.", "Statement is wrong, reason is correct."],
             answer: 0,
@@ -430,7 +402,6 @@
             exp: "The location tracking word 'here' is perfectly used in this structural setup to show where the object is placed."
         },
         {
-            type: "Experience-Based MCQ",
             q: "During a nature walk, your guide points to an insect collecting nectar. Which sentence would be most suitable?",
             options: ["The bee is collecting nectar.", "The be is collecting nectar.", "The here is collecting nectar.", "The pair is collecting nectar."],
             answer: 0,
@@ -454,7 +425,6 @@
     const progressBar = document.getElementById('progress-bar');
     const scoreTracker = document.getElementById('score-tracker');
     const timerElement = document.getElementById('timer');
-    const badgeElement = document.getElementById('badge');
     const questionElement = document.getElementById('question');
     const optionsElement = document.getElementById('options');
     const feedbackElement = document.getElementById('feedback');
@@ -481,7 +451,6 @@
         nextBtn.style.display = 'none';
         
         const qData = questions[currentIdx];
-        badgeElement.textContent = qData.type;
         questionElement.innerHTML = qData.q;
         optionsElement.innerHTML = '';
         
