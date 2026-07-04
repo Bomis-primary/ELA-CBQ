@@ -356,7 +356,7 @@
     </div>
 
     <div id="splash-screen">
-        <img src="g2/chp10/articles/assets/logo.png" alt="Innovine Logo" class="branding-logo">
+        <img src="logo.png" alt="Innovine Logo" class="branding-logo">
     </div>
 
     <div id="intro-card" class="game-container">
@@ -415,9 +415,9 @@
         </div>
     </div>
 
-    <audio id="audio-correct" src="g2/chp10/articles/assets/correct.mp3" preload="auto"></audio>
-    <audio id="audio-wrong" src="g2/chp10/articles/assets/wrong.mp3" preload="auto"></audio>
-    <audio id="audio-applause" src="g2/chp10/articles/assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+    <audio id="audio-correct" src="correct.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="wrong.mp3" preload="auto"></audio>
+    <audio id="audio-applause" src="freesound_community-claps-44774.mp3" preload="auto"></audio>
 
     <script>
         // Competency Curated Articles Database (A / An / The Matrix)
@@ -553,7 +553,7 @@
             const audio = document.getElementById(elementId);
             if (audio) {
                 audio.currentTime = 0;
-                audio.play().catch(e => console.log("Audio play postponed pending user gesture interaction."));
+                audio.play().catch(e => console.log("Audio waiting for player interaction context."));
             }
         }
 
