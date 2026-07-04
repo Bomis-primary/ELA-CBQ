@@ -1,1 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Conjunctions Interactive</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --warning: #F1C40F;
+            --dark: #2C3E50;
+            --light: #F8F9FA;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #EBF2FA;
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Screens management */
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            padding: 25px;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Intro Screen (Logo) */
+        #logo-screen {
+            justify-content: center;
+            align-items: center;
+            background: white;
+        }
+
+        .logo-img {
+            max-width: 250px;
+            height: auto;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* Welcome Screen */
+        #welcome-screen {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+
+        .instructions {
+            font-size: 16px;
+            margin-bottom: 30px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Game Header Utilities */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #EEF2F5;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            font-weight: bold;
+            font-size: 14px;
+            background: #EDF4FC;
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: var(--primary);
+        }
+
+        #timer {
+            background: #FDF2E9;
+            color: #E67E22;
+        }
+
+        #timer.warning {
+            background: #FDEDEC;
+            color: var(--error);
+            animation: shake 0.5s infinite;
+        }
+
+        /* Question Area */
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: var(--light);
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #EDF4FC;
+            border-color: var(--primary);
+        }
+
+        .option-btn.correct {
+            background: #E8F8F5;
+            border-color: var(--success);
+            color: #117A65;
+        }
+
+        .option-btn.wrong {
+            background: #FCE4D6;
+            border-color: var(--error);
+            color: #C0392B;
+        }
+
+        /* Feedback UI */
+        .feedback-box {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: 500;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .feedback-box.hint {
+            background-color: #FEF9E7;
+            border-left: 5px solid var(--warning);
+            color: #7D6608;
+            display: block;
+        }
+
+        .feedback-box.explanation {
+            background-color: #EBF5FB;
+            border-left: 5px solid var(--primary);
+            color: #1B4F72;
+            display: block;
+        }
+
+        /* Primary Controls */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(74, 144, 226, 0.2);
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #CBD5E1;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .action-container {
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* Audio controls toggle */
+        .audio-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* Final Results view */
+        .result-card {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+
+        .msg-box {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--dark);
+        }
+
+        /* Celebratory effects container */
+        #confetti-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        /* Mobile Layout tweaks */
+        @media (max-width: 480px) {
+            h1 { font-size: 22px; }
+            .question-text { font-size: 16px; }
+            .option-btn { font-size: 15px; padding: 12px; }
+            .screen { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <button class="audio-toggle" id="mute-btn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+        <canvas id="confetti-canvas"></canvas>
+
+        <div id="logo-screen" class="screen active">
+            <img class="logo-img" src="grade-2/english/conjunctions/assets/innovine-logo.png" alt="Innovine Logo">
+        </div>
+
+        <div id="welcome-screen" class="screen">
+            <h1>Joining Words Fun!</h1>
+            <p class="instructions">
+                Welcome! Let's complete a quest all about <strong>and, or, but,</strong> and <strong>because</strong>.<br><br>
+                You will have 60 seconds to solve each question. If you make a mistake, don't worry! You get a hint and one more chance to try again.
+            </p>
+            <button class="btn" onclick="startQuiz()">Start Learning Journey</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="game-header">
+                <span id="progress-indicator" class="status-item">Question 1/15</span>
+                <span id="timer" class="status-item">Time Left: 60s</span>
+                <span id="score-tracker" class="status-item">Score: 0</span>
+            </div>
+            
+            <div id="question-box">
+                <p class="question-text" id="question-text">Question goes here?</p>
+                <div class="options-grid" id="options-container">
+                    </div>
+            </div>
+
+            <div class="feedback-box" id="feedback-message"></div>
+
+            <div class="action-container">
+                <button class="btn" id="next-btn" onclick="handleNextStep()" disabled>Check Answer</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <div class="result-card">
+                <h1>Your Quest Complete!</h1>
+                <div class="score-display" id="final-score">0 / 15</div>
+                <div class="msg-box" id="result-message">Feedback text goes here.</div>
+                <button class="btn" onclick="resetQuiz()">Try Chapter Again</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="snd-correct" src="grade-2/english/conjunctions/assets/correct.mp3" preload="auto"></audio>
+    <audio id="snd-wrong" src="grade-2/english/conjunctions/assets/wrong.mp3" preload="auto"></audio>
+
+    <script>
+        // Core Question Data mapping
+        const questions = [
+            {
+                text: "Your cousin asks what you want to do on Sunday. Which sentence shows that you want to do TWO activities together?",
+                options: [
+                    "I want to visit the park and ride my bicycle.",
+                    "I want to visit the park or ride my bicycle.",
+                    "I want to visit the park but ride my bicycle.",
+                    "I want to visit the park because ride my bicycle."
+                ],
+                correct: 0,
+                hint: "Use the word that joins two actions you want to complete together!",
+                explanation: "'And' is used to join and add similar ideas together smoothly."
+            },
+            {
+                text: "Which sentence joins ideas DIFFERENTLY from the other three?",
+                options: [
+                    "We packed snacks and water bottles.",
+                    "My sister drew a picture and coloured it.",
+                    "The gardener planted flowers and watered them.",
+                    "We stayed indoors because it was raining."
+                ],
+                correct: 3,
+                hint: "Look for the single sentence that explains *why* something happened instead of listing items.",
+                explanation: Sentences 1, 2, and 3 use 'and' to add info, while the last one uses 'because' to state a reason."
+            },
+            {
+                text: "A child says: 'I used \"because\" in my sentence about carrying an umbrella.' Why is 'because' a good choice here?",
+                options: [
+                    "It helps explain the reason why they brought it.",
+                    "It helps show a choice between two things.",
+                    "It helps join two actions that are exactly the same.",
+                    "It shows a surprising turn of events."
+                ],
+                correct: 0,
+                hint: "Think about what target value 'because' explains inside a basic story.",
+                explanation: "We use 'because' to talk directly about the cause or cause-effect reasoning behind an action."
+            },
+            {
+                text: "A runner wanted to run in a race, ______ he had a hurt ankle. Which word best completes the sentence?",
+                options: ["and", "or", "but", "because"],
+                correct: 2,
+                hint: "Choose the word that connects a plan with an unexpected problem stopping it.",
+                explanation: "'But' functions to link contrasting scenarios or an active obstacle."
+            },
+            {
+                text: "Statement: We use 'because' when we talk about wearing a coat in winter. Why?",
+                options: [
+                    "Because it explains the reason (it is cold).",
+                    "Because it gives us a choice between two coats.",
+                    "Because it joins two different clothing items.",
+                    "Because it shows we do not like coats."
+                ],
+                correct: 0,
+                hint: "Why do you wear a heavy winter coat? The word 'because' connects the action straight to that reason.",
+                explanation: "'Because' introduces standard reasons or real-life causes directly."
+            },
+            {
+                text: "Which sentence shows an INCORRECT use of a joining word?",
+                options: [
+                    "We decorated the hall and arranged the chairs.",
+                    "You may bring a sketchbook or a colouring book.",
+                    "The show was great because everyone practised well.",
+                    "The guests arrived but we served refreshments."
+                ],
+                correct: 3,
+                hint: "Does serving food block or contrast with guests arriving, or does it match naturally?",
+                explanation: "There is no structural mismatch between guests arriving and feeding them, so using 'but' is wrong."
+            },
+            {
+                text: "Which student understands how to use joining words correctly?",
+                options: [
+                    "Rahul: 'I use \"or\" when someone must choose between two things.'",
+                    "Tina: 'I use \"because\" to show two actions happening together.'",
+                    "Amit: 'I use \"and\" to show the reason why I did my homework.'",
+                    "Priya: 'I use \"but\" to give someone a choice.'"
+                ],
+                correct: 0,
+                hint: "Think about which word lets you explicitly pick an apple *or* a sweet banana.",
+                explanation: "'Or' presents distinct alternatives where you can isolate choices."
+            },
+            {
+                text: "A child writes about a family trip. Which sentence has a mistake?",
+                options: [
+                    "We visited the aquarium and watched the fish.",
+                    "We carried umbrellas because dark clouds were in the sky.",
+                    "We could visit the beach or stay at the hotel.",
+                    "We were hungry because we ordered lunch."
+                ],
+                correct: 3,
+                hint: "Is ordering lunch the actual *cause* of being hungry, or is it a *result*?",
+                explanation: "Hunger triggers ordering food; ordering lunch does not make you hungry!"
+            },
+            {
+                text: "At a book fair, your parents tell you that you can choose ONLY ONE gift. Which sentence fits this rule?",
+                options: [
+                    "You may buy a storybook and a puzzle.",
+                    "You may buy a storybook or a puzzle.",
+                    "You may buy a storybook but a puzzle.",
+                    "You may buy a storybook because a puzzle."
+                ],
+                correct: 1,
+                hint: "You are limited to picking only one item out of the group. Locate the choice tracker.",
+                explanation: "'Or' functions strictly to outline mutual limits and choice constraints."
+            },
+            {
+                text: "A child writes: 'I wore my raincoat and it was raining heavily.' The child wants to explain the REASON they wore it. What change should they make?",
+                options: [
+                    "change and -> because",
+                    "change raincoat -> raincoats",
+                    "change wore -> wear",
+                    "change heavily -> heavy"
+                ],
+                correct: 0,
+                hint: "Swap out the standard descriptive inclusion word for the logical reasoning option.",
+                explanation: "Exchanging 'and' for 'because' contextualizes why the raincoat was functional."
+            },
+            {
+                text: "Which sentence clearly shows that you did ONE TASK PLUS ANOTHER TASK at home?",
+                options: [
+                    "I washed the vegetables and helped set the table.",
+                    "I washed the vegetables because guests were coming.",
+                    "I washed the vegetables but forgot the tomatoes.",
+                    "I washed the vegetables or set the table."
+                ],
+                correct: 0,
+                hint: "Find the response that sums up two helpful household tasks done back-to-back.",
+                explanation: "'And' groups multiple positive steps or activities systematically."
+            },
+            {
+                text: "Which sentence uses its joining word for a DIFFERENT reason than the others?",
+                options: [
+                    "The puppy barked because it heard a noise.",
+                    "The baby cried because she was sleepy.",
+                    "We left early because the roads were crowded.",
+                    "We packed food and water for the journey."
+                ],
+                correct: 3,
+                hint: "Three lines validate the explicit *why* of a situation. Identify the odd item out.",
+                explanation: "The first three target core cause-and-effect parameters while the list entry relies on 'and'."
+            },
+            {
+                text: "Why is 'but' used correctly in this sentence? 'The kite was colourful, but it did not fly well.'",
+                options: [
+                    "Because the two ideas show a surprise or opposite twist.",
+                    "Because the sentence is explaining a cause.",
+                    "Because the sentence gives you a choice.",
+                    "Because it adds a matching action."
+                ],
+                correct: 0,
+                hint: "A beautiful new kite should theoretically fly perfectly. What occurs when it fails?",
+                explanation: "'But' highlights contrasting features or shifts expectations dynamically."
+            },
+            {
+                text: "Statement: We use 'and' to link items like paper, crayons, and pencils. Why?",
+                options: [
+                    "Because it connects similar items that belong together in a group.",
+                    "Because it forces us to choose only one tool.",
+                    "Because it tells us why we are drawing.",
+                    "Because it shows that the crayons are broken."
+                ],
+                correct: 0,
+                hint: "Think about organizing standard items in a functional school desk collection.",
+                explanation: "'And' binds items together cleanly into logical groups."
+            },
+            {
+                text: "Students wanted to plant small plants outside, ______ the school ground was too muddy after the heavy rain. Which word fits perfectly?",
+                options: ["and", "or", "but", "because"],
+                correct: 2,
+                hint: "The class designed a wonderful activity, but physical conditions introduced an obstacle.",
+                explanation: "'But' balances operational plans directly against unexpected natural interruptions."
+            }
+        ];
+
+        // State Machine Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let attempts = 0;
+        let timerInterval = null;
+        let timeLeft = 60;
+        let selectedOptionIndex = null;
+        let isAudioMuted = false;
+        let currentStepState = "check"; // Modes: 'check', 'next', 'retry'
+
+        // Canvas element binding for custom sparklers/confetti animation
+        const canvas = document.getElementById("confetti-canvas");
+        const ctx = canvas.getContext("2d");
+        let confettiParticles = [];
+
+        // Application Lifecycles
+        window.addEventListener('load', () => {
+            // Auto-advance through mandatory branding display block
+            setTimeout(() => {
+                showScreen('welcome-screen');
+            }, 5000);
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+        });
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            timeLeft = 60;
+            attempts = 0;
+            selectedOptionIndex = null;
+            currentStepState = "check";
+            
+            const q = questions[currentQuestionIndex];
+            
+            // Header elements mapping
+            document.getElementById('progress-indicator').innerText = `Question ${currentQuestionIndex + 1}/${questions.length}`;
+            document.getElementById('score-tracker').innerText = `Score: ${score}`;
+            
+            // Render text context dynamically based on flow position
+            const headingPrefix = (currentQuestionIndex >= 12) ? "🏆 Final Challenge: " : "";
+            document.getElementById('question-text').innerHTML = `<span>${headingPrefix}</span>${q.text}`;
+            
+            // Clear fields cleanly
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            document.getElementById('feedback-message').className = 'feedback-box';
+            document.getElementById('feedback-message').innerText = '';
+            
+            // Populate choices dynamically
+            q.options.forEach((opt, idx) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerText = opt;
+                button.onclick = () => selectOption(idx);
+                container.appendChild(button);
+            });
+
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.innerText = "Check Answer";
+            nextBtn.disabled = true;
+
+            startTimer();
+        }
+
+        function startTimer() {
+            const timerEl = document.getElementById('timer');
+            timerEl.classList.remove('warning');
+            timerEl.innerText = `Time Left: ${timeLeft}s`;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerEl.innerText = `Time Left: ${timeLeft}s`;
+
+                if (timeLeft <= 10) {
+                    timerEl.classList.add('warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    forceTimeout();
+                }
+            }, 1000);
+        }
+
+        function selectOption(index) {
+            if (currentStepState !== "check" && currentStepState !== "retry") return;
+            
+            selectedOptionIndex = index;
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach((b, idx) => {
+                b.classList.remove('wrong', 'correct');
+                if (idx === index) {
+                    b.style.borderColor = 'var(--primary)';
+                    b.style.background = '#EDF4FC';
+                } else {
+                    b.style.borderColor = '#E2E8F0';
+                    b.style.background = 'var(--light)';
+                }
+            });
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        function handleNextStep() {
+            const q = questions[currentQuestionIndex];
+            const nextBtn = document.getElementById('next-btn');
+
+            if (currentStepState === "check" || currentStepState === "retry") {
+                attempts++;
+                clearInterval(timerInterval);
+
+                if (selectedOptionIndex === q.correct) {
+                    // Right path handler logic
+                    handleCorrectAnswer();
+                } else {
+                    // Wrong path handler logic 
+                    handleIncorrectAnswer(q);
+                }
+            } else if (currentStepState === "next") {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showFinalResults();
+                }
+            }
+        }
+
+        function handleCorrectAnswer() {
+            playSound('snd-correct');
+            triggerSparklers();
+            
+            const selectedBtn = document.querySelectorAll('.option-btn')[selectedOptionIndex];
+            selectedBtn.classList.add('correct');
+            disableAllOptions();
+
+            score++;
+            document.getElementById('score-tracker').innerText = `Score: ${score}`;
+
+            const feedback = document.getElementById('feedback-message');
+            feedback.className = 'feedback-box explanation';
+            feedback.innerText = `🌟 Brilliant! ${questions[currentQuestionIndex].explanation}`;
+
+            currentStepState = "next";
+            document.getElementById('next-btn').innerText = "Continue";
+        }
+
+        function handleIncorrectAnswer(q) {
+            playSound('snd-wrong');
+            const selectedBtn = document.querySelectorAll('.option-btn')[selectedOptionIndex];
+            selectedBtn.classList.add('wrong');
+
+            if (attempts === 1) {
+                // Secondary fallback attempt setup 
+                const feedback = document.getElementById('feedback-message');
+                feedback.className = 'feedback-box hint';
+                feedback.innerText = `💡 Try Again! Hint: ${q.hint}`;
+                
+                currentStepState = "retry";
+                document.getElementById('next-btn').innerText = "Check Retry";
+                document.getElementById('next-btn').disabled = true;
+                startTimer(); // Restart clock allocations sequentially
+            } else {
+                // Out of operational moves execution loop
+                disableAllOptions();
+                const correctBtn = document.querySelectorAll('.option-btn')[q.correct];
+                correctBtn.classList.add('correct');
+
+                const feedback = document.getElementById('feedback-message');
+                feedback.className = 'feedback-box explanation';
+                feedback.innerText = `Let's learn: ${q.explanation}`;
+
+                currentStepState = "next";
+                document.getElementById('next-btn').innerText = "Continue";
+            }
+        }
+
+        function forceTimeout() {
+            attempts = 2; // Treat as double fault penalty sequence
+            disableAllOptions();
+            const q = questions[currentQuestionIndex];
+            const correctBtn = document.querySelectorAll('.option-btn')[q.correct];
+            correctBtn.classList.add('correct');
+
+            const feedback = document.getElementById('feedback-message');
+            feedback.className = 'feedback-box explanation';
+            feedback.innerText = `⏰ Time's up! ${q.explanation}`;
+
+            currentStepState = "next";
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.innerText = "Continue";
+            nextBtn.disabled = false;
+            playSound('snd-wrong');
+        }
+
+        function disableAllOptions() {
+            document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+        }
+
+        function showFinalResults() {
+            showScreen('result-screen');
+            document.getElementById('final-score').innerText = `${score} / ${questions.length}`;
+            
+            const ratio = (score / questions.length) * 100;
+            const messageEl = document.getElementById('result-message');
+            
+            if (ratio >= 75) {
+                messageEl.innerText = "⭐ Good job! You are a master of joining words!";
+                triggerSparklers();
+                // Infinite light particles trigger on high success parameters
+                setTimeout(triggerSparklers, 600);
+            } else if (ratio >= 40) {
+                messageEl.innerText = "Review this chapter and try again! You're getting closer!";
+            } else {
+                messageEl.innerText = "Let’s practise more together! Try again to boost your score!";
+            }
+        }
+
+        function resetQuiz() {
+            startQuiz();
+        }
+
+        // Multimedia Safety Framework wrappers
+        function playSound(elementId) {
+            if (isAudioMuted) return;
+            const audio = document.getElementById(elementId);
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(() => {/* Prevent console log noise from security constraints */});
+            }
+        }
+
+        function toggleMute() {
+            isAudioMuted = !isAudioMuted;
+            document.getElementById('mute-btn').innerText = isAudioMuted ? "🔇" : "🔊";
+        }
+
+        // Custom Graphics Render Block for interactive Sparkler celebrations
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+
+        function triggerSparklers() {
+            const colors = ['#FFD700', '#FF5733', '#33FF57', '#3357FF', '#F333FF'];
+            for (let i = 0; i < 60; i++) {
+                confettiParticles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8 - 2,
+                    size: Math.random() * 6 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    alpha: 1,
+                    decay: Math.random() * 0.02 + 0.01
+                });
+            }
+            if (confettiParticles.length === 60) {
+                requestAnimationFrame(updateConfetti);
+            }
+        }
+
+        function updateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = confettiParticles.length - 1; i >= 0; i--) {
+                const p = confettiParticles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.1; // Simulated structural pull gravity
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    confettiParticles.splice(i, 1);
+                    continue;
+                }
+
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            if (confettiParticles.length > 0) {
+                requestAnimationFrame(updateConfetti);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+    </script>
+</body>
+</html>
