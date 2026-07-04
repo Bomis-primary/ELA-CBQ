@@ -1,1 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Common and Proper Nouns - Grade 2</title>
+<style>
+:root{
+  --bg1:#f6fbff;
+  --bg2:#fff4fb;
+  --card:rgba(255,255,255,.92);
+  --ink:#25324a;
+  --accent:#4b7bff;
+  --accent2:#ff6fb1;
+  --good:#2fbf71;
+  --bad:#ff5b6e;
+  --gold:#ffcc54;
+  --shadow:0 14px 36px rgba(49,73,133,.14);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(255,111,177,.18), transparent 30%),
+    radial-gradient(circle at top right, rgba(75,123,255,.16), transparent 28%),
+    linear-gradient(135deg,var(--bg1),var(--bg2));
+  overflow-x:hidden;
+}
+body::before,body::after{
+  content:"";
+  position:fixed;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:0;
+  opacity:.16;
+  animation:float 14s ease-in-out infinite;
+}
+body::before{
+  width:220px;height:220px;left:-60px;top:20px;
+  background:radial-gradient(circle,#9be2ff 0,#9be2ff 35%,transparent 70%);
+}
+body::after{
+  width:300px;height:300px;right:-90px;bottom:10px;
+  background:radial-gradient(circle,#ffd77f 0,#ffd77f 35%,transparent 70%);
+  animation-duration:18s;
+}
+@keyframes float{
+  0%,100%{transform:translateY(0) translateX(0)}
+  50%{transform:translateY(16px) translateX(10px)}
+}
+.bg-stars{
+  position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0
+}
+.star{
+  position:absolute;
+  color:rgba(255,255,255,.7);
+  animation:drift linear infinite;
+  filter:drop-shadow(0 0 6px rgba(255,255,255,.5));
+}
+@keyframes drift{
+  from{transform:translateY(110vh) rotate(0deg)}
+  to{transform:translateY(-20vh) rotate(360deg)}
+}
+.app{
+  position:relative;
+  z-index:1;
+  min-height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:14px;
+}
+.screen{
+  display:none;
+  width:min(980px,100%);
+  background:var(--card);
+  backdrop-filter:blur(10px);
+  border:2px solid rgba(255,255,255,.8);
+  box-shadow:var(--shadow);
+  border-radius:28px;
+  overflow:hidden;
+}
+.screen.active{display:block}
+.hero{
+  padding:22px 18px;
+  text-align:center;
+  background:linear-gradient(180deg,#fff,#f8fbff);
+  position:relative;
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0 0;
+  height:10px;
+  background:linear-gradient(90deg,#4b7bff,#ff6fb1,#ffcc54,#2fbf71);
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 14px;
+  border-radius:999px;
+  background:#fff;
+  border:1px solid #dce7ff;
+  font-weight:800;
+  font-size:13px;
+}
+.title{
+  font-size:clamp(28px,5vw,46px);
+  margin:14px 0 6px;
+  color:#24314a;
+}
+.subtitle{
+  margin:0 auto;
+  max-width:720px;
+  font-size:16px;
+  line-height:1.5;
+  color:#55657f;
+}
+.logo-wrap{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:12px 0 16px;
+}
+.logo-wrap img{
+  width:min(220px,70vw);
+  max-height:140px;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 16px rgba(75,123,255,.18));
+}
+.content{padding:18px}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+.panel{
+  background:#fff;
+  border-radius:22px;
+  padding:18px;
+  border:1px solid #e8eefc;
+  box-shadow:0 8px 18px rgba(49,73,133,.06);
+}
+.panel h3{margin:0 0 10px;font-size:18px}
+.kpi{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:12px;
+}
+.chip{
+  padding:12px;
+  border-radius:16px;
+  background:linear-gradient(180deg,#f9fbff,#fff);
+  border:1px solid #e4ecff;
+  text-align:center;
+}
+.chip b{
+  display:block;
+  font-size:20px;
+  color:#4b7bff;
+}
+.btn-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.btn{
+  appearance:none;
+  border:none;
+  cursor:pointer;
+  border-radius:16px;
+  padding:14px 18px;
+  font-weight:800;
+  font-size:15px;
+  transition:.2s transform,.2s box-shadow,.2s opacity;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{
+  background:linear-gradient(135deg,#4b7bff,#ff6fb1);
+  color:#fff;
+  box-shadow:0 10px 20px rgba(75,123,255,.2);
+}
+.btn.secondary{
+  background:#fff;
+  color:var(--ink);
+  border:1px solid #dbe4f6;
+}
+.hidden{display:none !important}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.meter{
+  flex:1;
+  min-width:220px;
+  height:14px;
+  background:#ebf2ff;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid #dce7ff;
+}
+.meter > div{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#4b7bff,#ff6fb1);
+  transition:width .25s ease;
+}
+.stats{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.stat{
+  background:#fff;
+  border:1px solid #dce7ff;
+  border-radius:14px;
+  padding:10px 12px;
+  font-weight:700;
+}
+.stat span{color:#4b7bff}
+.qbox{padding:18px 18px 14px}
+.qnum{
+  display:inline-block;
+  padding:7px 12px;
+  border-radius:999px;
+  background:#f4f7ff;
+  border:1px solid #dce7ff;
+  font-weight:800;
+  font-size:13px;
+}
+.question{
+  font-size:clamp(22px,3.5vw,30px);
+  line-height:1.25;
+  margin:12px 0 14px;
+  font-weight:800;
+  color:#24314a;
+}
+.scenario{
+  font-size:15px;
+  line-height:1.5;
+  color:#5e6c83;
+  margin-bottom:14px;
+}
+.options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.opt{
+  padding:14px;
+  border-radius:18px;
+  border:2px solid #e2e9f7;
+  background:#fff;
+  cursor:pointer;
+  text-align:left;
+  font-weight:700;
+  font-size:15px;
+  transition:.18s;
+}
+.opt:hover{
+  transform:translateY(-1px);
+  border-color:#9db7ff;
+}
+.opt.correct{
+  background:#ebfff3;
+  border-color:#62cb8a;
+}
+.opt.wrong{
+  background:#fff0f2;
+  border-color:#ff8692;
+}
+.feedback{
+  margin-top:14px;
+  padding:14px;
+  border-radius:18px;
+  background:#fff;
+  border:1px dashed #dbe4f6;
+  min-height:62px;
+  font-size:15px;
+}
+.feedback.good{
+  border-color:#92dcb0;
+  color:#21854f;
+}
+.feedback.bad{
+  border-color:#ffb8bf;
+  color:#c43a4f;
+}
+.nav{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.tiny{font-size:13px;color:#6f7c92}
+.overlay{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(246,251,255,.94);
+  z-index:20;
+}
+.overlay-card{
+  width:min(520px,92vw);
+  background:#fff;
+  border-radius:26px;
+  padding:28px;
+  text-align:center;
+  box-shadow:var(--shadow);
+  border:1px solid #e0e8fb;
+}
+.overlay-card img{
+  width:min(240px,70vw);
+  max-height:140px;
+  object-fit:contain;
+  margin:0 auto 12px;
+}
+.result-score{
+  font-size:48px;
+  font-weight:900;
+  color:#4b7bff;
+  margin:8px 0;
+}
+.confetti,.cross{
+  position:fixed;
+  pointer-events:none;
+  z-index:30;
+}
+.confetti{
+  font-size:22px;
+  animation:pop 900ms ease-out forwards;
+}
+@keyframes pop{
+  0%{transform:translateY(0) scale(.6);opacity:1}
+  100%{transform:translateY(-120px) scale(1.2);opacity:0}
+}
+.cross{
+  font-size:28px;
+  color:var(--bad);
+  animation:crossPop .7s ease-out forwards;
+}
+@keyframes crossPop{
+  0%{transform:scale(.6);opacity:1}
+  100%{transform:translateY(-50px) scale(1.3);opacity:0}
+}
+@media (max-width:780px){
+  .grid{grid-template-columns:1fr}
+  .options{grid-template-columns:1fr}
+  .kpi{grid-template-columns:1fr}
+  .screen{border-radius:22px}
+  .question{font-size:24px}
+  .result-score{font-size:40px}
+}
+</style>
+</head>
+<body>
+<div class="bg-stars" id="bgStars"></div>
+<div class="app">
+  <div class="screen active" id="introScreen">
+    <div class="hero">
+      <div class="logo-wrap">
+        <img src="assets/logo.png" alt="Innovine logo" id="logoImg">
+      </div>
+      <div class="badge">Superhero Candy Theme • Grade 2</div>
+      <h1 class="title">Common and Proper Nouns</h1>
+      <p class="subtitle">Choose the best answer about common and proper nouns. Special names start with a capital letter, and the game gets a little tougher as you go.</p>
+    </div>
+    <div class="content">
+      <div class="grid">
+        <div class="panel">
+          <h3>How it works</h3>
+          <ul class="tiny" style="margin:0;padding-left:18px;line-height:1.7">
+            <li>15 competency-based questions.</li>
+            <li>Grade 2 gets 60 seconds per question.</li>
+            <li>One retry after the first wrong attempt.</li>
+            <li>No answer hint on the first miss. The correct answer appears only after the second wrong attempt.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Ready to play?</h3>
+          <p class="tiny" style="margin-top:0">Tap start to begin the quiz. A final challenge appears at the end before the result screen.</p>
+          <div class="kpi">
+            <div class="chip"><b>15</b>Questions</div>
+            <div class="chip"><b>60s</b>Timer</div>
+            <div class="chip"><b>1</b>Retry</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:16px;justify-content:center">
+        <button class="btn primary" id="startBtn">Start Quiz</button>
+      </div>
+    </div>
+  </div>
 
+  <div class="screen" id="quizScreen">
+    <div class="content">
+      <div class="topbar">
+        <div class="meter"><div id="progressBar"></div></div>
+        <div class="stats">
+          <div class="stat">Score: <span id="scoreVal">0</span></div>
+          <div class="stat">Question: <span id="qVal">1</span>/<span id="qTotal">15</span></div>
+          <div class="stat">Time: <span id="timeVal">60</span>s</div>
+        </div>
+      </div>
+      <div class="panel qbox">
+        <div class="qnum" id="qTag">Question 1</div>
+        <div class="scenario" id="scenarioText"></div>
+        <div class="question" id="questionText"></div>
+        <div class="options" id="optionsWrap"></div>
+        <div class="feedback" id="feedbackBox">Choose one answer.</div>
+        <div class="nav">
+          <button class="btn secondary hidden" id="nextBtn">Next</button>
+          <div class="tiny" id="retryText">You get one retry if your first answer is wrong.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="finalScreen">
+    <div class="hero">
+      <div class="badge">Final Challenge</div>
+      <h2 class="title" style="margin-top:10px">One last check!</h2>
+      <p class="subtitle">Choose the best answer in the final challenge before you see your result.</p>
+    </div>
+    <div class="content">
+      <div class="panel qbox">
+        <div class="scenario" id="finalScenario"></div>
+        <div class="question" id="finalQuestion"></div>
+        <div class="options" id="finalOptions"></div>
+        <div class="feedback" id="finalFeedback">Take your best shot.</div>
+        <div class="nav">
+          <button class="btn secondary hidden" id="finalNextBtn">See Result</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="resultScreen">
+    <div class="hero">
+      <div class="badge">Result</div>
+      <h2 class="title">Great job!</h2>
+      <div class="result-score" id="resultScore">0/15</div>
+      <p class="subtitle" id="resultMsg"></p>
+    </div>
+    <div class="content" style="padding-top:0">
+      <div class="panel">
+        <h3>Summary</h3>
+        <div class="kpi">
+          <div class="chip"><b id="correctCount">0</b>Correct</div>
+          <div class="chip"><b id="wrongCount">0</b>Wrong</div>
+          <div class="chip"><b id="accPct">0%</b>Accuracy</div>
+        </div>
+        <div class="btn-row" style="margin-top:16px;justify-content:center">
+          <button class="btn primary" id="restartBtn">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="logoOverlay">
+  <div class="overlay-card">
+    <img src="assets/logo.png" alt="Innovine logo">
+    <div class="badge">Innovine</div>
+    <p class="tiny">Loading the quiz…</p>
+  </div>
+</div>
+
+<script>
+const questions = [
+{scenario:'During the morning assembly, the principal announced: "Next week, students from Delhi Public School will visit our campus." Which word is a proper noun?',q:'School Assembly',options:['students','campus','Delhi Public School','week'],answer:2,ex:'Delhi Public School is the special name of a school.'},
+{scenario:'Words: teacher, doctor, Mumbai, farmer. Which word does NOT belong with the others?',q:'Noun Type',options:['teacher','doctor','Mumbai','farmer'],answer:2,ex:'Mumbai is a special name of a place, so it is a proper noun.'},
+{scenario:'A student says: "I wrote river as a proper noun because it names a place." Why is this not correct?',q:'Reasoning',options:['Because river names any river, not a specific one','Because rivers are not places','Because proper nouns can only be people','Because river is an action word'],answer:0,ex:'River is a common noun because it names any river.'},
+{scenario:'Your family is planning a holiday. Which sentence contains a proper noun?',q:'Family Trip',options:['We will visit a beach.','We will travel by train.','We will visit Goa during the holidays.','We will stay in a hotel.'],answer:2,ex:'Goa is the special name of a place.'},
+{scenario:'Statement: "Rohan" is a proper noun. Reason: It is the special name of a person.',q:'Assertion–Reason',options:['The reason is correct and explains the statement','The reason is correct but does not explain the statement','The reason is wrong but the statement is correct','Both the reason and the statement are wrong'],answer:0,ex:'A proper noun is a special name, so the reason explains the statement.'},
+{scenario:'Which sentence shows incorrect understanding of common and proper nouns?',q:'Animal Context',options:['Tiger is the name of an animal.','Sundar is the name of my pet dog.','Elephant is a common noun.','Sheru is a proper noun.'],answer:0,ex:'Tiger is a common noun because it names an animal type, not a special name.'},
+{scenario:'Which sentence shows correct understanding of proper nouns?',q:'Purpose-Based Reasoning',options:['I would write India with a capital letter because it is a special name.','I would write city with a capital letter because it is a place.','I would write teacher with a capital letter because it is a person.','I would write river with a capital letter because it is a noun.'],answer:0,ex:'Proper nouns begin with capital letters because they are special names.'},
+{scenario:'Which sentence is incorrect?',q:'Error Detection',options:['My cousin lives in Pune.','We visited the Gateway of India.','The ganga is an important river.','Our teacher read us a story.'],answer:2,ex:'Ganga should begin with a capital letter because it is a proper noun.'},
+{scenario:'During a visit to the school library, you notice these words in a book: author, librarian, Chennai, reader. Which word is a proper noun?',q:'Library Visit',options:['author','librarian','Chennai','reader'],answer:2,ex:'Chennai is the special name of a city.'},
+{scenario:'A student writes: "Last summer, I travelled to hill station." What should the student correct to show a proper noun?',q:'Case-Based',options:['summer → Summer','travelled → travel','hill station → the name of the place visited','last → Last'],answer:2,ex:'A proper noun needs the exact special name of the place.'},
+{scenario:'You are reading about a cricket match. Which word is most likely to be a proper noun?',q:'Sports Context',options:['player','stadium','Virat Kohli','captain'],answer:2,ex:'Virat Kohli is the special name of a person.'},
+{scenario:'Words: peacock, camel, Jaipur, elephant. Which word does not belong?',q:'People, Places, Animals, Things',options:['peacock','camel','Jaipur','elephant'],answer:2,ex:'Jaipur is a proper noun because it is the special name of a place.'},
+{scenario:'Why is The Himalayas a proper noun?',q:'Reasoning',options:['Because it is the special name of a mountain range','Because all mountains are proper nouns','Because it is a long word','Because it names a thing'],answer:0,ex:'The Himalayas is a special name, so it is a proper noun.'},
+{scenario:'Statement: "Taj Mahal" is a proper noun. Reason: It names a specific monument.',q:'Assertion–Reason',options:['Both are correct and the reason explains the statement','Both are correct but not related','Statement is correct, reason is wrong','Statement is wrong, reason is correct'],answer:0,ex:'A proper noun names one specific thing.'},
+{scenario:'A notice says: "Students from Saraswati Vidya Mandir will participate in the cleanliness drive." Which noun is a proper noun?',q:'Community Event',options:['students','cleanliness','drive','Saraswati Vidya Mandir'],answer:3,ex:'Saraswati Vidya Mandir is the special name of a school.'}
+];
+const finalChallenge = {
+scenario:'Final Challenge: Choose the best example of a proper noun for a superhero city poster.',
+q:'Which word is a proper noun?',
+options:['city','Hero Town','place','people'],
+answer:1,
+ex:'Hero Town is the special name of a place.'
+};
+
+let idx=0, score=0, wrong=0, timer=60, timerInt=null, attempts=0, locked=false, inFinal=false;
+const qTotal = questions.length;
+
+const els = {
+intro:document.getElementById('introScreen'),
+quiz:document.getElementById('quizScreen'),
+final:document.getElementById('finalScreen'),
+result:document.getElementById('resultScreen'),
+startBtn:document.getElementById('startBtn'),
+restartBtn:document.getElementById('restartBtn'),
+nextBtn:document.getElementById('nextBtn'),
+finalNextBtn:document.getElementById('finalNextBtn'),
+qTotal:document.getElementById('qTotal'),
+scoreVal:document.getElementById('scoreVal'),
+qVal:document.getElementById('qVal'),
+timeVal:document.getElementById('timeVal'),
+progressBar:document.getElementById('progressBar'),
+qTag:document.getElementById('qTag'),
+scenarioText:document.getElementById('scenarioText'),
+questionText:document.getElementById('questionText'),
+optionsWrap:document.getElementById('optionsWrap'),
+feedbackBox:document.getElementById('feedbackBox'),
+finalScenario:document.getElementById('finalScenario'),
+finalQuestion:document.getElementById('finalQuestion'),
+finalOptions:document.getElementById('finalOptions'),
+finalFeedback:document.getElementById('finalFeedback'),
+resultScore:document.getElementById('resultScore'),
+resultMsg:document.getElementById('resultMsg'),
+correctCount:document.getElementById('correctCount'),
+wrongCount:document.getElementById('wrongCount'),
+accPct:document.getElementById('accPct'),
+logoOverlay:document.getElementById('logoOverlay')
+};
+
+function show(screen){
+  [els.intro,els.quiz,els.final,els.result].forEach(s=>s.classList.remove('active'));
+  screen.classList.add('active');
+}
+
+function playSound(type){
+  try{
+    const a = new Audio(type==='good' ? 'assets/correct.mp3' : 'assets/wrong.mp3');
+    a.volume = 0.55;
+    a.play().catch(()=>{});
+  }catch(e){}
+}
+
+function playClap(){
+  try{
+    const a = new Audio('assets/freesound_community-claps-44774.mp3');
+    a.volume = 0.45;
+    a.play().catch(()=>{});
+  }catch(e){}
+}
+
+function confetti(){
+  const icons = ['✦','★','✧','✮'];
+  for(let i=0;i<18;i++){
+    const s = document.createElement('div');
+    s.className = 'confetti';
+    s.textContent = icons[i%icons.length];
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.top = (55 + Math.random()*12) + 'vh';
+    s.style.color = ['#4b7bff','#ff6fb1','#ffcc54','#2fbf71'][i%4];
+    s.style.fontSize = (18 + Math.random()*12) + 'px';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),900);
+  }
+}
+
+function cross(){
+  const c = document.createElement('div');
+  c.className = 'cross';
+  c.textContent = '✕';
+  c.style.left = (40 + Math.random()*20) + 'vw';
+  c.style.top = (55 + Math.random()*10) + 'vh';
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),700);
+}
+
+function tick(){
+  clearInterval(timerInt);
+  timer = 60;
+  els.timeVal.textContent = timer;
+  timerInt = setInterval(()=>{
+    timer--;
+    els.timeVal.textContent = timer;
+    if(timer<=0){
+      clearInterval(timerInt);
+      handleAnswer(-1,true);
+    }
+  },1000);
+}
+
+function renderQuestion(){
+  locked = false;
+  attempts = 0;
+  els.nextBtn.classList.add('hidden');
+  els.feedbackBox.className = 'feedback';
+  els.feedbackBox.textContent = 'Choose one answer.';
+
+  const q = questions[idx];
+  els.qTag.textContent = `Question ${idx+1}`;
+  els.qVal.textContent = idx+1;
+  els.qTotal.textContent = qTotal;
+  els.progressBar.style.width = `${(idx/qTotal)*100}%`;
+  els.scenarioText.textContent = q.scenario;
+  els.questionText.textContent = q.q;
+
+  els.optionsWrap.innerHTML = '';
+  q.options.forEach((text,i)=>{
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = `${String.fromCharCode(97+i)}) ${text}`;
+    b.onclick = ()=>handleAnswer(i,false,b);
+    els.optionsWrap.appendChild(b);
+  });
+
+  tick();
+}
+
+function renderFinal(){
+  locked = false;
+  attempts = 0;
+  els.finalNextBtn.classList.add('hidden');
+  els.finalFeedback.className = 'feedback';
+  els.finalFeedback.textContent = 'Take your best shot.';
+  els.finalScenario.textContent = finalChallenge.scenario;
+  els.finalQuestion.textContent = finalChallenge.q;
+  els.finalOptions.innerHTML = '';
+
+  finalChallenge.options.forEach((text,i)=>{
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = `${String.fromCharCode(97+i)}) ${text}`;
+    b.onclick = ()=>handleAnswer(i,false,b);
+    els.finalOptions.appendChild(b);
+  });
+
+  tick();
+}
+
+function handleAnswer(choice, timeout=false, btn=null){
+  if(locked) return;
+  const current = inFinal ? finalChallenge : questions[idx];
+  const container = inFinal ? els.finalOptions : els.optionsWrap;
+  const buttons = [...container.querySelectorAll('.opt')];
+  const picked = btn || buttons[choice];
+
+  if(choice === current.answer){
+    locked = true;
+    clearInterval(timerInt);
+    score++;
+    els.scoreVal.textContent = score;
+    playSound('good');
+    confetti();
+
+    buttons.forEach((b,i)=>{
+      if(i===current.answer) b.classList.add('correct');
+    });
+
+    if(inFinal){
+      els.finalFeedback.className = 'feedback good';
+      els.finalFeedback.textContent = 'Correct! ' + current.ex;
+      els.finalNextBtn.classList.remove('hidden');
+    }else{
+      els.feedbackBox.className = 'feedback good';
+      els.feedbackBox.textContent = 'Correct! ' + current.ex;
+      setTimeout(()=>{
+        idx++;
+        if(idx < qTotal){
+          renderQuestion();
+        }else{
+          inFinal = true;
+          show(els.final);
+          renderFinal();
+        }
+      },700);
+    }
+    return;
+  }
+
+  wrong++;
+  playSound('bad');
+  cross();
+
+  if(attempts === 0 && !timeout){
+    attempts = 1;
+    if(inFinal){
+      els.finalFeedback.className = 'feedback';
+      els.finalFeedback.textContent = 'Try once more.';
+    }else{
+      els.feedbackBox.className = 'feedback';
+      els.feedbackBox.textContent = 'Try once more.';
+    }
+    return;
+  }
+
+  locked = true;
+  clearInterval(timerInt);
+
+  buttons.forEach((b,i)=>{
+    if(i===current.answer) b.classList.add('correct');
+    if(i===choice) b.classList.add('wrong');
+  });
+
+  const reveal = `Correct answer: ${current.options[current.answer]}. ${current.ex}`;
+  if(inFinal){
+    els.finalFeedback.className = 'feedback bad';
+    els.finalFeedback.textContent = reveal;
+    els.finalNextBtn.classList.remove('hidden');
+  }else{
+    els.feedbackBox.className = 'feedback bad';
+    els.feedbackBox.textContent = reveal;
+    els.nextBtn.classList.remove('hidden');
+  }
+}
+
+function finishGame(){
+  clearInterval(timerInt);
+  show(els.result);
+  const total = qTotal + 1;
+  els.resultScore.textContent = `${score}/${total}`;
+  els.correctCount.textContent = score;
+  els.wrongCount.textContent = wrong;
+  els.accPct.textContent = Math.round((score/total)*100) + '%';
+  els.resultMsg.textContent = score >= Math.ceil(total*0.8)
+    ? 'You played like a true superhero!'
+    : 'Good effort — practice makes your powers stronger!';
+  playClap();
+}
+
+els.startBtn.onclick = ()=>{ show(els.quiz); renderQuestion(); };
+els.nextBtn.onclick = ()=>{
+  idx++;
+  if(idx < qTotal){
+    renderQuestion();
+  }else{
+    inFinal = true;
+    show(els.final);
+    renderFinal();
+  }
+};
+els.finalNextBtn.onclick = finishGame;
+els.restartBtn.onclick = ()=>location.reload();
+
+for(let i=0;i<20;i++){
+  const d = document.createElement('div');
+  d.className = 'star';
+  d.style.left = Math.random()*100 + 'vw';
+  d.style.animationDuration = (12 + Math.random()*14) + 's';
+  d.style.animationDelay = (-Math.random()*18) + 's';
+  d.style.fontSize = (10 + Math.random()*18) + 'px';
+  d.textContent = ['✦','✧','✩','✪'][i%4];
+  document.getElementById('bgStars').appendChild(d);
+}
+
+setTimeout(()=>els.logoOverlay.remove(),5000);
+</script>
+</body>
+</html>
