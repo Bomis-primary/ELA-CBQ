@@ -50,9 +50,16 @@
             flex-direction: column;
             justify-content: center; 
             align-items: center; 
-            min-height: 250px; 
+            min-height: 350px; 
         }
         
+        .splash-logo {
+            max-width: 180px;
+            height: auto;
+            margin-bottom: 20px;
+            object-fit: contain;
+        }
+
         .spinner {
             width: 40px;
             height: 40px;
@@ -140,6 +147,7 @@
 
 <div id="app" class="container">
     <div id="splash-screen">
+        <img src="logo.png" alt="Innovine Logo" class="splash-logo">
         <h2 style="margin-bottom: 5px;">Loading Prepositions Challenge</h2>
         <p style="color: var(--text-muted)">Get ready...</p>
         <div class="spinner"></div>
@@ -195,12 +203,12 @@
     const qText = document.getElementById('question-text');
     const optsDiv = document.getElementById('options');
 
-    // Simulate splash presentation window (reduced duration slightly for snappier loading)
+    // Splash screen configuration set exactly to 5000 milliseconds (5 seconds)
     setTimeout(() => { 
         splash.classList.add('hidden'); 
         gameUI.classList.remove('hidden'); 
         loadQuestion(); 
-    }, 2500);
+    }, 5000);
 
     function loadQuestion() {
         if(currentQ >= questions.length) { endScreen(); return; }
@@ -236,7 +244,6 @@
     function playAudioSilently(src) {
         const audio = new Audio(src);
         audio.play().catch(() => {
-            // Silently absorb audio failures caused by missing local files or browser rules
             console.log(`Audio notification triggered: ${src}`);
         });
     }
@@ -246,12 +253,10 @@
 
         const currentQuestionData = questions[currentQ];
         
-        // Disable other interactions temporarily during evaluation feedback phase
         if(idx === currentQuestionData.a) {
             isInteractionLocked = true;
             selectedButton.classList.add('correct');
             
-            // Only grant full point value if solved on the first run of the question
             if (attempts === 1) { score++; } 
             
             playAudioSilently('assets/claps.mp3'); 
@@ -275,7 +280,6 @@
                 isInteractionLocked = true;
                 playAudioSilently('assets/wrong.mp3');
                 
-                // Highlight correct selection for learning clarity
                 const buttons = optsDiv.getElementsByTagName('button');
                 if (buttons[currentQuestionData.a]) {
                     buttons[currentQuestionData.a].classList.add('correct');
