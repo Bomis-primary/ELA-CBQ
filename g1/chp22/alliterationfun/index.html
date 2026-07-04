@@ -1,1 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Alliteration Fun - Grade 1</title>
+<style>
+:root{--bg1:#fff1f8;--bg2:#ffe8f3;--card:#ffffffdd;--ink:#4b2b4f;--accent:#ff6fb1;--accent2:#7c5cff;--good:#2bb673;--bad:#ff5a6a;--shadow:0 12px 30px rgba(120,40,90,.12)}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:linear-gradient(135deg,var(--bg1),var(--bg2));overflow-x:hidden}
+body::before,body::after{content:"";position:fixed;inset:auto;border-radius:50%;pointer-events:none;opacity:.22;filter:blur(2px);animation:float 14s ease-in-out infinite}
+body::before{width:220px;height:220px;background:radial-gradient(circle,#ffd6eb 0,#ffd6eb 35%,transparent 70%);top:10px;left:-40px}
+body::after{width:280px;height:280px;background:radial-gradient(circle,#ffe3a8 0,#ffe3a8 35%,transparent 70%);right:-80px;bottom:20px;animation-duration:18s}
+@keyframes float{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(18px) translateX(10px)}}
+.bg-stars{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}.star{position:absolute;color:rgba(255,255,255,.55);animation:drift linear infinite;filter:drop-shadow(0 0 6px rgba(255,255,255,.35))}@keyframes drift{from{transform:translateY(110vh) rotate(0deg)}to{transform:translateY(-20vh) rotate(360deg)}}
+.app{position:relative;z-index:1;min-height:100%;display:flex;align-items:center;justify-content:center;padding:14px}.screen{display:none;width:min(920px,100%);background:var(--card);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.75);box-shadow:var(--shadow);border-radius:28px;overflow:hidden}
+.screen.active{display:block}.hero{padding:22px 18px;text-align:center;background:linear-gradient(180deg,#fff, #fff4fb)}.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:#fff;border:1px solid #ffd3e8;font-weight:700;font-size:13px}.title{font-size:clamp(28px,5vw,46px);margin:14px 0 6px;color:#3f2354}.subtitle{margin:0 auto;max-width:680px;font-size:16px;line-height:1.5;color:#6e4b77}
+.logo-wrap{display:flex;justify-content:center;align-items:center;padding:16px}.logo-wrap img{width:min(220px,70vw);max-height:140px;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(255,105,180,.2))}
+.content{padding:18px}.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.panel{background:#fff;border-radius:22px;padding:18px;border:1px solid #f1d8e7;box-shadow:0 8px 18px rgba(120,40,90,.06)}.panel h3{margin:0 0 10px;font-size:18px}.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.chip{padding:12px;border-radius:16px;background:linear-gradient(180deg,#fff7fb,#fff);border:1px solid #f2d2e4;text-align:center}.chip b{display:block;font-size:20px;color:#ff4d97}.btn-row{display:flex;gap:10px;flex-wrap:wrap}.btn{appearance:none;border:none;cursor:pointer;border-radius:16px;padding:14px 18px;font-weight:800;font-size:15px;transition:.2s transform,.2s box-shadow,.2s opacity}.btn:hover{transform:translateY(-1px)}.btn.primary{background:linear-gradient(135deg,#ff6fb1,#ff9b60);color:#fff;box-shadow:0 10px 20px rgba(255,111,177,.25)}.btn.secondary{background:#fff;color:var(--ink);border:1px solid #efd2e1}.hidden{display:none !important}
+.topbar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap}.meter{flex:1;min-width:220px;height:14px;background:#fde8f2;border-radius:999px;overflow:hidden;border:1px solid #f4ccdf}.meter > div{height:100%;width:0;background:linear-gradient(90deg,#ff7cbf,#ffb35e);transition:width .25s ease}.stats{display:flex;gap:10px;flex-wrap:wrap}.stat{background:#fff;border:1px solid #efd3e5;border-radius:14px;padding:10px 12px;font-weight:700}.stat span{color:#ff4d97}
+.qbox{padding:18px 18px 14px}.qnum{display:inline-block;padding:7px 12px;border-radius:999px;background:#fff4d6;border:1px solid #f1d08a;font-weight:800;font-size:13px}.question{font-size:clamp(22px,3.5vw,30px);line-height:1.25;margin:12px 0 14px;font-weight:800;color:#44204d}.scenario{font-size:15px;line-height:1.5;color:#6e4b77;margin-bottom:14px}.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}.opt{padding:14px;border-radius:18px;border:2px solid #efd3e5;background:#fff;cursor:pointer;text-align:left;font-weight:700;font-size:15px;transition:.18s}.opt:hover{transform:translateY(-1px);border-color:#ffb3d2}.opt.correct{background:#e9fff2;border-color:#76d49a}.opt.wrong{background:#ffecee;border-color:#ff8692}.feedback{margin-top:14px;padding:14px;border-radius:18px;background:#fff;border:1px dashed #efc8dc;min-height:62px}.feedback.good{border-color:#9be4b8;color:#1f8d55}.feedback.bad{border-color:#ffb8bf;color:#c43a4f}.nav{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}.tiny{font-size:13px;color:#7a5f82}
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,241,248,.92);z-index:20}.overlay-card{width:min(520px,92vw);background:#fff;border-radius:26px;padding:28px;text-align:center;box-shadow:var(--shadow);border:1px solid #f0d2e0}.overlay-card img{width:min(240px,70vw);max-height:140px;object-fit:contain;margin:0 auto 12px}.result-score{font-size:48px;font-weight:900;color:#ff4d97;margin:8px 0}.confetti,.cross{position:fixed;pointer-events:none;z-index:30}.confetti{font-size:22px;animation:pop 900ms ease-out forwards}@keyframes pop{0%{transform:translateY(0) scale(.6);opacity:1}100%{transform:translateY(-120px) scale(1.2);opacity:0}}.cross{font-size:28px;color:var(--bad);animation:crossPop .7s ease-out forwards}@keyframes crossPop{0%{transform:scale(.6);opacity:1}100%{transform:translateY(-50px) scale(1.3);opacity:0}}
+@media (max-width:780px){.grid{grid-template-columns:1fr}.options{grid-template-columns:1fr}.kpi{grid-template-columns:1fr}.screen{border-radius:22px}.question{font-size:24px}.result-score{font-size:40px}}
+</style>
+</head>
+<body>
+<div class="bg-stars" id="bgStars"></div>
+<div class="app">
+  <div class="screen active" id="introScreen">
+    <div class="hero">
+      <div class="logo-wrap"><img src="assets/logo.png" alt="Innovine logo" id="logoImg"></div>
+      <div class="badge">Candy Theme • Grade 1 • Chapter-Based MCQ</div>
+      <h1 class="title">Alliteration Fun</h1>
+      <p class="subtitle">Pick the answer that shows the same beginning sound. Each question gets a retry, and the game gets a little harder as you go.</p>
+    </div>
+    <div class="content">
+      <div class="grid">
+        <div class="panel">
+          <h3>How it works</h3>
+          <ul class="tiny" style="margin:0;padding-left:18px;line-height:1.7">
+            <li>15 competency-based questions.</li>
+            <li>Grade 1 gets 60 seconds per question.</li>
+            <li>One retry after the first wrong attempt.</li>
+            <li>After the second wrong attempt, the correct answer and a short explanation appear.</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Ready to play?</h3>
+          <p class="tiny" style="margin-top:0">Tap start to begin the quiz. The final challenge appears at the end before your result screen.</p>
+          <div class="kpi">
+            <div class="chip"><b>15</b>Questions</div>
+            <div class="chip"><b>60s</b>Timer</div>
+            <div class="chip"><b>1</b>Retry</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:16px;justify-content:center"><button class="btn primary" id="startBtn">Start Quiz</button></div>
+    </div>
+  </div>
 
+  <div class="screen" id="quizScreen">
+    <div class="content">
+      <div class="topbar">
+        <div class="meter"><div id="progressBar"></div></div>
+        <div class="stats">
+          <div class="stat">Score: <span id="scoreVal">0</span></div>
+          <div class="stat">Question: <span id="qVal">1</span>/<span id="qTotal">15</span></div>
+          <div class="stat">Time: <span id="timeVal">60</span>s</div>
+        </div>
+      </div>
+      <div class="panel qbox">
+        <div class="qnum" id="qTag">Question 1</div>
+        <div class="scenario" id="scenarioText"></div>
+        <div class="question" id="questionText"></div>
+        <div class="options" id="optionsWrap"></div>
+        <div class="feedback" id="feedbackBox">Choose one answer.</div>
+        <div class="nav">
+          <button class="btn secondary hidden" id="nextBtn">Next</button>
+          <div class="tiny" id="retryText">You get one retry if your first answer is wrong.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="finalScreen">
+    <div class="hero">
+      <div class="badge">Final Challenge</div>
+      <h2 class="title" style="margin-top:10px">One last check!</h2>
+      <p class="subtitle">Choose the best example of alliteration from the final challenge question.</p>
+    </div>
+    <div class="content">
+      <div class="panel qbox">
+        <div class="scenario" id="finalScenario"></div>
+        <div class="question" id="finalQuestion"></div>
+        <div class="options" id="finalOptions"></div>
+        <div class="feedback" id="finalFeedback">Take your best shot.</div>
+        <div class="nav">
+          <button class="btn secondary hidden" id="finalNextBtn">See Result</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="resultScreen">
+    <div class="hero">
+      <div class="badge">Result</div>
+      <h2 class="title">Great job!</h2>
+      <div class="result-score" id="resultScore">0/15</div>
+      <p class="subtitle" id="resultMsg"></p>
+    </div>
+    <div class="content" style="padding-top:0">
+      <div class="panel">
+        <h3>Summary</h3>
+        <div class="kpi">
+          <div class="chip"><b id="correctCount">0</b>Correct</div>
+          <div class="chip"><b id="wrongCount">0</b>Wrong</div>
+          <div class="chip"><b id="accPct">0%</b>Accuracy</div>
+        </div>
+        <div class="btn-row" style="margin-top:16px;justify-content:center"><button class="btn primary" id="restartBtn">Play Again</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="logoOverlay"><div class="overlay-card"><img src="assets/logo.png" alt="Innovine logo"><div class="badge">Innovine</div><p class="tiny">Loading the candy quiz…</p></div></div>
+
+<script>
+const questions = [
+{scenario:'You are helping decorate for a birthday party. Which phrase sounds funny because the words begin with the same sound?',q:'Birthday Party',options:['happy balloons','big cake','silly snakes','red candles'],answer:2,ex:'"Silly snakes" repeats the same beginning sound in both words.'},
+{scenario:'You are reading a poem. Which phrase does NOT follow the same beginning sound pattern as the others?',q:'funny frogs, happy frogs, friendly frogs, fresh frogs',options:['funny frogs','happy frogs','friendly frogs','fresh frogs'],answer:1,ex:'"Happy frogs" starts with a different beginning sound.'},
+{scenario:'A child says: "I chose busy bees because both words begin with the same sound." Why is this correct?',q:'Reasoning',options:['Because alliteration uses words that begin with the same sound','Because both words are long','Because both words have the same meaning','Because both words end with the same letter'],answer:0,ex:'Alliteration is when nearby words begin with the same sound.'},
+{scenario:'During a nature walk, which phrase would sound like alliteration?',q:'Nature Walk',options:['green grass','bright flowers','busy butterflies','tall tree'],answer:2,ex:'"Busy butterflies" repeats the same starting sound.'},
+{scenario:'Statement: "Tiny turtles" is an example of alliteration. Reason: Both words begin with the same sound.',q:'Assertion–Reason',options:['The reason is correct and explains the statement','The reason is correct but does not explain the statement','The reason is wrong but the statement is correct','Both the reason and the statement are wrong'],answer:0,ex:'The reason explains why the statement is true.'},
+{scenario:'You are making funny names for pets. Which phrase would NOT be an example of alliteration?',q:'Pet Context',options:['playful puppies','clever cats','happy rabbits','bouncing bunnies'],answer:2,ex:'"Happy rabbits" does not keep the same beginning sound in both words.'},
+{scenario:'Which sentence shows correct understanding of alliteration?',q:'Purpose-Based Reasoning',options:['I would choose dancing ducks because both words begin with the same sound','I would choose red ducks because both words have four letters','I would choose big ducks because both words describe something','I would choose ducks swim because both words are in a sentence'],answer:0,ex:'The sentence names the shared beginning sound clearly.'},
+{scenario:'Which sentence shows incorrect understanding of alliteration?',q:'Error Detection',options:['I chose funny fish because both words begin with the same sound','I chose busy bees because both words begin with the same sound','I chose kind koalas because both words begin with the same sound','I chose small bees because both words begin with the same sound'],answer:3,ex:'"Small bees" does not share the same beginning sound.'},
+{scenario:'Your class is making a poster for Sports Day. Which title uses alliteration?',q:'School Event',options:['Sports Fun','Running Race','Super Sprinters','Fast Children'],answer:2,ex:'"Super Sprinters" repeats the same starting sound.'},
+{scenario:'A child says: "I will put brave bears in my alliteration group." What does this show?',q:'Case-Based',options:['The child understands that alliteration uses the same beginning sound','The child is grouping rhyming words','The child is looking for long words','The child is grouping action words'],answer:0,ex:'The child is correctly noticing the repeated beginning sound.'},
+{scenario:'During a picnic, which phrase would sound most like alliteration?',q:'Picnic Day',options:['juicy jam','tasty sandwiches','cold juice','fresh fruit'],answer:0,ex:'"Juicy jam" repeats the same beginning sound.'},
+{scenario:'Words: clever cats, cuddly cows, colourful crayons, little lions. Which phrase does not belong?',q:'Beginning Sound',options:['clever cats','cuddly cows','colourful crayons','little lions'],answer:3,ex:'"Little lions" begins with a different sound.'},
+{scenario:'Why does wonderful whales sound playful?',q:'Reasoning',options:['Because both words begin with the same sound','Because both words rhyme','Because both words are animals','Because both words are long'],answer:0,ex:'The repeated beginning sound makes it playful.'},
+{scenario:'Statement: "Brave birds" is an example of alliteration. Reason: The words start with the same beginning sound.',q:'Assertion–Reason',options:['Both are correct and the reason explains the statement','Both are correct but not related','Statement is correct, reason is wrong','Statement is wrong, reason is correct'],answer:0,ex:'The reason explains the statement.'},
+{scenario:'You are writing a funny story title. Which title uses alliteration?',q:'Story Writing',options:['The Funny Story','The Big Adventure','Mischievous Monkeys','The Little House'],answer:2,ex:'"Mischievous Monkeys" repeats the beginning sound.'}
+];
+const finalChallenge = {scenario:'Final Challenge: Choose the best alliteration title for a cheerful class poster.',q:'Which title uses alliteration?',options:['Happy Helpers','Class Poster','Bright School','Friends Together'],answer:0,ex:'"Happy Helpers" uses the same beginning sound.'};
+let idx=0, score=0, wrong=0, timer=60, timerInt=null, attempts=0, locked=false, qPool=[...questions], inFinal=false;
+const els={intro:document.getElementById('introScreen'),quiz:document.getElementById('quizScreen'),final:document.getElementById('finalScreen'),result:document.getElementById('resultScreen'),startBtn:document.getElementById('startBtn'),restartBtn:document.getElementById('restartBtn'),nextBtn:document.getElementById('nextBtn'),finalNextBtn:document.getElementById('finalNextBtn'),qTotal:document.getElementById('qTotal'),scoreVal:document.getElementById('scoreVal'),qVal:document.getElementById('qVal'),timeVal:document.getElementById('timeVal'),progressBar:document.getElementById('progressBar'),qTag:document.getElementById('qTag'),scenarioText:document.getElementById('scenarioText'),questionText:document.getElementById('questionText'),optionsWrap:document.getElementById('optionsWrap'),feedbackBox:document.getElementById('feedbackBox'),retryText:document.getElementById('retryText'),finalScenario:document.getElementById('finalScenario'),finalQuestion:document.getElementById('finalQuestion'),finalOptions:document.getElementById('finalOptions'),finalFeedback:document.getElementById('finalFeedback'),resultScore:document.getElementById('resultScore'),resultMsg:document.getElementById('resultMsg'),correctCount:document.getElementById('correctCount'),wrongCount:document.getElementById('wrongCount'),accPct:document.getElementById('accPct'),logoOverlay:document.getElementById('logoOverlay')};
+function show(s){[els.intro,els.quiz,els.final,els.result].forEach(x=>x.classList.remove('active'));s.classList.add('active')}
+function beep(type){const a=type==='good'?new Audio('assets/correct.mp3'):new Audio('assets/wrong.mp3');a.volume=.55;a.play().catch(()=>{})}
+function clap(){const a=new Audio('assets/freesound_community-claps-44774.mp3');a.volume=.45;a.play().catch(()=>{})}
+function tick(){clearInterval(timerInt);timer=60;els.timeVal.textContent=timer;timerInt=setInterval(()=>{timer--;els.timeVal.textContent=timer;if(timer<=0){clearInterval(timerInt);handleAnswer(-1,true)}},1000)}
+function render(){locked=false;attempts=0;els.nextBtn.classList.add('hidden');els.feedbackBox.className='feedback';els.feedbackBox.textContent='Choose one answer.';const q=qPool[idx];els.qTag.textContent=`Question ${idx+1}`;els.qVal.textContent=idx+1;els.qTotal.textContent=qPool.length;els.progressBar.style.width=`${(idx/qPool.length)*100}%`;els.scenarioText.textContent=q.scenario;els.questionText.textContent=q.q;els.optionsWrap.innerHTML='';q.options.forEach((t,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=`${String.fromCharCode(97+i)}) ${t}`;b.onclick=()=>handleAnswer(i,false,b);els.optionsWrap.appendChild(b)});tick()}
+function mark(btn,cls){if(btn)btn.classList.add(cls)}
+function handleAnswer(choice,timeout=false,btn=null){if(locked)return;const q=inFinal?finalChallenge:qPool[idx];const buttons=[...((inFinal?els.finalOptions:els.optionsWrap).querySelectorAll('.opt'))];const picked=btn||buttons[choice];if(choice===q.answer){locked=true;clearInterval(timerInt);score++;els.scoreVal.textContent=score;els.feedbackBox&& (els.feedbackBox.className='feedback good');els.finalFeedback&&(els.finalFeedback.className='feedback good');if(inFinal)els.finalFeedback.textContent='Correct! ' + q.ex;else els.feedbackBox.textContent='Correct! ' + q.ex;mark(picked,'correct');beep('good');confetti();setTimeout(()=>{if(inFinal){els.finalNextBtn.classList.remove('hidden')}else{idx++; if(idx<qPool.length)render(); else startFinal()}},700)}else{wrong++;beep('bad');cross();if(attempts===0 && !timeout){attempts=1; if(inFinal)els.finalFeedback.textContent='Try once more.'; else els.feedbackBox.textContent='That was not correct. Try one more time.'; mark(picked,'wrong'); buttons.forEach((b,i)=>{if(i===q.answer)b.style.outline='3px solid #76d49a'}); return;} locked=true; clearInterval(timerInt); buttons.forEach((b,i)=>{if(i===q.answer)b.classList.add('correct'); if(i===choice)b.classList.add('wrong')}); if(inFinal){els.finalFeedback.className='feedback bad';els.finalFeedback.textContent=`Correct answer: ${q.options[q.answer]}. ${q.ex}`; els.finalNextBtn.classList.remove('hidden');} else {els.feedbackBox.className='feedback bad';els.feedbackBox.textContent=`Correct answer: ${q.options[q.answer]}. ${q.ex}`; els.nextBtn.classList.remove('hidden');}}}
+function startFinal(){inFinal=true;show(els.final);els.finalScenario.textContent=finalChallenge.scenario;els.finalQuestion.textContent=finalChallenge.q;els.finalOptions.innerHTML='';els.finalFeedback.className='feedback';els.finalFeedback.textContent='Take your best shot.';finalChallenge.options.forEach((t,i)=>{const b=document.createElement('button');b.className='opt';b.textContent=`${String.fromCharCode(97+i)}) ${t}`;b.onclick=()=>handleAnswer(i,false,b);els.finalOptions.appendChild(b)});tick()}
+function confetti(){for(let i=0;i<18;i++){const s=document.createElement('div');s.className='confetti';s.textContent=['✦','★','✧','✮'][i%4];s.style.left=Math.random()*100+'vw';s.style.top=(55+Math.random()*12)+'vh';s.style.color=['#ff7cbf','#ffb35e','#8d6bff','#57d59a'][i%4];s.style.fontSize=(18+Math.random()*12)+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),900)}}
+function cross(){const c=document.createElement('div');c.className='cross';c.textContent='✕';c.style.left=(40+Math.random()*20)+'vw';c.style.top=(55+Math.random()*10)+'vh';document.body.appendChild(c);setTimeout(()=>c.remove(),700)}
+function finish(){clearInterval(timerInt);show(els.result);els.resultScore.textContent=`${score}/${qPool.length+1}`;const total=qPool.length+1;els.correctCount.textContent=score;els.wrongCount.textContent=wrong;els.accPct.textContent=Math.round((score/total)*100)+'%';els.resultMsg.textContent=score>=total*0.8?'You nailed the candy quiz!':'Nice work — try again for a sweeter score.';clap()}
+els.startBtn.onclick=()=>{show(els.quiz);render()};els.nextBtn.onclick=()=>{idx++; if(idx<qPool.length){render()} else startFinal()};els.finalNextBtn.onclick=finish;els.restartBtn.onclick=()=>location.reload();
+for(let i=0;i<18;i++){const d=document.createElement('div');d.className='star';d.style.left=Math.random()*100+'vw';d.style.animationDuration=(12+Math.random()*14)+'s';d.style.animationDelay=(-Math.random()*18)+'s';d.style.fontSize=(10+Math.random()*18)+'px';d.textContent=['✦','✧','✩','✪'][i%4];document.getElementById('bgStars').appendChild(d)}
+setTimeout(()=>els.logoOverlay.remove(),5000);
+</script>
+</body>
+</html>
