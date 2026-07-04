@@ -1,1 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Sight Words Spotlight - Interactive MCQ</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --primary-color: #4cc9f0;
+            --primary-dark: #4361ee;
+            --accent-color: #ffee55;
+            --text-color: #ffffff;
+            --card-bg: #1f2833;
+            --success-color: #06d6a0;
+            --error-color: #ef476f;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Glowing Background Animations */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .spotlight {
+            position: absolute;
+            background: radial-gradient(circle, rgba(76, 201, 240, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            width: 400px;
+            height: 400px;
+            animation: drift 20s infinite ease-in-out;
+        }
+
+        @keyframes drift {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(100px, 50px); }
+        }
+
+        /* Branding Screen */
+        #brand-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #brand-screen img {
+            max-width: 200px;
+            height: auto;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Container & Cards */
+        .container {
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            padding: 35px;
+            text-align: center;
+            display: none;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(76, 201, 240, 0.2);
+        }
+
+        .card.active {
+            display: block;
+        }
+
+        h1 { color: var(--accent-color); margin-bottom: 12px; font-size: 2rem; text-shadow: 0 0 10px rgba(255, 238, 85, 0.3); }
+        h2 { font-size: 1.4rem; margin-bottom: 20px; color: var(--text-color); }
+        p.subtitle { color: #c5a3ff; margin-bottom: 25px; font-size: 1.05rem; }
+
+        /* Meta tags */
+        .meta-tag {
+            display: inline-block;
+            background: rgba(76, 201, 240, 0.15);
+            border: 1px solid var(--primary-color);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 5px;
+            color: var(--primary-color);
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--primary-color);
+            color: #0b0c10;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 4px 14px rgba(76, 201, 240, 0.4);
+        }
+
+        .btn:hover { background-color: #64d4f7; box-shadow: 0 6px 20px rgba(76, 201, 240, 0.6); }
+        .btn:active { transform: scale(0.98); }
+
+        /* HUD Tracker Layout */
+        .hud-tracker {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(31, 40, 51, 0.85);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            padding: 12px 20px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+
+        .timer-box { color: var(--error-color); display: flex; align-items: center; gap: 5px; }
+        .score-box { color: var(--success-color); }
+        .progress-box { color: var(--primary-color); }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        /* Question Elements */
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: left;
+            color: var(--text-color);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            font-size: 1.05rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background: rgba(76, 201, 240, 0.08);
+            border-color: var(--primary-color);
+        }
+
+        .option-btn.correct {
+            background-color: rgba(6, 214, 160, 0.15) !important;
+            border-color: var(--success-color) !important;
+            color: var(--success-color);
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(6, 214, 160, 0.2);
+        }
+
+        .option-btn.wrong {
+            background-color: rgba(239, 71, 111, 0.15) !important;
+            border-color: var(--error-color) !important;
+            color: var(--error-color);
+        }
+
+        /* Feedback Indicators */
+        .indicator {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: rgba(67, 97, 238, 0.15);
+            border-left: 4px solid var(--primary-color);
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            display: none;
+            color: #d1d7e0;
+        }
+
+        /* Confetti Overlay */
+        .canvas-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .action-space {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .hidden { display: none !important; }
+
+        @media(max-width: 480px) {
+            .card { padding: 25px 15px; }
+            h1 { font-size: 1.6rem; }
+            .question-text { font-size: 1.1rem; }
+            .option-btn { font-size: 0.95rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg" id="ambient-bg"></div>
+
+    <canvas id="fx-canvas" class="canvas-overlay"></canvas>
+
+    <div id="brand-screen">
+        <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none';">
+    </div>
+
+    <div class="container">
+        
+        <div id="hud-bar" class="hud-tracker hidden">
+            <div class="progress-box">🔍 Word: <span id="hud-current">1</span>/<span id="hud-total">15</span></div>
+            <div class="timer-box">⏱️ <span id="hud-timer">60</span>s</div>
+            <div class="score-box">⭐ Score: <span id="hud-score">0</span></div>
+        </div>
+
+        <div class="progress-bar-container hidden" id="progress-container">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div id="intro-card" class="card active">
+            <div class="meta-wrapper">
+                <span class="meta-tag">Grade 1</span>
+                <span class="meta-tag">English</span>
+            </div>
+            <h1>Magic Sight Words Spotlight</h1>
+            <p class="subtitle">Train your eyes to capture words instantly! Spotlight frequently used sight words to unlock reading fluency mastery.</p>
+            <button class="btn" onclick="startQuiz()">Begin Spotlight</button>
+        </div>
+
+        <div id="quiz-card" class="card">
+            <div class="question-text" id="q-text">Spotting text configuration...</div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="feedback-box" id="feedback-container"></div>
+            <div class="action-space">
+                <button class="btn hidden" id="next-btn" onclick="advanceQuestion()">Next ➡️</button>
+            </div>
+        </div>
+
+        <div id="challenge-card" class="card">
+            <h1>🌟 The Ultimate Spotlight Challenge! 🌟</h1>
+            <p class="subtitle" style="margin-bottom:20px;">Spectacular precision! You've matched almost every high-frequency word. The ultimate sight word puzzle is ready to test your speed.</p>
+            <p id="challenge-desc" style="font-weight: 600; margin-bottom: 25px; color: var(--accent-color);"></p>
+            <button class="btn" onclick="triggerFinalQuestion()">Unlock Final Word</button>
+        </div>
+
+        <div id="result-card" class="card">
+            <h1>Fluency Level Locked!</h1>
+            <p class="subtitle" id="result-status"></p>
+            <h2 style="font-size: 3rem; color: var(--accent-color); margin: 15px 0;" id="final-score-text">0 / 15</h2>
+            <p style="margin-bottom:25px;" id="performance-feedback"></p>
+            <button class="btn" onclick="restartQuiz()">Restart Spotlight 🔄</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Curated Competency Question Set mapped chronologically by cognitive difficulty variables
+        const questions = [
+            {
+                text: "You find a note in your lunch box. Which word would you most likely recognize quickly because you see it often in books and notes?",
+                options: ["because", "the", "beautiful", "elephant"],
+                answer: 1,
+                explanation: "\"The\" appears in almost all sentences, making it an foundational baseline sight word that readers pick up instantly by sight."
+            },
+            {
+                text: "While reading a story, you see these words: the, and, was, butterfly. Which word is different because it is not a commonly used sight word?",
+                options: ["the", "and", "was", "butterfly"],
+                answer: 3,
+                explanation: "\"Butterfly\" is a descriptive content noun instead of a high-frequency structure word encountered continuously."
+            },
+            {
+                text: "A child says: \"I stopped to sound out every letter in the word 'the' because it is a new word.\" Why is this not the best choice?",
+                options: [
+                    "Because \"the\" is a common sight word that readers learn to recognize quickly",
+                    "Because \"the\" is not a real word",
+                    "Because \"the\" is the longest word in the sentence",
+                    "Because sight words are only used in stories"
+                ],
+                answer: 0,
+                explanation: "Sounding out high-frequency words can disrupt reading speed; identifying \"the\" instantly creates a smoother reading experience."
+            },
+            {
+                text: "Your teacher writes a sentence on the board: \"I can help.\" Which word is a sight word that many Grade 1 students learn early?",
+                options: ["help", "can", "classroom", "teacher"],
+                answer: 1,
+                explanation: "\"Can\" is an foundational component that functions dynamically across simple interactive activity sentences."
+            },
+            {
+                text: "Statement: Sight words help us read more smoothly. \nReason: These words appear often in books and sentences.",
+                options: [
+                    "The reason is correct and explains the statement",
+                    "The reason is correct but does not explain the statement",
+                    "The reason is wrong but the statement is correct",
+                    "Both the reason and the statement are wrong"
+                ],
+                answer: 0,
+                explanation: "Because sight words pop up repeatedly, recognizing them effortlessly leaves memory open for more advanced sentences."
+            },
+            {
+                text: "Which sentence shows incorrect understanding of sight words?",
+                options: [
+                    "I see sight words often when I read.",
+                    "Sight words help me read faster.",
+                    "Every long word is a sight word.",
+                    "I can learn sight words by reading regularly."
+                ],
+                answer: 2,
+                explanation: "Length doesn't matter; sight words are chosen solely by how frequently they are seen, regardless of letter counts."
+            },
+            {
+                text: "Which sentence shows correct understanding of sight words?",
+                options: [
+                    "I would learn \"and\" because it appears in many sentences.",
+                    "I would learn only animal names as sight words.",
+                    "I would learn only colour names as sight words.",
+                    "I would use sight words only during tests."
+                ],
+                answer: 0,
+                explanation: "\"And\" connects actions and clauses constantly, validating its status as a vital foundational word."
+            },
+            {
+                text: "Which sentence contains a sight word written incorrectly?",
+                options: [
+                    "I can ride a bicycle.",
+                    "We are playing outside.",
+                    "I hav a new water bottle.",
+                    "They are my friends."
+                ],
+                answer: 2,
+                explanation: "The core high-frequency element \"have\" is written missing its termination letter \"e\", disrupting reading flow."
+            },
+            {
+                text: "You receive a birthday card that says: \"We love you.\" Which word is a commonly used sight word?",
+                options: ["birthday", "love", "card", "you"],
+                answer: 3,
+                explanation: "\"You\" is a core conversational pronoun that readers must identify immediately without relying on sound mechanics."
+            },
+            {
+                text: "A child says: \"I will practice reading 'come' because I see it in many sentences.\" What does this show?",
+                options: [
+                    "The child understands how sight words are used.",
+                    "The child thinks all words are sight words.",
+                    "The child is learning punctuation.",
+                    "The child is learning rhyming words."
+                ],
+                answer: 0,
+                explanation: "Identifying repeating environmental words allows children to optimize their active processing focus points."
+            },
+            {
+                text: "You read a classroom notice: \"Please sit here.\" Which word is most likely a sight word?",
+                options: ["please", "classroom", "notice", "blackboard"],
+                answer: 0,
+                explanation: "\"Please\" works as a high-frequency social anchor that appears across everyday operational parameters."
+            },
+            {
+                text: "Words: you, said, they, watermelon. Which word does not belong with the others?",
+                options: ["you", "said", "they", "watermelon"],
+                answer: 3,
+                explanation: "\"Watermelon\" is a compound content word, distinct from functional conversational components."
+            },
+            {
+                text: "Which sentence would be difficult to read smoothly because a common sight word is written incorrectly?",
+                options: [
+                    "They are my neighbours.",
+                    "We went to the park.",
+                    "I lik to draw pictures.",
+                    "She is helping her sister."
+                ],
+                answer: 2,
+                explanation: "The key action word \"like\" is misspelled as \"lik\", creating confusion in reading cadence."
+            },
+            {
+                text: "Statement: \"said\" is often taught as a sight word. \nReason: Readers see it frequently in stories and conversations.",
+                options: [
+                    "Both are correct and the reason explains the statement",
+                    "Both are correct but not related",
+                    "Statement is correct, reason is wrong",
+                    "Statement is wrong, reason is correct"
+                ],
+                answer: 0,
+                explanation: "Since dialogue anchors narrations frequently, memorizing \"said\" directly eliminates structural bottlenecks."
+            },
+            {
+                text: "Your mother leaves a note: \"Please put the books on the shelf.\" Which sight word helps you understand the instruction quickly?",
+                options: ["shelf", "books", "please", "put"],
+                answer: 2,
+                explanation: "\"Please\" triggers rapid operational scanning, serving as an easily recognizable sight word component."
+            }
+        ];
+
+        // Global Variables Tracker State Configuration
+        let currentIdx = 0;
+        let score = 0;
+        let clockSecs = 60; // Configured precisely for Grade 1 parameters
+        let countdownTimer = null;
+        let doubleFaultCheck = 0; // Dual attempt track evaluation architecture rule
+
+        // Audio initialization structures
+        const sndCorrect = new Audio('assets/correct.mp3');
+        const sndWrong = new Audio('assets/wrong.mp3');
+        const sndClaps = new Audio('assets/freesound_community-claps-44774.mp3');
+
+        // FX Spotlight Canvas management mechanics
+        const canvas = document.getElementById('fx-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function setCanvasBounds() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', setCanvasBounds);
+        setCanvasBounds();
+
+        // Populate ambient flashlight spotlights
+        function instantiateAmbientBackground() {
+            const bg = document.getElementById('ambient-bg');
+            for(let i=0; i<3; i++){
+                let light = document.createElement('div');
+                light.className = 'spotlight';
+                light.style.left = `${Math.random() * 60}vw`;
+                light.style.top = `${Math.random() * 60}vh`;
+                light.style.animationDelay = `${i * 4}s`;
+                bg.appendChild(light);
+            }
+        }
+        instantiateAmbientBackground();
+
+        // 5 second mandatory splash tracking lock
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const brand = document.getElementById('brand-screen');
+                brand.style.opacity = '0';
+                setTimeout(() => brand.remove(), 500);
+            }, 5000);
+        });
+
+        // Loop controls and transitions
+        function startQuiz() {
+            document.getElementById('intro-card').classList.remove('active');
+            document.getElementById('hud-bar').classList.remove('hidden');
+            document.getElementById('progress-container').classList.remove('hidden');
+            document.getElementById('quiz-card').classList.add('active');
+            currentIdx = 0;
+            score = 0;
+            updateHUD();
+            displayQuestion();
+        }
+
+        function updateHUD() {
+            document.getElementById('hud-current').innerText = currentIdx + 1;
+            document.getElementById('hud-total').innerText = questions.length;
+            document.getElementById('hud-score').innerText = score;
+            let percent = ((currentIdx) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = `${percent}%`;
+        }
+
+        function initiateTimer() {
+            clearInterval(countdownTimer);
+            clockSecs = 60;
+            document.getElementById('hud-timer').innerText = clockSecs;
+            countdownTimer = setInterval(() => {
+                clockSecs--;
+                document.getElementById('hud-timer').innerText = clockSecs;
+                if(clockSecs <= 0) {
+                    clearInterval(countdownTimer);
+                    handleExpirationTime();
+                }
+            }, 1000);
+        }
+
+        function displayQuestion() {
+            initiateTimer();
+            doubleFaultCheck = 0;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('feedback-container').style.display = 'none';
+            
+            let q = questions[currentIdx];
+            document.getElementById('q-text').innerText = q.text;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                let btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span>${opt}</span><span class="indicator" id="ind-${idx}"></span>`;
+                btn.onclick = () => processSelection(idx, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function processSelection(chosenIdx, clickedBtn) {
+            let q = questions[currentIdx];
+            
+            if (chosenIdx === q.answer) {
+                clearInterval(countdownTimer);
+                clickedBtn.classList.add('correct');
+                document.getElementById(`ind-${chosenIdx}`).innerText = '✓';
+                freezeOptions();
+                score++;
+                document.getElementById('hud-score').innerText = score;
+                playAudioSafely(sndCorrect);
+                triggerStarsEffect();
+                revealControls();
+            } else {
+                doubleFaultCheck++;
+                playAudioSafely(sndWrong);
+                
+                if (doubleFaultCheck === 1) {
+                    clickedBtn.classList.add('wrong');
+                    document.getElementById(`ind-${chosenIdx}`).innerText = '✗';
+                    alert("🔍 Spotlight Check! That word looks slightly different. Let's trace it one more time!");
+                } else {
+                    clearInterval(countdownTimer);
+                    clickedBtn.classList.add('wrong');
+                    document.getElementById(`ind-${chosenIdx}`).innerText = '✗';
+                    
+                    let btns = document.querySelectorAll('.option-btn');
+                    btns[q.answer].classList.add('correct');
+                    document.getElementById(`ind-${q.answer}`).innerText = '✓';
+                    
+                    freezeOptions();
+                    revealExplanation(q.explanation);
+                    revealControls();
+                }
+            }
+        }
+
+        function handleExpirationTime() {
+            let q = questions[currentIdx];
+            freezeOptions();
+            let btns = document.querySelectorAll('.option-btn');
+            btns[q.answer].classList.add('correct');
+            revealExplanation("⏰ Lens spotlight offline! " + q.explanation);
+            revealControls();
+        }
+
+        function freezeOptions() {
+            let btns = document.querySelectorAll('.option-btn');
+            btns.forEach(b => b.setAttribute('disabled', 'true'));
+        }
+
+        function revealExplanation(text) {
+            const fb = document.getElementById('feedback-container');
+            fb.innerText = text;
+            fb.style.display = 'block';
+        }
+
+        function revealControls() {
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function advanceQuestion() {
+            currentIdx++;
+            if (currentIdx === questions.length - 1) {
+                // Intercept step for displaying specialized Final Challenge Gate Screen prior to ultimate question
+                document.getElementById('quiz-card').classList.remove('active');
+                document.getElementById('challenge-card').classList.add('active');
+                document.getElementById('challenge-desc').innerText = `Amazing focus! You spotted ${currentIdx} out of ${questions.length} reading hurdles smoothly. The final node demands maximum observation metrics!`;
+            } else if (currentIdx >= questions.length) {
+                showResults();
+            } else {
+                updateHUD();
+                displayQuestion();
+            }
+        }
+
+        function triggerFinalQuestion() {
+            document.getElementById('challenge-card').classList.remove('active');
+            document.getElementById('quiz-card').classList.add('active');
+            updateHUD();
+            displayQuestion();
+        }
+
+        function showResults() {
+            clearInterval(countdownTimer);
+            document.getElementById('quiz-card').classList.remove('active');
+            document.getElementById('hud-bar').classList.add('hidden');
+            document.getElementById('progress-container').classList.add('hidden');
+            document.getElementById('result-card').classList.add('active');
+            
+            document.getElementById('final-score-text').innerText = `${score} / ${questions.length}`;
+            
+            let status = document.getElementById('result-status');
+            let feedback = document.getElementById('performance-feedback');
+            
+            if (score >= 12) {
+                status.innerText = "🌟 HIGH-FREQUENCY FLUENCY ACCELERATOR LOCKED! 🌟";
+                feedback.innerText = "Sensational! Your mind matches sight words instantly. Reading books and notes will be a breeze for you!";
+                playAudioSafely(sndClaps);
+            } else if (score >= 7) {
+                status.innerText = "👍 Word Tracker Pro!";
+                feedback.innerText = "Great focus profile. You captured most high-repetition reading structures smoothly. Let's try once more for a perfect 15!";
+            } else {
+                status.innerText = "📚 Steady Reading Route!";
+                feedback.innerText = "Sight words anchor everything we read. Run the spotlight exercise again to strengthen your instant visual trace loop!";
+            }
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-card').classList.remove('active');
+            startQuiz();
+        }
+
+        function playAudioSafely(audioObj) {
+            audioObj.currentTime = 0;
+            audioObj.play().catch(e => console.log("Audio infrastructure initialized successfully."));
+        }
+
+        // Particle System Loop Engine (Spotlight Glowing Star Clusters)
+        function triggerStarsEffect() {
+            for (let i = 0; i < 40; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    dx: (Math.random() - 0.5) * 7,
+                    dy: (Math.random() - 0.5) * 7 - 3,
+                    size: Math.random() * 5 + 4,
+                    color: i % 2 === 0 ? '#ffee55' : '#4cc9f0',
+                    alpha: 1,
+                    decay: Math.random() * 0.015 + 0.015
+                });
+            }
+        }
+
+        function updateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.dx;
+                p.y += p.dy;
+                p.alpha -= p.decay;
+                
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                    continue;
+                }
+
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = p.color;
+                
+                // Form clean star graphics metrics
+                ctx.beginPath();
+                for (let j = 0; j < 5; j++) {
+                    ctx.lineTo(p.x + Math.cos((18 + j * 72) * Math.PI / 180) * p.size, p.y + Math.sin((18 + j * 72) * Math.PI / 180) * p.size);
+                    ctx.lineTo(p.x + Math.cos((54 + j * 72) * Math.PI / 180) * (p.size / 2), p.y + Math.sin((54 + j * 72) * Math.PI / 180) * (p.size / 2));
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+            requestAnimationFrame(updateParticles);
+        }
+        requestAnimationFrame(updateParticles);
+    </script>
+</body>
+</html>
