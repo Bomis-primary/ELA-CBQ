@@ -1,1 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Pronouns Interactive Quiz</title>
+    <style>
+        /* CSS Reset & Variables */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        :root {
+            --primary: #5B67F1;
+            --primary-light: #EBEEFF;
+            --secondary: #4ECDC4;
+            --correct: #FFD166;
+            --wrong: #FF6B6B;
+            --text-dark: #2D3748;
+            --text-light: #718096;
+            --bg-gradient: linear-gradient(135deg, #f9f8f6 0%, #f1f3f5 100%);
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Dynamic Background elements */
+        .ambient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .ambient-symbol {
+            position: absolute;
+            color: rgba(91, 103, 241, 0.05);
+            font-size: 4rem;
+            font-weight: bold;
+            animation: float 12s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        /* Branding Splash Overlay */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .branding-logo {
+            max-width: 220px;
+            height: auto;
+            animation: pulseLogo 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseLogo {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Game Containers */
+        .game-container {
+            width: 90%;
+            max-width: 650px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+            position: relative;
+            display: none;
+        }
+
+        .game-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header UI Components */
+        .header-logo-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .header-logo {
+            max-height: 45px;
+            width: auto;
+        }
+
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .timer-box {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: #edf2f7;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.4s ease;
+        }
+
+        /* Question and Options layouts */
+        .question-text {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 25px;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .context-box {
+            background: #f7fafc;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-style: italic;
+            font-size: 1rem;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 25px;
+        }
+
+        .option-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .option-card:hover:not(.disabled) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .option-card.selected-wrong {
+            border-color: var(--wrong);
+            background: #FFF5F5;
+            color: #C53030;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .option-card.revealed-correct {
+            border-color: #48BB78;
+            background: #F0FFF4;
+            color: #22543D;
+        }
+
+        .option-card.disabled {
+            pointer-events: none;
+        }
+
+        /* Indicators */
+        .indicator-icon {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Feedback and Action panel */
+        .feedback-panel {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .feedback-title.wrong-info { color: #C53030; }
+        .feedback-title.correct-info { color: #22543D; }
+
+        .action-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: none;
+        }
+
+        .action-btn:hover {
+            background: #4341E6;
+        }
+
+        /* Screens specific configs */
+        .intro-screen, .result-screen {
+            text-align: center;
+        }
+
+        .intro-title {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .intro-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 25px;
+        }
+
+        .badge-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            background: #edf2f7;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Particle Confetti and Shake Canvas elements */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .confetti-star {
+            position: absolute;
+            color: var(--correct);
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: burst 0.8s ease-out forwards;
+            z-index: 100;
+        }
+
+        @keyframes burst {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* Result Styles */
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            font-size: 2rem;
+            font-weight: bold;
+            border: 4px solid var(--primary);
+        }
+
+        .score-lbl { font-size: 0.85rem; color: var(--text-light); text-transform: uppercase; margin-top: 2px;}
+
+        /* Mobile Adjustments */
+        @media(max-width: 600px) {
+            .game-container { padding: 20px; width: 95%; }
+            .question-text { font-size: 1.1rem; }
+            .option-card { font-size: 0.95rem; padding: 12px 16px; }
+            .intro-title { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="ambient-symbol" style="top: 15%; left: 8%; animation-delay: 0s;">I</div>
+        <div class="ambient-symbol" style="top: 70%; left: 12%; animation-delay: 3s;">You</div>
+        <div class="ambient-symbol" style="top: 25%; right: 10%; animation-delay: 1.5s;">We</div>
+        <div class="ambient-symbol" style="top: 80%; right: 15%; animation-delay: 4.5s;">They</div>
+        <div class="ambient-symbol" style="top: 45%; left: 50%; animation-delay: 2.5s;">She</div>
+    </div>
+
+    <div id="splash-screen">
+        <img src="assets/logo.png" alt="Innovine Logo" class="branding-logo">
+    </div>
+
+    <div id="intro-card" class="game-container">
+        <div class="header-logo-container">
+            <img src="assets/logo.png" alt="Innovine" class="header-logo">
+        </div>
+        <div class="intro-screen">
+            <h1 class="intro-title">Pronoun Practice Quest</h1>
+            <p class="intro-subtitle">Master the words used to replace naming words dynamically!</p>
+            
+            <div class="badge-grid">
+                <span class="badge">Grade 2</span>
+                <span class="badge">Subject: English</span>
+                <span class="badge">15 Challenges</span>
+            </div>
+
+            <button class="action-btn" style="display: block;" onclick="startQuiz()">Begin Adventure</button>
+        </div>
+    </div>
+
+    <div id="quiz-card" class="game-container">
+        <div class="header-logo-container">
+            <img src="assets/logo.png" alt="Innovine" class="header-logo">
+        </div>
+        
+        <div class="quiz-meta">
+            <span id="question-index-counter">Question 1 of 15</span>
+            <div class="timer-box">
+                ⏱️ <span id="timer-countdown">60</span>s
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div id="progress-indicator-line" class="progress-bar"></div>
+        </div>
+
+        <div id="context-wrapper" class="context-box" style="display: none;"></div>
+        <div id="question-text-field" class="question-text"></div>
+
+        <div id="options-wrapper-element" class="options-grid"></div>
+
+        <div id="feedback-panel-element" class="feedback-panel">
+            <div id="feedback-title-text" class="feedback-title"></div>
+            <div id="feedback-explanation-body"></div>
+        </div>
+
+        <button id="action-control-button" class="action-btn" onclick="handleActionClick()"></button>
+    </div>
+
+    <div id="result-card" class="game-container">
+        <div class="header-logo-container">
+            <img src="assets/logo.png" alt="Innovine" class="header-logo">
+        </div>
+        <div class="result-screen">
+            <h1 class="intro-title" id="completion-greeting">Wonderful Effort!</h1>
+            <p class="intro-subtitle">You have completed the entire Pronoun Topic Quest.</p>
+            
+            <div class="score-circle">
+                <span id="final-score-display">0/15</span>
+                <div class="score-lbl">Score Tracker</div>
+            </div>
+
+            <p id="performance-feedback-text" style="margin-bottom: 25px; color: var(--text-dark); font-weight: 500;"></p>
+
+            <button class="action-btn" style="display: block;" onclick="restartQuiz()">Restart Adventure</button>
+        </div>
+    </div>
+
+    <audio id="audio-correct" src="assets/correct.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+    <audio id="audio-applause" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+    <script>
+        // Quiz Data Array Matrix Sorted structurally in gradual ascending difficulty
+        const quizDatabase = [
+            {
+                type: "Experience-Based MCQ (Football Practice)",
+                context: "Your football team has just won a match. While talking to your parents about the victory, which sentence would you most likely say?",
+                question: "Select the sentence with the best dynamic pronoun choice:",
+                options: ["They played very well today.", "We played very well today.", "You played very well today.", "He played very well today."],
+                answer: 1,
+                explanation: "Because you are part of the football team, you use the plural pronoun 'We' to include yourself and your team members."
+            },
+            {
+                type: "Odd One Out (Pronoun Use)",
+                context: "Words: he, she, they, bicycle",
+                question: "Which word does not belong with the others?",
+                options: ["he", "she", "they", "bicycle"],
+                answer: 3,
+                explanation: "'he', 'she', and 'they' are pronouns used to replace names of people. 'bicycle' is a naming word (noun) for an object."
+            },
+            {
+                type: "Experience-Based MCQ (Family Picnic)",
+                context: "Your cousin Rahul is flying a kite in the park. You are telling someone about your cousin.",
+                question: "Which sentence would you say?",
+                options: ["I am flying a kite.", "We are flying a kite.", "He is flying a kite.", "They are flying a kite."],
+                answer: 2,
+                explanation: "Rahul is a boy being spoken about, so we use the singular male replacement pronoun 'He'."
+            },
+            {
+                type: "Experience-Based MCQ (Science Museum)",
+                context: "You and your classmates visit a science museum. Later, your teacher asks about the trip.",
+                question: "Which sentence would be most suitable?",
+                options: ["We learned many new things.", "I learned many new things.", "He learned many new things.", "It learned many new things."],
+                answer: 0,
+                explanation: "'We' is correctly used because it represents you together with your classmates as a united group."
+            },
+            {
+                type: "Experience-Based MCQ (Lost-and-Found Counter)",
+                context: "You are looking for your missing cap and speaking directly to the person at the counter.",
+                question: "Which pronoun would you use to address that person?",
+                options: ["he", "she", "you", "they"],
+                answer: 2,
+                explanation: "When addressing someone directly face-to-face, the second-person pronoun 'you' is appropriate."
+            },
+            {
+                type: "Experience-Based MCQ (Street Animal Rescue)",
+                context: "You find an injured puppy near your building and tell your neighbour about it.",
+                question: "Which sentence would you most likely say?",
+                options: ["He needs help.", "We needs help.", "They needs help.", "You needs help."],
+                answer: 0,
+                explanation: "An individual animal like a single puppy is replaced appropriately with 'He' or 'It'. Additionally, 'He' matches correctly with the singular verb action 'needs'."
+            },
+            {
+                type: "Reasoning MCQ",
+                context: "A student says: 'I used \"they\" when talking about four children planting trees.'",
+                question: "Why is this a good choice?",
+                options: ["Because \"they\" can refer to more than one person", "Because \"they\" is used only for girls", "Because \"they\" is used only for boys", "Because \"they\" refers to one person"],
+                answer: 0,
+                explanation: "'They' is a plural third-person pronoun explicitly used when referencing more than one human or object."
+            },
+            {
+                type: "Purpose-Based Reasoning MCQ",
+                question: "Which sentence shows correct understanding of pronouns?",
+                options: ["I would use \"we\" when talking about myself and my friends.", "I would use \"he\" when talking about myself and my friends.", "I would use \"she\" when talking about a group of children.", "I would use \"it\" when talking about my classmates."],
+                answer: 0,
+                explanation: "You use 'we' anytime you are discussing a group that includes yourself ('myself and my friends')."
+            },
+            {
+                type: "Reasoning MCQ",
+                context: "Sentence: 'We cleaned the park during the community drive.'",
+                question: "Why is \"we\" used in this sentence?",
+                options: ["Because the speaker is part of the group doing the action", "Because only one person cleaned the park", "Because the park is being described", "Because the sentence talks about a thing"],
+                answer: 0,
+                explanation: "The choice of 'we' demonstrates clearly that the person writing or speaking performed the activity alongside the rest of the group."
+            },
+            {
+                type: "Assertion–Reason MCQ",
+                context: "Statement: We use \"it\" to talk about a single thing or animal.\nReason: \"It\" replaces the name of one thing or animal.",
+                question: "Choose the correct evaluation:",
+                options: ["The reason is correct and explains the statement", "The reason is correct but does not explain the statement", "The reason is wrong but the statement is correct", "Both the reason and the statement are wrong"],
+                answer: 0,
+                explanation: "The reason accurately details the structural language rule determining why 'it' is applied to singular objects or animals."
+            },
+            {
+                type: "Assertion–Reason MCQ",
+                context: "Statement: \"They\" can be used for a group of people.\nReason: \"They\" refers to more than one person or thing.",
+                question: "Choose the correct evaluation:",
+                options: ["Both are correct and the reason explains the statement", "Both are correct but not related", "Statement is correct, reason is wrong", "Statement is wrong, reason is correct"],
+                answer: 0,
+                explanation: "Both aspects hold accurate linguistic truths, and the explanation maps perfectly to the core plural mechanics of 'They'."
+            },
+            {
+                type: "NOT Correct Understanding (Neighbourhood Context)",
+                question: "Which sentence shows incorrect understanding of pronouns?",
+                options: ["My sister loves drawing. She makes beautiful sketches.", "The puppy is sleeping. It looks comfortable.", "Rohan and Arjun are cycling. They are wearing helmets.", "The mango tree is full of fruit. He is very tall."],
+                answer: 3,
+                explanation: "A tree is an inanimate biological structure/thing. Replacing it with the male personal pronoun 'He' is incorrect; 'It' should be used instead."
+            },
+            {
+                type: "Error Detection MCQ",
+                question: "Which sentence is grammatically incorrect?",
+                options: ["My brother is reading a comic. He enjoys adventure stories.", "The parrots are sitting on a branch. They are very noisy.", "My grandmother baked cookies. She shared them with us.", "The bicycles are parked outside. It are locked."],
+                answer: 3,
+                explanation: "'Bicycles' is plural. Replicating them requires the pronoun 'They' accompanied by 'are'. 'It are' is completely mismatched syntax."
+            },
+            {
+                type: "Case-Based MCQ",
+                context: "A student writes: 'Meera won the painting competition. He received a trophy.'",
+                question: "What structural edit must be corrected?",
+                options: ["Meera → Meeras", "He → She", "trophy → trophies", "won → win"],
+                answer: 1,
+                explanation: "Meera is a female character name. The pronoun matching her must be altered from 'He' to the feminine choice 'She'."
+            },
+            {
+                type: "Odd One Out (Reference Recognition)",
+                question: "Which structural sentence does not belong with the others due to an error?",
+                options: ["My father is a doctor. He works at a hospital.", "The kitten is playful. It chases a ball.", "My cousins live nearby. They visit often.", "My cousins live nearby. She visit often."],
+                answer: 3,
+                explanation: "'My cousins' represents multiple individuals. The option utilizing 'She visit' introduces an erroneous singular pronoun along with broken verb agreement."
+            }
+        ];
+
+        // State Machine Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval = null;
+        let timeRemaining = 60; // Grade 2 rule: 60 seconds
+        let attemptsMade = 0;
+        let finalChallengeActive = false;
+
+        // Sound Player Wrapper with defensive failure mitigation
+        function safePlayAudio(elementId) {
+            const audio = document.getElementById(elementId);
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play().catch(e => console.log("Audio playback managed safely:", e));
+            }
+        }
+
+        // Window Initializer Orchestration
+        window.addEventListener('DOMContentLoaded', () => {
+            // Display Splash Branding Screen for exactly 5 seconds, then transition to Intro
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = 0;
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    document.getElementById('intro-card').classList.add('active');
+                }, 500);
+            }, 5000);
+        });
+
+        // Initialize and Start Quiz
+        function startQuiz() {
+            document.getElementById('intro-card').classList.remove('active');
+            document.getElementById('quiz-card').classList.add('active');
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        // Build Question Template Card dynamically
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            timeRemaining = 60;
+            attemptsMade = 0;
+            finalChallengeActive = (currentQuestionIndex === quizDatabase.length - 1);
+            
+            document.getElementById('timer-countdown').innerText = timeRemaining;
+            document.getElementById('question-index-counter').innerText = `Question ${currentQuestionIndex + 1} of ${quizDatabase.length} ${finalChallengeActive ? '🔥 FINAL CHALLENGE' : ''}`;
+            
+            // Advance Progress UI line
+            const percentage = ((currentQuestionIndex) / quizDatabase.length) * 100;
+            document.getElementById('progress-indicator-line').style.width = `${percentage}%`;
+
+            const currentData = quizDatabase[currentQuestionIndex];
+            
+            // Context conditional renderer
+            const contextEl = document.getElementById('context-wrapper');
+            if (currentData.context) {
+                contextEl.innerText = currentData.context;
+                contextEl.style.display = 'block';
+            } else {
+                contextEl.style.display = 'none';
+            }
+
+            document.getElementById('question-text-field').innerText = currentData.question;
+            
+            // Generate clean selection cards
+            const optionsWrapper = document.getElementById('options-wrapper-element');
+            optionsWrapper.innerHTML = '';
+            
+            currentData.options.forEach((option, index) => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.innerHTML = `<span>${option}</span><span class="indicator-icon" id="ind-${index}"></span>`;
+                card.onclick = () => selectOption(index);
+                optionsWrapper.appendChild(card);
+            });
+
+            // Clean up interaction drawers
+            document.getElementById('feedback-panel-element').style.display = 'none';
+            document.getElementById('action-control-button').style.display = 'none';
+
+            // Start countdown timer ticker
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                document.getElementById('timer-countdown').innerText = timeRemaining;
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeoutBreakdown();
+                }
+            }, 1000);
+        }
+
+        // Process Interactive Selection Core Logic
+        function selectOption(selectedIndex) {
+            const currentData = quizDatabase[currentQuestionIndex];
+            const cards = document.getElementsByClassName('option-card');
+            
+            // Correct Track Sequence Match
+            if (selectedIndex === currentData.answer) {
+                clearInterval(timerInterval);
+                safePlayAudio('audio-correct');
+                cards[selectedIndex].classList.add('revealed-correct');
+                document.getElementById(`ind-${selectedIndex}`).innerHTML = '⭐';
+                triggerConfettiBurst(cards[selectedIndex]);
+                
+                // Add points based on dynamic retry penalty evaluation
+                if (attemptsMade === 0) {
+                    score++;
+                }
+                
+                displaySystemFeedback(true);
+            } 
+            // Incorrect Track Sequence Match
+            else {
+                attemptsMade++;
+                safePlayAudio('audio-wrong');
+                cards[selectedIndex].classList.add('selected-wrong');
+                document.getElementById(`ind-${selectedIndex}`).innerHTML = '❌';
+                cards[selectedIndex].classList.add('disabled'); // Disable this broken choice
+
+                if (attemptsMade === 1) {
+                    // Give student 1 dynamic second try
+                    alert("Oops! That's not quite right. Try looking closely at the pronoun matching rule and try one more time!");
+                    cards[selectedIndex].classList.remove('selected-wrong');
+                } else {
+                    // Out of opportunities for this current index
+                    clearInterval(timerInterval);
+                    cards[currentData.answer].classList.add('revealed-correct');
+                    document.getElementById(`ind-${currentData.answer}`).innerHTML = '⭐';
+                    displaySystemFeedback(false);
+                }
+            }
+        }
+
+        // Handle structural timeouts
+        function handleTimeoutBreakdown() {
+            const currentData = quizDatabase[currentQuestionIndex];
+            const cards = document.getElementsByClassName('option-card');
+            
+            // Lock active selection interactions
+            for(let card of cards) { card.classList.add('disabled'); }
+            
+            cards[currentData.answer].classList.add('revealed-correct');
+            document.getElementById(`ind-${currentData.answer}`).innerHTML = '⭐';
+            
+            safePlayAudio('audio-wrong');
+            
+            const titleEl = document.getElementById('feedback-title-text');
+            const panelEl = document.getElementById('feedback-panel-element');
+            const bodyEl = document.getElementById('feedback-explanation-body');
+            
+            titleEl.className = "feedback-title wrong-info";
+            titleEl.innerText = "⏳ Time Expired!";
+            bodyEl.innerText = currentData.explanation;
+            panelEl.style.display = 'block';
+            
+            configureActionControlState();
+        }
+
+        // Render Panel feedback explanations nicely
+        function displaySystemFeedback(isCorrect) {
+            const currentData = quizDatabase[currentQuestionIndex];
+            const titleEl = document.getElementById('feedback-title-text');
+            const panelEl = document.getElementById('feedback-panel-element');
+            const bodyEl = document.getElementById('feedback-explanation-body');
+            const cards = document.getElementsByClassName('option-card');
+
+            for(let card of cards) { card.classList.add('disabled'); }
+
+            if (isCorrect) {
+                titleEl.className = "feedback-title correct-info";
+                titleEl.innerText = "🎉 Brilliant Choice!";
+            } else {
+                titleEl.className = "feedback-title wrong-info";
+                titleEl.innerText = "💡 Keep Learning!";
+            }
+
+            bodyEl.innerText = currentData.explanation;
+            panelEl.style.display = 'block';
+            
+            configureActionControlState();
+        }
+
+        // Toggle button states to control pagination steps
+        function configureActionControlState() {
+            const btn = document.getElementById('action-control-button');
+            if (finalChallengeActive) {
+                btn.innerText = "Finish Quest & View Results";
+            } else {
+                btn.innerText = "Advance to Next Challenge ➡️";
+            }
+            btn.style.display = 'block';
+        }
+
+        // Route actions depending on state sequence positioning
+        function handleActionClick() {
+            if (finalChallengeActive) {
+                renderResultsScreen();
+            } else {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        // Star confetti visual effects layer
+        function triggerConfettiBurst(targetElement) {
+            const bounds = targetElement.getBoundingClientRect();
+            for (let i = 0; i < 12; i++) {
+                const star = document.createElement('div');
+                star.className = 'confetti-star';
+                star.innerHTML = '★';
+                star.style.left = `${bounds.left + (bounds.width / 2)}px`;
+                star.style.top = `${bounds.top + (bounds.height / 2)}px`;
+                
+                // Set custom expansion direction variations
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 40 + Math.random() * 80;
+                star.style.setProperty('--tx', `${Math.cos(angle) * distance}px`);
+                star.style.setProperty('--ty', `${Math.sin(angle) * distance}px`);
+                
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), 800);
+            }
+        }
+
+        // Final score calculation view rendering
+        function renderResultsScreen() {
+            document.getElementById('quiz-card').classList.remove('active');
+            document.getElementById('result-card').classList.add('active');
+            
+            document.getElementById('progress-indicator-line').style.width = `100%`;
+            document.getElementById('final-score-display').innerText = `${score}/${quizDatabase.length}`;
+            
+            const messageEl = document.getElementById('performance-feedback-text');
+            const headingEl = document.getElementById('completion-greeting');
+            
+            if (score === quizDatabase.length) {
+                headingEl.innerText = "🏆 Perfect Score! Master Weaver!";
+                messageEl.innerText = "Exceptional performance! You perfectly identified and utilized pronouns correctly in every single scenario context.";
+                safePlayAudio('audio-applause');
+            } else if (score >= 11) {
+                headingEl.innerText = "🌟 Fantastic Job!";
+                messageEl.innerText = "Great job! You have a solid understanding of how pronouns work. Just a tiny bit of review and you'll have it down perfectly.";
+                safePlayAudio('audio-applause');
+            } else {
+                headingEl.innerText = "👍 Nice Effort!";
+                messageEl.innerText = "You successfully tackled many pronoun concepts today. Retrying the adventure will help reinforce structural language rules even further!";
+            }
+        }
+
+        // Reset runtime matrices for fresh attempts
+        function restartQuiz() {
+            document.getElementById('result-card').classList.remove('active');
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
