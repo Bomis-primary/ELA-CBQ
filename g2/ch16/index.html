@@ -1,1 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Homophones Interactive</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --background: #F5F7FA;
+            --surface: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Bar Indicators */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .hud-item {
+            background: #EDF2F7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .timer-badge {
+            background: #FFEBEB;
+            color: var(--error);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Intro Screen */
+        #intro-screen {
+            text-align: center;
+            padding: 40px 10px;
+        }
+
+        .logo-placeholder {
+            width: 180px;
+            height: auto;
+            max-height: 80px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        /* Question Layout */
+        .question-type-badge {
+            display: inline-block;
+            background: #EBF8FF;
+            color: #2B6CB0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: var(--surface);
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (min-width: 768px) {
+            .option-btn:hover:not(:disabled) {
+                border-color: var(--primary);
+                background: #F0F7FF;
+            }
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.correct {
+            background: #E6FFFA;
+            border-color: var(--success);
+            color: #234E52;
+        }
+
+        .option-btn.wrong {
+            background: #FFF5F5;
+            border-color: var(--error);
+            color: #742A2A;
+        }
+
+        /* Controls / Feedback Panel */
+        .feedback-panel {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .feedback-panel.hint {
+            background: #FEFCBF;
+            border-left: 5px solid #D69E2E;
+            color: #744210;
+            display: block;
+        }
+
+        .feedback-panel.explanation {
+            background: #EBF8FF;
+            border-left: 5px solid var(--primary);
+            color: #2B6CB0;
+            display: block;
+        }
+
+        .action-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .next-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .next-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Results Screen */
+        #result-screen {
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .restart-btn {
+            background: var(--text);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* Utilities */
+        .audio-ctrl {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Confetti Effect Overlays */
+        .confetti-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <canvas id="canvas" class="confetti-canvas"></canvas>
+
+    <div class="top-bar" id="hud" style="display: none;">
+        <div class="hud-item" id="score-tracker">Score: 0</div>
+        <button class="audio-ctrl" id="mute-btn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+        <div class="hud-item timer-badge" id="timer">⏱️ 60s</div>
+    </div>
+
+    <div class="progress-container" id="progress-container" style="display: none;">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="intro-screen" class="screen active">
+        <img src="assets/logo.png" alt="Innovine Logo" class="logo-placeholder" onerror="this.style.display='none'">
+        <h2 style="font-size: 1.6rem; margin-bottom: 10px;">English Grammar Interactive</h2>
+        <p style="font-size: 0.9rem; color: var(--text-light);">Loading questions...</p>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div id="badge" class="question-type-badge"></div>
+        <div id="question" class="question-text"></div>
+        <div id="options" class="options-grid"></div>
+        
+        <div id="feedback" class="feedback-panel"></div>
+        
+        <div class="action-container">
+            <button id="next-btn" class="next-btn" onclick="handleNext()">Next Question</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <div class="result-title" id="result-title"></div>
+        <p id="result-eval" style="font-size: 1.1rem; color: var(--text-light);"></p>
+        <div class="score-display" id="final-score">0/15</div>
+        <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+    </div>
+</div>
+
+<audio id="snd-correct" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+<script>
+    const questions = [
+        {
+            type: "Experience-Based MCQ",
+            q: "Your team came first in the relay race. Later, you tell your grandparents about it. Which sentence would you most likely say?",
+            options: ["Our team won the race.", "Our team one the race.", "Our team race the won.", "Our team winner the race."],
+            answer: 0,
+            hint: "Think about the word that means coming out first or victorious in a sport.",
+            exp: "'Won' means to achieve first place in a competition, whereas 'one' represents the number 1."
+        },
+        {
+            type: "Odd One Out",
+            q: "Which sentence uses the highlighted word differently from the others?",
+            options: ["I can see the rainbow after the rain.", "We can see the fishing boats from the beach.", "I want to see the new library.", "The sea was calm in the morning."],
+            answer: 3,
+            hint: "Three lines talk about using your eyes to look at things. Look for the one referring to a massive water body.",
+            exp: "'Sea' means a body of salt water, while 'see' in the other three choices means using your sight."
+        },
+        {
+            type: "Reasoning MCQ",
+            q: "A child says: 'I used \"pear\" when writing about the fruit in my lunch box.' Why is this a good choice?",
+            options: ["Because \"pear\" names a fruit", "Because \"pear\" means two things together", "Because all fruits are called pears", "Because \"pear\" means to look at something"],
+            answer: 0,
+            hint: "What does the specific word layout 'p-e-a-r' represent?",
+            exp: "'Pear' is correctly spelled to mean the sweet juicy fruit, while a matching set of two items is spelled 'pair'."
+        },
+        {
+            type: "Experience-Based MCQ",
+            q: "You have finished your drawing and need to put your name on it. Which sentence would you most likely hear from your teacher?",
+            options: ["Write your name neatly.", "Right your name neatly.", "Won your name neatly.", "Hear your name neatly."],
+            answer: 0,
+            hint: "Which word means to mark letters on paper with a pencil?",
+            exp: "'Write' means forming words on a page, while 'right' refers to a correct answer or a direction."
+        },
+        {
+            type: "Assertion–Reason MCQ",
+            q: "Statement: 'Bee' and 'be' are homophones.<br><br>Reason: They sound the same but have different meanings.",
+            options: ["The reason is correct and explains the statement.", "The reason is correct but does not explain the statement.", "The reason is wrong but the statement is correct.", "Both the reason and the statement are wrong."],
+            answer: 0,
+            hint: "Do 'bee' and 'be' share the exact same sound? Do they mean different things?",
+            exp: "Both statements are completely correct. Homophones are words that sound identical but hold different spellings and definitions."
+        },
+        {
+            type: "NOT Correct Understanding",
+            q: "Which sentence shows incorrect understanding of homophones?",
+            options: ["We went to the sea during our holiday.", "I can see the lighthouse from here.", "My father can sea the lighthouse clearly.", "The sea was full of fishing boats."],
+            answer: 2,
+            hint: "Look closely at the action word for looking with eyes. Can we use 'sea' (water) as a verb here?",
+            exp: "Using 'sea' to describe looking at a lighthouse is incorrect. The sentence should use 'see' instead."
+        },
+        {
+            type: "Purpose-Based Reasoning MCQ",
+            q: "Which sentence shows correct understanding of homophones?",
+            options: ["I would use \"here\" when talking about a place where I am standing.", "I would use \"hear\" when talking about my location.", "I would use \"sea\" when talking about looking at something.", "I would use \"write\" when talking about a direction."],
+            answer: 0,
+            hint: "Think about the spelling of 'h-e-r-e' vs 'h-e-a-r'. Which one tells us where we are?",
+            exp: "'Here' refers to a current location or spot, whereas 'hear' means listening with your ears."
+        },
+        {
+            type: "Error Detection MCQ",
+            q: "A child writes about helping in the kitchen. Which sentence is incorrect?",
+            options: ["I ate a pear after dinner.", "My sister wore a matching pair of socks.", "We kept the fruit basket near the window.", "I packed a pair in my lunch box."],
+            answer: 3,
+            hint: "Look at the lunch box item. Can you pack a 'pair' (meaning two matching things) as an individual piece of fruit?",
+            exp: "A delicious fruit is a 'pear'. Writing 'I packed a pair' is an incorrect framework for a fruit."
+        },
+        {
+            type: "Experience-Based MCQ",
+            q: "The principal gives an important announcement. Which sentence would best fit the situation?",
+            options: ["Please hear carefully.", "Please here carefully.", "Please hearing carefully.", "Please hears carefully."],
+            answer: 0,
+            hint: "Which word means to pay attention or listen with your ears?",
+            exp: "'Hear' is the action of listening, while 'here' points to a physical location."
+        },
+        {
+            type: "Case-Based MCQ",
+            q: "A child writes: 'My older son helped me solve the maths problem.' The child wants to talk about daylight and warm weather. What should be corrected?",
+            options: ["older → oldest", "son → sun", "helped → helps", "problem → problems"],
+            answer: 1,
+            hint: "Which homophone gives us light and warmth in the sky?",
+            exp: "Changing 'son' (a family child) to 'sun' correctly frames the daylight and hot outdoor weather."
+        },
+        {
+            type: "Experience-Based MCQ",
+            q: "During a treasure hunt, your friend points to the correct path. Which sentence would you most likely hear?",
+            options: ["Turn right at the big tree.", "Turn write at the big tree.", "Turn won at the big tree.", "Turn pair at the big tree."],
+            answer: 0,
+            hint: "Which word represents a direction, like the opposite of left?",
+            exp: "'Right' denotes a physical direction or correct choice, whereas 'write' implies penning words down."
+        },
+        {
+            type: "Odd One Out",
+            q: "Which sentence does not belong with the others?",
+            options: ["The bee landed on a flower.", "The bee collected nectar.", "We watched the bee near the garden gate.", "I want to be a doctor when I grow up."],
+            answer: 3,
+            hint: "Three options are talking about a small flying insect. Find the one that uses the word as a general verb.",
+            exp: "The last choice uses 'be' as an action verb for growing up, whereas the other three refer to the buzzing insect 'bee'."
+        },
+        {
+            type: "Reasoning MCQ",
+            q: "Why is 'two' used in this sentence: 'I bought two notebooks from the book fair.'?",
+            options: ["Because the sentence talks about the number 2", "Because the sentence talks about movement", "Because the sentence talks about a place", "Because the sentence talks about winning"],
+            answer: 0,
+            hint: "What does 't-w-o' specifically measure or describe?",
+            exp: "'Two' represents the numerical digit 2, while 'to' denotes direction/movement and 'too' means also."
+        },
+        {
+            type: "Assertion–Reason MCQ",
+            q: "Statement: 'Here is your water bottle' uses the correct homophone.<br><br>Reason: 'Here' refers to a place or position.",
+            options: ["Both are correct and the reason explains the statement.", "Both are correct but not related.", "Statement is correct, reason is wrong.", "Statement is wrong, reason is correct."],
+            answer: 0,
+            hint: "Does 'here' accurately indicate where the water bottle is sitting right now?",
+            exp: "The location tracking word 'here' is perfectly used in this structural setup to show where the object is placed."
+        },
+        {
+            type: "Experience-Based MCQ",
+            q: "During a nature walk, your guide points to an insect collecting nectar. Which sentence would be most suitable?",
+            options: ["The bee is collecting nectar.", "The be is collecting nectar.", "The here is collecting nectar.", "The pair is collecting nectar."],
+            answer: 0,
+            hint: "What is the correct spelling for a fuzzy insect that makes honey?",
+            exp: "The honey-making insect is spelled 'bee'. 'Be' is a linking verb framework."
+        }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let attempts = 0;
+    let timerInterval = null;
+    let timeLeft = 60;
+    let isMuted = false;
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const hud = document.getElementById('hud');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const scoreTracker = document.getElementById('score-tracker');
+    const timerElement = document.getElementById('timer');
+    const badgeElement = document.getElementById('badge');
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const feedbackElement = document.getElementById('feedback');
+    const nextBtn = document.getElementById('next-btn');
+
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            introScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            hud.style.display = 'flex';
+            progressContainer.style.display = 'block';
+            loadQuestion();
+        }, 5000);
+    });
+
+    function loadQuestion() {
+        clearInterval(timerInterval);
+        timeLeft = 60; 
+        timerElement.textContent = `⏱️ ${timeLeft}s`;
+        attempts = 0;
+        
+        feedbackElement.style.display = 'none';
+        feedbackElement.className = 'feedback-panel';
+        nextBtn.style.display = 'none';
+        
+        const qData = questions[currentIdx];
+        badgeElement.textContent = qData.type;
+        questionElement.innerHTML = qData.q;
+        optionsElement.innerHTML = '';
+        
+        progressBar.style.width = `${(currentIdx / questions.length) * 100}%`;
+        scoreTracker.textContent = `Score: ${score}`;
+
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = opt;
+            btn.onclick = () => selectOption(idx, btn);
+            optionsElement.appendChild(btn);
+        });
+
+        startTimer();
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = `⏱️ ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                lockOptionsDueToTimeout();
+            }
+        }, 1000);
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        document.getElementById('mute-btn').textContent = isMuted ? "🔇" : "🔊";
+    }
+
+    function playSound(type) {
+        if (isMuted) return;
+        const sound = document.getElementById(type === 'correct' ? 'snd-correct' : 'snd-wrong');
+        if(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
+    }
+
+    function selectOption(selectedIdx, clickedBtn) {
+        const qData = questions[currentIdx];
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+
+        if (selectedIdx === qData.answer) {
+            clearInterval(timerInterval);
+            clickedBtn.classList.add('correct');
+            playSound('correct');
+            if (attempts === 0) score++;
+            scoreTracker.textContent = `Score: ${score}`;
+            
+            triggerConfetti();
+
+            feedbackElement.innerHTML = `<strong>Correct!</strong> ${qData.exp}`;
+            feedbackElement.className = 'feedback-panel explanation';
+            
+            disableAllOptions();
+            nextBtn.style.display = 'block';
+        } else {
+            attempts++;
+            clickedBtn.classList.add('wrong');
+            clickedBtn.disabled = true;
+            playSound('wrong');
+
+            if (attempts === 1) {
+                feedbackElement.innerHTML = `<strong>Try Again!</strong> Hint: ${qData.hint}`;
+                feedbackElement.className = 'feedback-panel hint';
+            } else {
+                clearInterval(timerInterval);
+                feedbackElement.innerHTML = `<strong>Incorrect.</strong> The correct answer was: <em>${qData.options[qData.answer]}</em>.<br><br>${qData.exp}`;
+                feedbackElement.className = 'feedback-panel explanation';
+                
+                optionButtons[qData.answer].classList.add('correct');
+                disableAllOptions();
+                nextBtn.style.display = 'block';
+            }
+        }
+    }
+
+    function lockOptionsDueToTimeout() {
+        const qData = questions[currentIdx];
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+        feedbackElement.innerHTML = `<strong>Time's up!</strong> The correct answer was: <em>${qData.options[qData.answer]}</em>.<br><br>${qData.exp}`;
+        feedbackElement.className = 'feedback-panel explanation';
+        optionButtons[qData.answer].classList.add('correct');
+        disableAllOptions();
+        nextBtn.style.display = 'block';
+    }
+
+    function disableAllOptions() {
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+        optionButtons.forEach(btn => btn.disabled = true);
+    }
+
+    function handleNext() {
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        clearInterval(timerInterval);
+        quizScreen.classList.remove('active');
+        resultScreen.classList.add('active');
+        hud.style.display = 'none';
+        progressContainer.style.display = 'none';
+
+        const finalScoreElement = document.getElementById('final-score');
+        const titleElement = document.getElementById('result-title');
+        const evalElement = document.getElementById('result-eval');
+
+        finalScoreElement.textContent = `${score}/${questions.length}`;
+        const percentage = (score / questions.length) * 100;
+
+        if (percentage >= 75) {
+            titleElement.textContent = "Good job! 🎉";
+            evalElement.textContent = "You have an excellent grasp of homophones and their different meanings.";
+            triggerConfettiLoop();
+        } else if (percentage >= 40) {
+            titleElement.textContent = "Review this chapter and try again 📖";
+            evalElement.textContent = "You're getting close! Practice a bit more to clear up tricky word pairs.";
+        } else {
+            titleElement.textContent = "Let’s practise more 💪";
+            evalElement.textContent = "Review how words sounding identical can have unique spellings, then check back!";
+        }
+    }
+
+    function restartQuiz() {
+        currentIdx = 0;
+        score = 0;
+        resultScreen.classList.remove('active');
+        quizScreen.classList.add('active');
+        hud.style.display = 'flex';
+        progressContainer.style.display = 'block';
+        loadQuestion();
+    }
+
+    // Canvas Confetti Overlays
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let confetti = [];
+    let confettiTimer = null;
+
+    function triggerConfetti() {
+        initConfetti();
+        canvas.style.display = 'block';
+        setTimeout(() => {
+            canvas.style.display = 'none';
+            confetti = [];
+        }, 2500);
+    }
+
+    function triggerConfettiLoop() {
+        initConfetti();
+        canvas.style.display = 'block';
+    }
+
+    function initConfetti() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+        confetti = [];
+        for (let i = 0; i < 60; i++) {
+            confetti.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                r: Math.random() * 6 + 4,
+                d: Math.random() * canvas.height,
+                colorHex: ['#4A90E2', '#2ECC71', '#F1C40F', '#E74C3C'][Math.floor(Math.random()*4)],
+                tilt: Math.random() * 10 - 5
+            });
+        }
+        if(!confettiTimer) {
+            confettiTimer = requestAnimationFrame(drawConfetti);
+        }
+    }
+
+    function drawConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confetti.forEach((p) => {
+            p.y += Math.cos(p.d) + 1 + p.r / 2;
+            p.x += Math.sin(p.tilt);
+            
+            ctx.beginPath();
+            ctx.lineWidth = p.r;
+            ctx.strokeStyle = p.colorHex;
+            ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+            ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+            ctx.stroke();
+        });
+
+        if(canvas.style.display === 'block') {
+            requestAnimationFrame(drawConfetti);
+        } else {
+            confettiTimer = null;
+        }
+    }
+</script>
+
+</body>
+</html>
