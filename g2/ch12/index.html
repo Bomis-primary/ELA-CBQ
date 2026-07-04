@@ -162,7 +162,7 @@
 
 <div id="app" class="container">
     <div id="splash-screen">
-        <img src="logo.png" alt="Innovine Logo" class="splash-logo">
+        <img src="assets/logo.png" alt="Innovine Logo" class="splash-logo">
         <h2 style="margin-bottom: 5px;">Loading Prepositions Challenge</h2>
         <p style="color: var(--text-muted)">Get ready...</p>
         <div class="spinner"></div>
@@ -250,7 +250,6 @@
         document.getElementById('attempts').innerText = attempts;
         
         const q = questions[currentQ];
-        // Modified to template literal to prevent nested quote breaking string concatenation
         qText.innerText = `Question ${currentQ + 1} of ${questions.length}: ${q.q}`;
         optsDiv.innerHTML = '';
         
@@ -293,7 +292,6 @@
             
             if (attempts === 1) { score++; } 
             
-            // Standard compliance paths
             playAudioSilently('assets/claps.mp3'); 
             triggerConfetti();
             
