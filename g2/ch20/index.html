@@ -1,1 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Sound Words Interactive</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --background: #F5F7FA;
+            --surface: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Bar Indicators */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .hud-item {
+            background: #EDF2F7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .timer-badge {
+            background: #FFEBEB;
+            color: var(--error);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Intro Screen */
+        #intro-screen {
+            text-align: center;
+            padding: 50px 10px;
+        }
+
+        .logo-placeholder {
+            width: 180px;
+            height: auto;
+            max-height: 80px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        /* Question Layout */
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: var(--surface);
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (min-width: 768px) {
+            .option-btn:hover:not(:disabled) {
+                border-color: var(--primary);
+                background: #F0F7FF;
+            }
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.correct {
+            background: #E6FFFA;
+            border-color: var(--success);
+            color: #234E52;
+        }
+
+        .option-btn.wrong {
+            background: #FFF5F5;
+            border-color: var(--error);
+            color: #742A2A;
+        }
+
+        /* Controls / Feedback Panel */
+        .feedback-panel {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .feedback-panel.hint {
+            background: #FEFCBF;
+            border-left: 5px solid #D69E2E;
+            color: #744210;
+            display: block;
+        }
+
+        .feedback-panel.explanation {
+            background: #EBF8FF;
+            border-left: 5px solid var(--primary);
+            color: #2B6CB0;
+            display: block;
+        }
+
+        .action-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .next-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .next-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Results Screen */
+        #result-screen {
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .restart-btn {
+            background: var(--text);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* Utilities */
+        .audio-ctrl {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Confetti Effect Overlays */
+        .confetti-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <canvas id="canvas" class="confetti-canvas"></canvas>
+
+    <div class="top-bar" id="hud" style="display: none;">
+        <div class="hud-item" id="score-tracker">Score: 0</div>
+        <button class="audio-ctrl" id="mute-btn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+        <div class="hud-item timer-badge" id="timer">⏱️ 60s</div>
+    </div>
+
+    <div class="progress-container" id="progress-container" style="display: none;">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="intro-screen" class="screen active">
+        <img src="assets/logo.png" alt="Innovine Logo" class="logo-placeholder" onerror="this.style.display='none'">
+        <h2 style="font-size: 1.6rem;">English Grammar Interactive: Sound Words</h2>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div id="question" class="question-text"></div>
+        <div id="options" class="options-grid"></div>
+        
+        <div id="feedback" class="feedback-panel"></div>
+        
+        <div class="action-container">
+            <button id="next-btn" class="next-btn" onclick="handleNext()">Next Question</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <div class="result-title" id="result-title"></div>
+        <p id="result-eval" style="font-size: 1.1rem; color: var(--text-light);"></p>
+        <div class="score-display" id="final-score">0/15</div>
+        <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+    </div>
+</div>
+
+<audio id="snd-correct" src="assets/claps.mp3" preload="auto"></audio>
+<audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+<script>
+    const questions = [
+        {
+            q: "You are helping your grandfather water the plants. Suddenly, your little brother jumps into a puddle. Which sound word would best describe what you hear?",
+            options: ["tick-tock", "splash", "woof", "buzz"],
+            answer: 1,
+            hint: "What word sounds like water hitting the ground when something falls or jumps directly into it?",
+            exp: "'Splash' mimics the sound made when an object or a person disrupts water suddenly."
+        },
+        {
+            q: "Which sound word does NOT belong with the others?",
+            options: ["woof", "meow", "buzz", "tick-tock"],
+            answer: 3,
+            hint: "Three of these choices are sounds made naturally by living animals or insects. Find the non-living item sound.",
+            exp: "'Woof', 'meow', and 'buzz' are sounds made by living creatures, whereas 'tick-tock' is the sound of a mechanical wall clock."
+        },
+        {
+            q: "A child writes: 'The bee went buzz around the flower.' Why is 'buzz' a good choice?",
+            options: [
+                "Because it sounds like the noise a bee makes",
+                "Because bees live near flowers",
+                "Because all insects buzz loudly",
+                "Because buzz means flying"
+            ],
+            answer: 0,
+            hint: "Think about how sound words work—they copy or resemble the actual noises made in real life.",
+            exp: "Sound words (onomatopoeia) are selected precisely because their pronunciation copies the real-life audio cue."
+        },
+        {
+            q: "You are waiting for school to begin. The classroom is quiet, and you hear a sound coming from the wall clock. Which sound word best describes it?",
+            options: ["bang", "splash", "tick-tock", "woof"],
+            answer: 2,
+            hint: "Listen closely to a working clock. What rhythmic sound do the moving hands make every single second?",
+            exp: "'Tick-tock' mimics the steady, constant movement of a mechanical clock's gears and hands."
+        },
+        {
+            q: "Statement: 'Ding-dong' can be used when talking about a bell.<br><br>Reason: The sound word copies the noise made by the bell.",
+            options: [
+                "The reason is correct and explains the statement.",
+                "The reason is correct but does not explain the statement.",
+                "The reason is wrong but the statement is correct.",
+                "Both the reason and the statement are wrong."
+            ],
+            answer: 0,
+            hint: "When a school or church bell rings out loud, does it make a sound resembling 'ding-dong'?",
+            exp: "Both statements are correct. 'Ding-dong' is an accurate sound word because it matches the audio resonance of a ringing bell."
+        },
+        {
+            q: "Which sentence shows incorrect understanding of sound words?",
+            options: [
+                "The dog went woof when the gate opened.",
+                "The bell rang ding-dong at assembly time.",
+                "The cat said meow when it saw food.",
+                "The clock went splash all night."
+            ],
+            answer: 3,
+            hint: "Clocks don't contain liquid pools inside them. Which action sound is paired with the wrong object?",
+            exp: "A clock going 'splash' is incorrect. Clocks make a 'tick-tock' noise, while water splashes."
+        },
+        {
+            q: "Which sentence shows correct understanding of sound words?",
+            options: [
+                "I would use \"bang\" when describing a loud sudden noise.",
+                "I would use \"bang\" when describing a cat.",
+                "I would use \"bang\" when describing a clock.",
+                "I would use \"bang\" when describing a flower."
+            ],
+            answer: 0,
+            hint: "What kind of noise do you hear when a heavy object falls or a big balloon pops open?",
+            exp: "'Bang' represents a sharp, sudden, and heavy explosive sound contextually."
+        },
+        {
+            q: "A child writes about a visit to a pet café. Which sentence is incorrect?",
+            options: [
+                "The puppy went woof when we entered.",
+                "The cat gave a soft meow.",
+                "The birds chirped in their cages.",
+                "The kitten made a splash to greet us."
+            ],
+            answer: 3,
+            hint: "Look for the sentence where a small furry kitten is mistakenly described as making a water pool sound.",
+            exp: "Kittens don't make a 'splash' to communicate; they purr or meow. Splash is meant for water displacement."
+        },
+        {
+            q: "You are standing near the school gate when the lunch bell rings. Which sound word would best complete the description?",
+            options: ["ding-dong", "meow", "woof", "splash"],
+            answer: 0,
+            hint: "Which choice mirrors the acoustic clanging of a swinging metal school bell?",
+            exp: "Bells naturally resound with a 'ding-dong' chime, signaling changes during the school day."
+        },
+        {
+            q: "A child writes: 'The water made a woof when the bucket fell into the pond.' What should be corrected?",
+            options: ["water → waters", "woof → splash", "bucket → buckets", "pond → ponds"],
+            answer: 1,
+            hint: "Think about the noise water makes when a heavy bucket falls right inside it. Is it an animal bark?",
+            exp: "Water
