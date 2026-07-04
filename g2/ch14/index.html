@@ -289,7 +289,6 @@
     <div id="intro-screen" class="screen active">
         <img src="assets/logo.png" alt="Innovine Logo" class="logo-placeholder" onerror="this.style.display='none'">
         <h2 style="font-size: 1.6rem; margin-bottom: 10px;">English Grammar Interactive</h2>
-        <p style="color: var(--text-light); margin-bottom: 20px;">Tenses: Simple Present & Simple Past (Grade 2)</p>
         <p style="font-size: 0.9rem; color: var(--text-light);">Loading questions...</p>
     </div>
 
@@ -314,7 +313,7 @@
 </div>
 
 <audio id="snd-correct" src="assets/correct.mp3" preload="auto"></audio>
-<audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></preload>
+<audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
 
 <script>
     // System & Assessment Core Directives 
@@ -476,7 +475,7 @@
 
     function loadQuestion() {
         clearInterval(timerInterval);
-        timeLeft = 60; // Grade 2 rule: 60s minimum
+        timeLeft = 60; 
         timerElement.textContent = `⏱️ ${timeLeft}s`;
         attempts = 0;
         
@@ -540,7 +539,6 @@
             if (attempts === 0) score++;
             scoreTracker.textContent = `Score: ${score}`;
             
-            // Trigger visual celebratory feedback mechanics
             triggerConfetti();
 
             feedbackElement.innerHTML = `<strong>Correct!</strong> ${qData.exp}`;
@@ -556,11 +554,9 @@
             playSound('wrong');
 
             if (attempts === 1) {
-                // First evaluation error scenario: prompt retry with hint
                 feedbackElement.innerHTML = `<strong>Try Again!</strong> Hint: ${qData.hint}`;
                 feedbackElement.className = 'feedback-panel hint';
             } else {
-                // Secondary error scenario: provide resolution framework
                 clearInterval(timerInterval);
                 feedbackElement.innerHTML = `<strong>Incorrect.</strong> The correct answer was: <em>${qData.options[qData.answer]}</em>.<br><br>${qData.exp}`;
                 feedbackElement.className = 'feedback-panel explanation';
@@ -610,7 +606,6 @@
         finalScoreElement.textContent = `${score}/${questions.length}`;
         const percentage = (score / questions.length) * 100;
 
-        // Structured functional score boundaries matching deployment logic
         if (percentage >= 75) {
             titleElement.textContent = "Good job! 🎉";
             evalElement.textContent = "You have an excellent grasp of Simple Present and Simple Past tenses.";
