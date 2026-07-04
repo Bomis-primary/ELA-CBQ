@@ -1,1 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Adjectives: Describing Words Challenge</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    overflow-x: hidden;
+    background: linear-gradient(135deg,#ffe0ec,#fff3d6,#e0f7fa,#ffe0ec);
+    background-size: 400% 400%;
+    animation: bgShift 18s ease infinite;
+  }
+  @keyframes bgShift {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
 
+  /* floating ice cream scoops */
+  .scoop {
+    position: fixed;
+    bottom: -120px;
+    border-radius: 50%;
+    opacity: 0.55;
+    z-index: 0;
+    pointer-events: none;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) translateX(0) rotate(0deg); }
+    50% { transform: translateY(-55vh) translateX(18px) rotate(10deg); }
+    100% { transform: translateY(-115vh) translateX(-12px) rotate(-8deg); }
+  }
+
+  /* sprinkles falling */
+  .sprinkle {
+    position: fixed;
+    top: -30px;
+    width: 6px;
+    height: 14px;
+    border-radius: 3px;
+    opacity: 0.6;
+    z-index: 0;
+    pointer-events: none;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(115vh) rotate(360deg); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  /* Logo intro screen */
+  #logoScreen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg,#fff3d6,#ffe0ec);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    transition: opacity 0.6s ease;
+  }
+  #logoScreen img {
+    width: 160px;
+    max-width: 60vw;
+    animation: pop 1s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  #logoScreen.hide { opacity: 0; pointer-events: none; }
+
+  .card {
+    background: rgba(255,255,255,0.92);
+    border-radius: 26px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    padding: 28px 22px;
+    width: 100%;
+    text-align: center;
+    border: 3px dashed #ffb6d9;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    color: #ff6fa5;
+    margin-bottom: 6px;
+  }
+  .meta {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 18px;
+  }
+  .btn {
+    background: linear-gradient(135deg,#ff9fc7,#ffd08a);
+    border: none;
+    color: #6b3a2c;
+    font-weight: bold;
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(255,159,199,0.4);
+    transition: transform 0.15s ease;
+  }
+  .btn:active { transform: scale(0.95); }
+
+  .hidden { display: none !important; }
+
+  .topbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #6b3a2c;
+  }
+  .score-pill, .timer-pill {
+    background: #fff8ef;
+    padding: 6px 14px;
+    border-radius: 20px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    border: 2px solid #ffd08a;
+  }
+  .timer-pill.warn { color: #ff4444; border-color: #ff4444; }
+
+  .final-banner {
+    background: linear-gradient(135deg,#ff9fc7,#ffd08a);
+    color: #5b2c1a;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+  }
+
+  .qtext {
+    font-size: 1.08rem;
+    color: #333;
+    margin-bottom: 18px;
+    line-height: 1.4;
+    text-align: left;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .option {
+    background: #fff8fb;
+    border: 2px solid #ffd6e8;
+    border-radius: 16px;
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 0.98rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: #444;
+  }
+  .option:hover { border-color: #ff9fc7; }
+  .option.correct {
+    background: #d9ffe0;
+    border-color: #4CAF50;
+    color: #1b6b2c;
+    font-weight: bold;
+  }
+  .option.wrong {
+    background: #ffe1e1;
+    border-color: #ff5c5c;
+    color: #a80000;
+  }
+  .option.disabled { pointer-events: none; opacity: 0.75; }
+
+  .feedback {
+    margin-top: 14px;
+    font-size: 0.92rem;
+    color: #444;
+    background: #fff3d6;
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: left;
+    display: none;
+    border-left: 4px solid #ffb6d9;
+  }
+  .feedback.show { display: block; }
+
+  .nextBtn { margin-top: 16px; display:none; }
+
+  #crossOverlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    pointer-events: none;
+  }
+  #crossOverlay svg {
+    width: 90px;
+    height: 90px;
+    opacity: 0;
+  }
+  #crossOverlay.show svg {
+    animation: crossPop 0.6s ease forwards;
+  }
+  @keyframes crossPop {
+    0% { opacity: 0; transform: scale(0.4); }
+    50% { opacity: 1; transform: scale(1.15); }
+    100% { opacity: 0; transform: scale(1); }
+  }
+
+  .star {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    background: #ffb6d9;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    z-index: 500;
+    pointer-events: none;
+  }
+
+  .result-emoji { font-size: 3rem; margin-bottom: 6px; }
+  .result-score { font-size: 1.4rem; color: #ff6fa5; font-weight: bold; margin: 10px 0; }
+  .result-msg { color: #555; margin-bottom: 18px; }
+</style>
+</head>
+<body>
+
+<div id="logoScreen">
+  <img src="assets/logo.png" alt="Innovine">
+</div>
+
+<div id="bgLayer"></div>
+
+<div id="crossOverlay">
+  <svg viewBox="0 0 100 100">
+    <line x1="15" y1="15" x2="85" y2="85" stroke="#ff3b3b" stroke-width="12" stroke-linecap="round"/>
+    <line x1="85" y1="15" x2="15" y2="85" stroke="#ff3b3b" stroke-width="12" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<div class="container">
+
+  <div class="card" id="startScreen">
+    <h1>🍦 Adjectives: Describing Words Challenge</h1>
+    <div class="meta">Grade 2 &nbsp;|&nbsp; English &nbsp;|&nbsp; Topic: Adjectives — Describing Words</div>
+    <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">
+      15 questions &nbsp;•&nbsp; 60 seconds each &nbsp;•&nbsp; One retry if you get it wrong!
+    </p>
+    <button class="btn" onclick="startGame()">Start Challenge 🍨</button>
+  </div>
+
+  <div class="card hidden" id="gameScreen">
+    <div class="topbar">
+      <div class="score-pill" id="scorePill">Score: 0 / 15</div>
+      <div class="timer-pill" id="timerPill">⏱ 60s</div>
+    </div>
+    <div id="finalBanner" class="final-banner hidden">🍒 Final Challenge!</div>
+    <div class="qtext" id="qText"></div>
+    <div class="options" id="optionsBox"></div>
+    <div class="feedback" id="feedbackBox"></div>
+    <button class="btn nextBtn" id="nextBtn" onclick="nextQuestion()">Next ➜</button>
+  </div>
+
+  <div class="card hidden" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🍦</div>
+    <h1>Challenge Complete!</h1>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-msg" id="resultMsg"></div>
+    <button class="btn" onclick="restartGame()">Play Again 🔄</button>
+  </div>
+
+</div>
+
+<audio id="correctSound" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+<script>
+/* ---------------- Background scoops & sprinkles ---------------- */
+const bgLayer = document.getElementById('bgLayer');
+const scoopColors = ['#ffb6d9','#ffd08a','#c9f0ff','#c8f7d0','#ffe0a3'];
+for (let i=0;i<8;i++){
+  const b = document.createElement('div');
+  b.className='scoop';
+  const size = 26 + Math.random()*18;
+  b.style.width = size+'px';
+  b.style.height = size+'px';
+  b.style.left = Math.random()*100+'vw';
+  b.style.background = scoopColors[i % scoopColors.length];
+  b.style.animationDuration = (14+Math.random()*10)+'s';
+  b.style.animationDelay = (Math.random()*10)+'s';
+  bgLayer.appendChild(b);
+}
+for (let i=0;i<10;i++){
+  const s = document.createElement('div');
+  s.className='sprinkle';
+  s.style.left = Math.random()*100+'vw';
+  s.style.background = scoopColors[i % scoopColors.length];
+  s.style.animationDuration = (7+Math.random()*6)+'s';
+  s.style.animationDelay = (Math.random()*6)+'s';
+  bgLayer.appendChild(s);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('logoScreen').classList.add('hide');
+  }, 5000);
+});
+
+const questions = [
+{ q:"During the Diwali market visit, you noticed lanterns of different colours hanging in the shops. Which adjective best describes the lanterns?",
+  options:["bright","round","many","colourful"],
+  answer:3, explain:"'Colourful' describes the variety of colours seen in the lanterns." },
+{ q:"Words: red, blue, green, happy. Which word does NOT belong with the others?",
+  options:["red","blue","green","happy"],
+  answer:3, explain:"Red, blue, and green are colour adjectives. 'Happy' describes a feeling, not a colour." },
+{ q:"A student says: \"I chose 'circle' as an adjective because it tells about shape.\" Why is this not correct?",
+  options:["Because \"circle\" is a noun; the adjective form would describe shape, such as \"round\"","Because shapes cannot be adjectives","Because adjectives only describe colours","Because \"circle\" is an action word"],
+  answer:0, explain:"'Circle' is the name of a shape (a noun). The adjective form, like 'round' or 'circular', describes it." },
+{ q:"During Sports Day, the coach gave medals to the first three runners. Which adjective tells the number of runners?",
+  options:["first","three","fast","golden"],
+  answer:1, explain:"'Three' tells exactly how many runners received medals." },
+{ q:"Statement: \"Tiny\" is an adjective of size. Reason: It describes how big or small something is.",
+  options:["The reason is correct and explains the statement","The reason is correct but does not explain the statement","The reason is wrong but the statement is correct","Both the reason and the statement are wrong"],
+  answer:0, explain:"'Tiny' tells us about size, so the reason directly explains the statement." },
+{ q:"Which sentence shows incorrect understanding of adjectives?",
+  options:["We used three sharp pencils for the project.","The square chart paper was placed on the desk.","Our teacher wore a blue saree on Friday.","The students carried blue happily bags."],
+  answer:3, explain:"'Blue happily bags' incorrectly stacks an adverb between adjective and noun — it should be 'blue bags happily' or restructured correctly." },
+{ q:"Which sentence shows correct understanding of adjectives?",
+  options:["I would use \"curved\" to describe the shape of a road.","I would use \"seven\" to describe the colour of a kite.","I would use \"green\" to describe the size of a tree.","I would use \"happy\" to describe the number of books."],
+  answer:0, explain:"'Curved' correctly describes shape, matching the type of adjective to what it describes." },
+{ q:"Which sentence is incorrect?",
+  options:["The giant wheel looked enormous at the fair.","My grandmother baked six round laddoos.","The children wore colourful costumes for the play.","We bought a seven mango."],
+  answer:3, explain:"'A seven mango' is incorrect — with plural quantities, the noun must also be plural: 'seven mangoes'." },
+{ q:"During a visit to a nature park, students saw a lake shaped like a crescent moon. Which adjective best describes the lake?",
+  options:["silver","deep","crescent-shaped","many"],
+  answer:2, explain:"'Crescent-shaped' describes the shape of the lake, matching the description given." },
+{ q:"A student writes: \"The puppy has five playful tail.\" What should be corrected?",
+  options:["five → fifth","playful → playfully","tail → tails","puppy → puppies"],
+  answer:2, explain:"Since the number 'five' is used, the noun should be plural: 'tails'." },
+{ q:"In art class, students made paper kites of different shapes. Which adjective tells the shape of the kite?",
+  options:["yellow","diamond-shaped","large","two"],
+  answer:1, explain:"'Diamond-shaped' describes the shape of the kite." },
+{ q:"Words: three, many, several, noisy. Which word does not belong with the others?",
+  options:["three","many","several","noisy"],
+  answer:3, explain:"Three, many, and several are adjectives of number/quantity. 'Noisy' describes sound, not quantity." },
+{ q:"Why is \"golden\" an adjective in the phrase golden temple?",
+  options:["Because it describes the colour or appearance of the temple","Because it names the temple","Because it shows an action","Because it tells the number of temples"],
+  answer:0, explain:"'Golden' describes the appearance/colour of the temple, making it an adjective." },
+{ q:"Statement: \"Several\" is an adjective of number. Reason: It tells how many people or things there are.",
+  options:["Both are correct and the reason explains the statement","Both are correct but not related","Statement is correct, reason is wrong","Statement is wrong, reason is correct"],
+  answer:0, explain:"'Several' tells quantity, so the reason correctly explains why it is a number adjective." },
+{ q:"At a village fair, children rode on a giant Ferris wheel with bright lights. Which adjective describes the size of the Ferris wheel?",
+  options:["bright","giant","circular","many"],
+  answer:1, explain:"'Giant' describes the large size of the Ferris wheel." }
+];
+
+let current = 0;
+let score = 0;
+let attempts = 0;
+let timer = null;
+let timeLeft = 60;
+const TIME_PER_Q = 60;
+
+const startScreen = document.getElementById('startScreen');
+const gameScreen = document.getElementById('gameScreen');
+const resultScreen = document.getElementById('resultScreen');
+const qText = document.getElementById('qText');
+const optionsBox = document.getElementById('optionsBox');
+const scorePill = document.getElementById('scorePill');
+const timerPill = document.getElementById('timerPill');
+const feedbackBox = document.getElementById('feedbackBox');
+const nextBtn = document.getElementById('nextBtn');
+const finalBanner = document.getElementById('finalBanner');
+
+function startGame(){
+  startScreen.classList.add('hidden');
+  gameScreen.classList.remove('hidden');
+  current = 0; score = 0;
+  loadQuestion();
+}
+
+function loadQuestion(){
+  attempts = 0;
+  feedbackBox.classList.remove('show');
+  feedbackBox.innerHTML = '';
+  nextBtn.style.display = 'none';
+  scorePill.textContent = `Score: ${score} / ${questions.length}`;
+  finalBanner.classList.toggle('hidden', current !== questions.length - 1);
+
+  const q = questions[current];
+  qText.textContent = `Q${current+1}. ${q.q}`;
+  optionsBox.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.textContent = opt;
+    div.onclick = () => selectOption(idx, div);
+    optionsBox.appendChild(div);
+  });
+
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timer);
+  timeLeft = TIME_PER_Q;
+  timerPill.textContent = `⏱ ${timeLeft}s`;
+  timerPill.classList.remove('warn');
+  timer = setInterval(() => {
+    timeLeft--;
+    timerPill.textContent = `⏱ ${timeLeft}s`;
+    if (timeLeft <= 10) timerPill.classList.add('warn');
+    if (timeLeft <= 0){
+      clearInterval(timer);
+      handleTimeout();
+    }
+  }, 1000);
+}
+
+function handleTimeout(){
+  processAnswer(-1, null);
+}
+
+function selectOption(idx, el){
+  clearInterval(timer);
+  const opts = optionsBox.querySelectorAll('.option');
+  opts.forEach(o => o.classList.add('disabled'));
+  processAnswer(idx, el);
+}
+
+function processAnswer(idx, el){
+  const q = questions[current];
+  const isCorrect = idx === q.answer;
+
+  if (isCorrect){
+    if (el) el.classList.add('correct');
+    score++;
+    scorePill.textContent = `Score: ${score} / ${questions.length}`;
+    playSound('correctSound');
+    burstStars();
+    setTimeout(nextQuestion, 1200);
+    return;
+  }
+
+  attempts++;
+  if (el) el.classList.add('wrong');
+  playSound('wrongSound');
+  showCross();
+
+  if (attempts === 1){
+    feedbackBox.innerHTML = "Not quite — one more scoop of thought! 🍨";
+    feedbackBox.classList.add('show');
+    const opts = optionsBox.querySelectorAll('.option');
+    opts.forEach((o,i) => {
+      if (i !== idx) o.classList.remove('disabled');
+    });
+    startTimer();
+  } else {
+    const opts = optionsBox.querySelectorAll('.option');
+    opts.forEach((o,i) => {
+      o.classList.add('disabled');
+      if (i === q.answer) o.classList.add('correct');
+    });
+    feedbackBox.innerHTML = `<strong>Correct answer:</strong> ${q.options[q.answer]}<br><br>${q.explain}`;
+    feedbackBox.classList.add('show');
+    nextBtn.style.display = 'inline-block';
+  }
+}
+
+function nextQuestion(){
+  current++;
+  if (current >= questions.length){
+    showResult();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showResult(){
+  gameScreen.classList.add('hidden');
+  resultScreen.classList.remove('hidden');
+  document.getElementById('resultScore').textContent = `${score} / ${questions.length}`;
+  let msg = '';
+  let emoji = '🍦';
+  const pct = score / questions.length;
+  if (pct >= 0.8){ msg = "Sweet success! You know your describing words!"; emoji='🏆'; }
+  else if (pct >= 0.5){ msg = "Good scoop! A little more practice and you'll master it."; emoji='🍨'; }
+  else { msg = "Nice try! Keep practicing and you'll get sweeter results."; emoji='🍧'; }
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('resultEmoji').textContent = emoji;
+  playSound('clapSound');
+}
+
+function restartGame(){
+  resultScreen.classList.add('hidden');
+  startScreen.classList.remove('hidden');
+}
+
+function playSound(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.currentTime = 0;
+  el.play().catch(()=>{});
+}
+
+function burstStars(){
+  for (let i=0;i<14;i++){
+    const star = document.createElement('div');
+    star.className = 'star';
+    const angle = Math.random()*2*Math.PI;
+    const dist = 80 + Math.random()*120;
+    const dx = Math.cos(angle)*dist;
+    const dy = Math.sin(angle)*dist;
+    star.style.background = scoopColors[i % scoopColors.length];
+    document.body.appendChild(star);
+    star.animate([
+      { transform: 'translate(-50%,-50%) scale(0.5)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1.1) rotate(180deg)`, opacity: 0 }
+    ], { duration: 900, easing: 'ease-out' });
+    setTimeout(() => star.remove(), 900);
+  }
+}
+
+function showCross(){
+  const overlay = document.getElementById('crossOverlay');
+  overlay.classList.add('show');
+  setTimeout(() => overlay.classList.remove('show'), 650);
+}
+</script>
+</body>
+</html>
