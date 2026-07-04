@@ -1,1 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Gender Nouns Challenge</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    overflow-x: hidden;
+    background: linear-gradient(135deg,#5c1a1a,#7a2323,#4a1414,#6b1f1f);
+    background-size: 400% 400%;
+    animation: bgShift 18s ease infinite;
+  }
+  @keyframes bgShift {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
 
+  /* spotlight glow */
+  .spotlight {
+    position: fixed;
+    top: -10%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,215,120,0.35) 0%, rgba(255,215,120,0) 70%);
+    z-index: 0;
+    pointer-events: none;
+    animation: glowMove ease-in-out infinite;
+  }
+  @keyframes glowMove {
+    0%,100% { transform: translateX(0); }
+    50% { transform: translateX(20px); }
+  }
+
+  /* drifting curtain folds */
+  .fold {
+    position: fixed;
+    bottom: -120px;
+    border-radius: 40% 40% 0 0;
+    opacity: 0.35;
+    z-index: 0;
+    pointer-events: none;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-55vh) translateX(15px); }
+    100% { transform: translateY(-115vh) translateX(-10px); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  #logoScreen {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg,#4a1414,#7a2323);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    transition: opacity 0.6s ease;
+  }
+  #logoScreen img {
+    width: 160px;
+    max-width: 60vw;
+    animation: pop 1s ease;
+    background: #fff;
+    border-radius: 16px;
+    padding: 10px;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.08); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+  #logoScreen.hide { opacity: 0; pointer-events: none; }
+
+  .card {
+    background: rgba(255,250,240,0.95);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    padding: 28px 22px;
+    width: 100%;
+    text-align: center;
+    border: 3px solid #d4af37;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    color: #7a2323;
+    margin-bottom: 6px;
+  }
+  .meta {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 18px;
+  }
+  .btn {
+    background: linear-gradient(135deg,#d4af37,#7a2323);
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(212,175,55,0.4);
+    transition: transform 0.15s ease;
+  }
+  .btn:active { transform: scale(0.95); }
+
+  .hidden { display: none !important; }
+
+  .topbar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #fff;
+    background: #7a2323;
+    padding: 10px 14px;
+    border-radius: 14px;
+  }
+  .score-pill, .timer-pill {
+    background: #4a1414;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 2px solid #d4af37;
+  }
+  .timer-pill.warn { color: #ff8080; border-color: #ff8080; }
+
+  .final-banner {
+    background: linear-gradient(135deg,#d4af37,#7a2323);
+    color: #fff;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+  }
+
+  .qtext {
+    font-size: 1.08rem;
+    color: #333;
+    margin-bottom: 18px;
+    line-height: 1.4;
+    text-align: left;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .option {
+    background: #fdf6ea;
+    border: 2px solid #e8d4a0;
+    border-radius: 14px;
+    padding: 12px 14px;
+    text-align: left;
+    font-size: 0.98rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    color: #444;
+  }
+  .option:hover { border-color: #d4af37; }
+  .option.correct {
+    background: #d9ffe0;
+    border-color: #4CAF50;
+    color: #1b6b2c;
+    font-weight: bold;
+  }
+  .option.wrong {
+    background: #ffe1e1;
+    border-color: #ff5c5c;
+    color: #a80000;
+  }
+  .option.disabled { pointer-events: none; opacity: 0.75; }
+
+  .feedback {
+    margin-top: 14px;
+    font-size: 0.92rem;
+    color: #444;
+    background: #fff3d6;
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align: left;
+    display: none;
+    border-left: 4px solid #d4af37;
+  }
+  .feedback.show { display: block; }
+
+  .nextBtn { margin-top: 16px; display:none; }
+
+  #crossOverlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    pointer-events: none;
+  }
+  #crossOverlay svg {
+    width: 90px;
+    height: 90px;
+    opacity: 0;
+  }
+  #crossOverlay.show svg {
+    animation: crossPop 0.6s ease forwards;
+  }
+  @keyframes crossPop {
+    0% { opacity: 0; transform: scale(0.4); }
+    50% { opacity: 1; transform: scale(1.15); }
+    100% { opacity: 0; transform: scale(1); }
+  }
+
+  .star {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 14px;
+    height: 14px;
+    background: #d4af37;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    z-index: 500;
+    pointer-events: none;
+  }
+
+  .result-emoji { font-size: 3rem; margin-bottom: 6px; }
+  .result-score { font-size: 1.4rem; color: #7a2323; font-weight: bold; margin: 10px 0; }
+  .result-msg { color: #555; margin-bottom: 18px; }
+</style>
+</head>
+<body>
+
+<div id="logoScreen">
+  <img src="assets/logo.png" alt="Innovine">
+</div>
+
+<div id="bgLayer"></div>
+
+<div id="crossOverlay">
+  <svg viewBox="0 0 100 100">
+    <line x1="15" y1="15" x2="85" y2="85" stroke="#ff3b3b" stroke-width="12" stroke-linecap="round"/>
+    <line x1="85" y1="15" x2="15" y2="85" stroke="#ff3b3b" stroke-width="12" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<div class="container">
+
+  <div class="card" id="startScreen">
+    <h1>🎭 Gender Nouns Challenge</h1>
+    <div class="meta">Grade 2 &nbsp;|&nbsp; English &nbsp;|&nbsp; Topic: Masculine & Feminine Gender Nouns</div>
+    <p style="color:#666; font-size:0.9rem; margin-bottom:20px;">
+      15 questions &nbsp;•&nbsp; 60 seconds each &nbsp;•&nbsp; One retry if you get it wrong!
+    </p>
+    <button class="btn" onclick="startGame()">Raise the Curtain 🎪</button>
+  </div>
+
+  <div class="card hidden" id="gameScreen">
+    <div class="topbar">
+      <div class="score-pill" id="scorePill">Score: 0 / 15</div>
+      <div class="timer-pill" id="timerPill">⏱ 60s</div>
+    </div>
+    <div id="finalBanner" class="final-banner hidden">🌟 Final Challenge!</div>
+    <div class="qtext" id="qText"></div>
+    <div class="options" id="optionsBox"></div>
+    <div class="feedback" id="feedbackBox"></div>
+    <button class="btn nextBtn" id="nextBtn" onclick="nextQuestion()">Next ➜</button>
+  </div>
+
+  <div class="card hidden" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎭</div>
+    <h1>Show Complete!</h1>
+    <div class="result-score" id="resultScore"></div>
+    <div class="result-msg" id="resultMsg"></div>
+    <button class="btn" onclick="restartGame()">Play Again 🔄</button>
+  </div>
+
+</div>
+
+<audio id="correctSound" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+<script>
+const bgLayer = document.getElementById('bgLayer');
+const theatreColors = ['#d4af37','#7a2323','#ffd778','#a83232'];
+for (let i=0;i<3;i++){
+  const g = document.createElement('div');
+  g.className='spotlight';
+  const size = 250 + Math.random()*150;
+  g.style.width = size+'px';
+  g.style.height = size+'px';
+  g.style.left = (10 + i*35)+'vw';
+  g.style.animationDuration = (6+Math.random()*4)+'s';
+  bgLayer.appendChild(g);
+}
+for (let i=0;i<6;i++){
+  const f = document.createElement('div');
+  f.className='fold';
+  const w = 40 + Math.random()*30;
+  f.style.width = w+'px';
+  f.style.height = (w*1.6)+'px';
+  f.style.left = Math.random()*100+'vw';
+  f.style.background = theatreColors[i % theatreColors.length];
+  f.style.animationDuration = (14+Math.random()*10)+'s';
+  f.style.animationDelay = (Math.random()*10)+'s';
+  bgLayer.appendChild(f);
+}
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('logoScreen').classList.add('hide');
+  }, 5000);
+});
+
+const questions = [
+{ q:"You are reading a wedding invitation that says: \"The bride and groom warmly invite you to the celebration.\" Which word refers to the feminine gender?",
+  options:["celebration","invite","bride","groom"],
+  answer:2, explain:"'Bride' refers to the female getting married, making it the feminine gender noun." },
+{ q:"Words: lioness, tigress, actress, nephew. Which word does NOT belong with the others?",
+  options:["lioness","tigress","actress","nephew"],
+  answer:3, explain:"Lioness, tigress, and actress are feminine nouns. 'Nephew' is masculine." },
+{ q:"A student says: \"I chose 'hostess' because it refers to a female host.\" Why is this correct?",
+  options:["Because hostess is the feminine form of host","Because hostess means a place","Because hostess is an action word","Because all feminine nouns end in -ess"],
+  answer:0, explain:"'Hostess' is indeed the feminine form of 'host'." },
+{ q:"The principal welcomed a famous actor and actress to the annual day programme. Which pair shows one masculine and one feminine gender noun?",
+  options:["principal – programme","actor – actress","annual – famous","school – day"],
+  answer:1, explain:"'Actor' is masculine and 'actress' is feminine, forming a gender pair." },
+{ q:"Statement: \"Lioness\" is a feminine gender noun. Reason: It refers to a female lion.",
+  options:["The reason is correct and explains the statement","The reason is correct but does not explain the statement","The reason is wrong but the statement is correct","Both the reason and the statement are wrong"],
+  answer:0, explain:"The reason correctly explains why 'lioness' is feminine." },
+{ q:"Which sentence shows incorrect understanding of gender nouns?",
+  options:["A niece is the female form of a nephew.","A mare is a female horse.","A rooster is a female chicken.","A bride is a female getting married."],
+  answer:2, explain:"A rooster is actually a male chicken; the female is called a hen." },
+{ q:"Which sentence shows correct understanding of gender nouns?",
+  options:["I would use \"doe\" when talking about a female deer.","I would use \"doe\" when talking about a male deer.","I would use \"buck\" when talking about a female deer.","I would use \"deer\" only for male animals."],
+  answer:0, explain:"'Doe' correctly refers to a female deer." },
+{ q:"Which sentence is incorrect?",
+  options:["The actress received an award for her performance.","My nephew visited us during the holidays.","The lioness protected her cubs.","The hostess welcomed all the guests and he thanked them."],
+  answer:3, explain:"Since 'hostess' is feminine, the pronoun should be 'she', not 'he'." },
+{ q:"You are watching a wildlife programme about elephants. Which sentence correctly refers to a female elephant?",
+  options:["The bull elephant led the herd.","The cow elephant cared for the calf.","The stallion elephant ran quickly.","The rooster elephant called loudly."],
+  answer:1, explain:"'Cow' is the correct term for a female elephant." },
+{ q:"A student writes: \"My nephew is my father's daughter.\" What should be corrected?",
+  options:["niece → nephew","father → mother","son → daughter","father's → parents'"],
+  answer:0, explain:"Since 'daughter' is feminine, the word should be 'niece', not 'nephew'." },
+{ q:"During a farm visit, the guide points to a female duck. Which noun would be most suitable?",
+  options:["drake","duck","rooster","ram"],
+  answer:1, explain:"'Duck' is used specifically for a female duck (the male is called a drake)." },
+{ q:"Words: stallion, ram, gander, queen. Which word does not belong?",
+  options:["stallion","ram","gander","queen"],
+  answer:3, explain:"Stallion, ram, and gander are masculine nouns. 'Queen' is feminine." },
+{ q:"Why is \"tigress\" considered a feminine gender noun?",
+  options:["Because it refers to a female tiger","Because it describes a tiger","Because it tells what a tiger does","Because it is the name of a place"],
+  answer:0, explain:"'Tigress' specifically refers to a female tiger." },
+{ q:"Statement: \"Peahen\" is the feminine form of \"peacock.\" Reason: A peahen is a female peafowl.",
+  options:["Both are correct and the reason explains the statement","Both are correct but not related","Statement is correct, reason is wrong","Statement is wrong, reason is correct"],
+  answer:0, explain:"The reason correctly explains why 'peahen' is the feminine form of 'peacock'." },
+{ q:"In a story, a prince and a princess set out on an adventure. Which sentence correctly describes the pair?",
+  options:["Both are masculine gender nouns.","Both are feminine gender nouns.","Prince is masculine and princess is feminine.","Princess is masculine and prince is feminine."],
+  answer:2, explain:"'Prince' is masculine and 'princess' is feminine — a correct gender pair." }
+];
+
+let current = 0;
+let score = 0;
+let attempts = 0;
+let timer = null;
+let timeLeft = 60;
+const TIME_PER_Q = 60;
+
+const startScreen = document.getElementById('startScreen');
+const gameScreen = document.getElementById('gameScreen');
+const resultScreen = document.getElementById('resultScreen');
+const qText = document.getElementById('qText');
+const optionsBox = document.getElementById('optionsBox');
+const scorePill = document.getElementById('scorePill');
+const timerPill = document.getElementById('timerPill');
+const feedbackBox = document.getElementById('feedbackBox');
+const nextBtn = document.getElementById('nextBtn');
+const finalBanner = document.getElementById('finalBanner');
+
+function startGame(){
+  startScreen.classList.add('hidden');
+  gameScreen.classList.remove('hidden');
+  current = 0; score = 0;
+  loadQuestion();
+}
+
+function loadQuestion(){
+  attempts = 0;
+  feedbackBox.classList.remove('show');
+  feedbackBox.innerHTML = '';
+  nextBtn.style.display = 'none';
+  scorePill.textContent = `Score: ${score} / ${questions.length}`;
+  finalBanner.classList.toggle('hidden', current !== questions.length - 1);
+
+  const q = questions[current];
+  qText.textContent = `Q${current+1}. ${q.q}`;
+  optionsBox.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.textContent = opt;
+    div.onclick = () => selectOption(idx, div);
+    optionsBox.appendChild(div);
+  });
+
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timer);
+  timeLeft = TIME_PER_Q;
+  timerPill.textContent = `⏱ ${timeLeft}s`;
+  timerPill.classList.remove('warn');
+  timer = setInterval(() => {
+    timeLeft--;
+    timerPill.textContent = `⏱ ${timeLeft}s`;
+    if (timeLeft <= 10) timerPill.classList.add('warn');
+    if (timeLeft <= 0){
+      clearInterval(timer);
+      handleTimeout();
+    }
+  }, 1000);
+}
+
+function handleTimeout(){
+  processAnswer(-1, null);
+}
+
+function selectOption(idx, el){
+  clearInterval(timer);
+  const opts = optionsBox.querySelectorAll('.option');
+  opts.forEach(o => o.classList.add('disabled'));
+  processAnswer(idx, el);
+}
+
+function processAnswer(idx, el){
+  const q = questions[current];
+  const isCorrect = idx === q.answer;
+
+  if (isCorrect){
+    if (el) el.classList.add('correct');
+    score++;
+    scorePill.textContent = `Score: ${score} / ${questions.length}`;
+    playSound('correctSound');
+    burstStars();
+    setTimeout(nextQuestion, 1200);
+    return;
+  }
+
+  attempts++;
+  if (el) el.classList.add('wrong');
+  playSound('wrongSound');
+  showCross();
+
+  if (attempts === 1){
+    feedbackBox.innerHTML = "Not quite — the spotlight is still on you, try again! 🎬";
+    feedbackBox.classList.add('show');
+    const opts = optionsBox.querySelectorAll('.option');
+    opts.forEach((o,i) => {
+      if (i !== idx) o.classList.remove('disabled');
+    });
+    startTimer();
+  } else {
+    const opts = optionsBox.querySelectorAll('.option');
+    opts.forEach((o,i) => {
+      o.classList.add('disabled');
+      if (i === q.answer) o.classList.add('correct');
+    });
+    feedbackBox.innerHTML = `<strong>Correct answer:</strong> ${q.options[q.answer]}<br><br>${q.explain}`;
+    feedbackBox.classList.add('show');
+    nextBtn.style.display = 'inline-block';
+  }
+}
+
+function nextQuestion(){
+  current++;
+  if (current >= questions.length){
+    showResult();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showResult(){
+  gameScreen.classList.add('hidden');
+  resultScreen.classList.remove('hidden');
+  document.getElementById('resultScore').textContent = `${score} / ${questions.length}`;
+  let msg = '';
+  let emoji = '🎭';
+  const pct = score / questions.length;
+  if (pct >= 0.8){ msg = "Standing ovation! You truly know your gender nouns!"; emoji='🏆'; }
+  else if (pct >= 0.5){ msg = "A solid performance! A bit more rehearsal and you'll shine."; emoji='🎪'; }
+  else { msg = "Nice try on stage! Keep practicing for an encore performance."; emoji='🎟️'; }
+  document.getElementById('resultMsg').textContent = msg;
+  document.getElementById('resultEmoji').textContent = emoji;
+  playSound('clapSound');
+}
+
+function restartGame(){
+  resultScreen.classList.add('hidden');
+  startScreen.classList.remove('hidden');
+}
+
+function playSound(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.currentTime = 0;
+  el.play().catch(()=>{});
+}
+
+function burstStars(){
+  for (let i=0;i<14;i++){
+    const star = document.createElement('div');
+    star.className = 'star';
+    const angle = Math.random()*2*Math.PI;
+    const dist = 80 + Math.random()*120;
+    const dx = Math.cos(angle)*dist;
+    const dy = Math.sin(angle)*dist;
+    star.style.background = theatreColors[i % theatreColors.length];
+    document.body.appendChild(star);
+    star.animate([
+      { transform: 'translate(-50%,-50%) scale(0.5)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1.1) rotate(180deg)`, opacity: 0 }
+    ], { duration: 900, easing: 'ease-out' });
+    setTimeout(() => star.remove(), 900);
+  }
+}
+
+function showCross(){
+  const overlay = document.getElementById('crossOverlay');
+  overlay.classList.add('show');
+  setTimeout(() => overlay.classList.remove('show'), 650);
+}
+</script>
+</body>
+</html>
