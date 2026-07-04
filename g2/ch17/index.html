@@ -1,1 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 2 Contractions Interactive</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --background: #F5F7FA;
+            --surface: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Top Bar Indicators */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .hud-item {
+            background: #EDF2F7;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .timer-badge {
+            background: #FFEBEB;
+            color: var(--error);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Intro Screen */
+        #intro-screen {
+            text-align: center;
+            padding: 50px 10px;
+        }
+
+        .logo-placeholder {
+            width: 180px;
+            height: auto;
+            max-height: 80px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        /* Question Layout */
+        .question-text {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: var(--surface);
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: block;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (min-width: 768px) {
+            .option-btn:hover:not(:disabled) {
+                border-color: var(--primary);
+                background: #F0F7FF;
+            }
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.correct {
+            background: #E6FFFA;
+            border-color: var(--success);
+            color: #234E52;
+        }
+
+        .option-btn.wrong {
+            background: #FFF5F5;
+            border-color: var(--error);
+            color: #742A2A;
+        }
+
+        /* Controls / Feedback Panel */
+        .feedback-panel {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            display: none;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .feedback-panel.hint {
+            background: #FEFCBF;
+            border-left: 5px solid #D69E2E;
+            color: #744210;
+            display: block;
+        }
+
+        .feedback-panel.explanation {
+            background: #EBF8FF;
+            border-left: 5px solid var(--primary);
+            color: #2B6CB0;
+            display: block;
+        }
+
+        .action-container {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .next-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+
+        .next-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Results Screen */
+        #result-screen {
+            text-align: center;
+            padding: 30px 10px;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .restart-btn {
+            background: var(--text);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        /* Utilities */
+        .audio-ctrl {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* Confetti Effect Overlays */
+        .confetti-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 99;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <canvas id="canvas" class="confetti-canvas"></canvas>
+
+    <div class="top-bar" id="hud" style="display: none;">
+        <div class="hud-item" id="score-tracker">Score: 0</div>
+        <button class="audio-ctrl" id="mute-btn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+        <div class="hud-item timer-badge" id="timer">⏱️ 60s</div>
+    </div>
+
+    <div class="progress-container" id="progress-container" style="display: none;">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div id="intro-screen" class="screen active">
+        <img src="assets/logo.png" alt="Innovine Logo" class="logo-placeholder" onerror="this.style.display='none'">
+        <h2 style="font-size: 1.6rem;">English Grammar Interactive: Contractions</h2>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+        <div id="question" class="question-text"></div>
+        <div id="options" class="options-grid"></div>
+        
+        <div id="feedback" class="feedback-panel"></div>
+        
+        <div class="action-container">
+            <button id="next-btn" class="next-btn" onclick="handleNext()">Next Question</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen">
+        <div class="result-title" id="result-title"></div>
+        <p id="result-eval" style="font-size: 1.1rem; color: var(--text-light);"></p>
+        <div class="score-display" id="final-score">0/15</div>
+        <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+    </div>
+</div>
+
+<audio id="snd-correct" src="assets/claps.mp3" preload="auto"></audio>
+<audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+<script>
+    const questions = [
+        {
+            q: "Your friend calls and asks if you would like to come to a kite festival. Which reply sounds most natural?",
+            options: ["I am excited to come.", "I'm excited to come.", "I am excited come.", "I'm excitement to come."],
+            answer: 1,
+            hint: "Look for the natural, short way to say 'I am' while keeping the sentence grammatically correct.",
+            exp: "'I'm' is the short contraction for 'I am', which sounds the most natural in friendly daily conversations."
+        },
+        {
+            q: "Which sentence uses contractions differently from the others?",
+            options: ["We're planting trees this afternoon.", "They're collecting old newspapers.", "You're carrying the water bottles.", "We are helping during the community drive."],
+            optionsText: ["We're", "They're", "You're", "We are"],
+            answer: 3,
+            hint: "Three of the sentences use an apostrophe to combine words. Find the one that writes out the words fully.",
+            exp: "The first three sentences use contractions ('We're', 'They're', 'You're'), while 'We are' writes out both words fully."
+        },
+        {
+            q: "A child says: 'I used \"can't\" while talking about something I am unable to do.' Why is this a good choice?",
+            options: ["Because \"can't\" shows that something cannot be done", "Because \"can't\" means already happened", "Because \"can't\" is used only for questions", "Because \"can't\" means many people"],
+            answer: 0,
+            hint: "Think about what words combine to make 'can't'.",
+            exp: "'Can't' is the short form of 'cannot', which is used to show that an action is impossible or unable to be done."
+        },
+        {
+            q: "You forgot your swimming cap at home. Which sentence would you most likely say to your coach?",
+            options: ["I cannot join the lesson today.", "I can't join the lesson today.", "I can't lesson today.", "Cannot I join the lesson today."],
+            answer: 1,
+            hint: "In everyday situations, we prefer using the short form of 'cannot' in a complete sentence.",
+            exp: "Saying 'I can't join the lesson today' uses the complete contraction structure correctly and fits a natural conversation."
+        },
+        {
+            q: "Statement: 'We're' is a contraction.<br><br>Reason: It combines two words into a shorter form.",
+            options: ["The reason is correct and explains the statement.", "The reason is correct but does not explain the statement.", "The reason is wrong but the statement is correct.", "Both the reason and the statement are wrong."],
+            answer: 0,
+            hint: "Does a contraction shorten two words? Does 'We're' stand for 'We are'?",
+            exp: "Both parts are correct. 'We're' is a contraction because it joins 'we' and 'are' into a single, shorter word structure using an apostrophe."
+        },
+        {
+            q: "Which sentence shows incorrect understanding of contractions?",
+            options: ["We're looking for adventure books.", "It's my first visit to this book fair.", "They're standing near the story-telling corner.", "We'r buying books for our class library."],
+            answer: 3,
+            hint: "Check the punctuation and letters of each contraction closely. One is missing its final letter.",
+            exp: "'We'r' is an incorrect spelling. The proper contraction for 'we are' must be written as 'We're'."
+        },
+        {
+            q: "Which sentence shows correct understanding of contractions?",
+            options: ["I would use \"they're\" when talking about a group of people.", "I would use \"I'm\" when talking about my friends.", "I would use \"he's\" when talking about many children.", "I would use \"we're\" when talking about one person."],
+            answer: 0,
+            hint: "Match the shortcut word to who it belongs to. Who does 'they' usually describe?",
+            exp: "'They're' stands for 'they are' and is used when talking about a group of other people."
+        },
+        {
+            q: "A child writes about a family gathering. Which sentence is incorrect?",
+            options: ["We're meeting our cousins after dinner.", "It's Grandma's birthday today.", "They're bringing homemade sweets.", "Your coming with us to the celebration."],
+            answer: 3,
+            hint: "Look for a sentence that needs a contraction meaning 'you are' instead of the word showing ownership.",
+            exp: "The sentence should use 'You're' (you are) instead of 'Your'. 'Your coming' is an incorrect framework here."
+        },
+        {
+            q: "The club leader asks whether everyone has brought gardening gloves. Which reply sounds most natural?",
+            options: ["We have not forgotten them.", "We've not forgotten them.", "We forgetting them.", "We gloves forgotten them."],
+            answer: 1,
+            hint: "Which choice shortens 'We have' using a proper contraction?",
+            exp: "'We've' correctly shortens 'We have', making the dialogue conversational and flowing naturally."
+        },
+        {
+            q: "A child writes: 'Its raining, so we should stay indoors.' What should be corrected?",
+            options: ["Its → It's", "raining → rained", "indoors → indoor", "stay → staying"],
+            answer: 0,
+            hint: "Which word layout represents the shortcut form of 'It is'?",
+            exp: "The contraction for 'It is' requires an apostrophe, making 'It's' the correct choice to express that weather is occurring."
+        },
+        {
+            q: "Your team is about to start an important match. Which sentence would your captain most likely say?",
+            options: ["We are ready to play.", "We're ready to play.", "Ready we're play.", "We ready to play."],
+            answer: 1,
+            hint: "Captains encourage teams using friendly, natural contractions in clear sentences.",
+            exp: "'We're ready to play' uses the natural contraction form 'we're' seamlessly in a complete sentence."
+        },
+        {
+            q: "Which sentence does not belong with the others?",
+            options: ["He's practising for the music competition.", "She's preparing her science model.", "It's sleeping under the chair.", "They are waiting for the bus."],
+            answer: 3,
+            hint: "Look at how the words are written. Three choices use an apostrophe shortcut, but one does not.",
+            exp: "The first three lines use short contractions ('He's', 'She's', 'It's'), while the last choice writes out 'They are' fully without an apostrophe."
+        },
+        {
+            q: "Why is 'you're' used in the sentence: 'You're carrying the first-aid kit today.'?",
+            options: ["Because the speaker is talking directly to someone", "Because the speaker is talking about themselves", "Because the speaker is talking about many people", "Because the speaker is talking about an animal"],
+            answer: 0,
+            hint: "When you use the word 'you', whom are you addressing?",
+            exp: "'You're' means 'you are', which is used when a speaker addresses another person directly."
+        },
+        {
+            q: "Statement: 'Don't' is used correctly in the sentence, 'Don't run near the wet floor.'<br><br>Reason: 'Don't' is a shorter form commonly used in everyday instructions and speech.",
+            options: ["Both are correct and the reason explains the statement.", "Both are correct but not related.", "Statement is correct, reason is wrong.", "Statement is wrong, reason is correct."],
+            answer: 0,
+            hint: "Does 'Don't' make sense for a safety warning rule? Is it a quick spoken shortcut?",
+            exp: "Both elements match perfectly. 'Don't' is a short, friendly contraction for 'do not' that is perfect for everyday safety instructions."
+        },
+        {
+            q: "Heavy rain has started, and your friends want to continue playing outside. Which sentence would you most likely say?",
+            options: ["We will not play outside now.", "We won't play outside now.", "We won't outside now.", "Won't we outside now."],
+            answer: 1,
+            hint: "What is the everyday contraction rule for shortening 'will not' in a complete sentence?",
+            exp: "'Won't' is the unique contraction for 'will not'. Saying 'We won't play outside now' frames the action correctly."
+        }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let attempts = 0;
+    let timerInterval = null;
+    let timeLeft = 60;
+    let isMuted = false;
+
+    const introScreen = document.getElementById('intro-screen');
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const hud = document.getElementById('hud');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+    const scoreTracker = document.getElementById('score-tracker');
+    const timerElement = document.getElementById('timer');
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const feedbackElement = document.getElementById('feedback');
+    const nextBtn = document.getElementById('next-btn');
+
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            introScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            hud.style.display = 'flex';
+            progressContainer.style.display = 'block';
+            loadQuestion();
+        }, 5000);
+    });
+
+    function loadQuestion() {
+        clearInterval(timerInterval);
+        timeLeft = 60; 
+        timerElement.textContent = `⏱️ ${timeLeft}s`;
+        attempts = 0;
+        
+        feedbackElement.style.display = 'none';
+        feedbackElement.className = 'feedback-panel';
+        nextBtn.style.display = 'none';
+        
+        const qData = questions[currentIdx];
+        questionElement.innerHTML = qData.q;
+        optionsElement.innerHTML = '';
+        
+        progressBar.style.width = `${(currentIdx / questions.length) * 100}%`;
+        scoreTracker.textContent = `Score: ${score}`;
+
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerHTML = opt;
+            btn.onclick = () => selectOption(idx, btn);
+            optionsElement.appendChild(btn);
+        });
+
+        startTimer();
+    }
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = `⏱️ ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                lockOptionsDueToTimeout();
+            }
+        }, 1000);
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        document.getElementById('mute-btn').textContent = isMuted ? "🔇" : "🔊";
+    }
+
+    function playSound(type) {
+        if (isMuted) return;
+        const sound = document.getElementById(type === 'correct' ? 'snd-correct' : 'snd-wrong');
+        if(sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
+    }
+
+    function selectOption(selectedIdx, clickedBtn) {
+        const qData = questions[currentIdx];
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+
+        if (selectedIdx === qData.answer) {
+            clearInterval(timerInterval);
+            clickedBtn.classList.add('correct');
+            playSound('correct');
+            if (attempts === 0) score++;
+            scoreTracker.textContent = `Score: ${score}`;
+            
+            triggerConfetti();
+
+            feedbackElement.innerHTML = `<strong>Correct!</strong> ${qData.exp}`;
+            feedbackElement.className = 'feedback-panel explanation';
+            
+            disableAllOptions();
+            nextBtn.style.display = 'block';
+        } else {
+            attempts++;
+            clickedBtn.classList.add('wrong');
+            clickedBtn.disabled = true;
+            playSound('wrong');
+
+            if (attempts === 1) {
+                feedbackElement.innerHTML = `<strong>Try Again!</strong> Hint: ${qData.hint}`;
+                feedbackElement.className = 'feedback-panel hint';
+            } else {
+                clearInterval(timerInterval);
+                feedbackElement.innerHTML = `<strong>Incorrect.</strong> The correct answer was: <em>${qData.options[qData.answer]}</em>.<br><br>${qData.exp}`;
+                feedbackElement.className = 'feedback-panel explanation';
+                
+                optionButtons[qData.answer].classList.add('correct');
+                disableAllOptions();
+                nextBtn.style.display = 'block';
+            }
+        }
+    }
+
+    function lockOptionsDueToTimeout() {
+        const qData = questions[currentIdx];
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+        feedbackElement.innerHTML = `<strong>Time's up!</strong> The correct answer was: <em>${qData.options[qData.answer]}</em>.<br><br>${qData.exp}`;
+        feedbackElement.className = 'feedback-panel explanation';
+        optionButtons[qData.answer].classList.add('correct');
+        disableAllOptions();
+        nextBtn.style.display = 'block';
+    }
+
+    function disableAllOptions() {
+        const optionButtons = optionsElement.querySelectorAll('.option-btn');
+        optionButtons.forEach(btn => btn.disabled = true);
+    }
+
+    function handleNext() {
+        currentIdx++;
+        if (currentIdx < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        clearInterval(timerInterval);
+        quizScreen.classList.remove('active');
+        resultScreen.classList.add('active');
+        hud.style.display = 'none';
+        progressContainer.style.display = 'none';
+
+        const finalScoreElement = document.getElementById('final-score');
+        const titleElement = document.getElementById('result-title');
+        const evalElement = document.getElementById('result-eval');
+
+        finalScoreElement.textContent = `${score}/${questions.length}`;
+        const percentage = (score / questions.length) * 100;
+
+        if (percentage >= 75) {
+            titleElement.textContent = "Good job! 🎉";
+            evalElement.textContent = "You have an excellent grasp of contractions and their proper uses.";
+            triggerConfettiLoop();
+        } else if (percentage >= 40) {
+            titleElement.textContent = "Review this chapter and try again 📖";
+            evalElement.textContent = "You're getting close! Practice a bit more to clear up tricky apostrophe combinations.";
+        } else {
+            titleElement.textContent = "Let’s practise more 💪";
+            evalElement.textContent = "Review how two separate words are shorted together using apostrophes, then check back!";
+        }
+    }
+
+    function restartQuiz() {
+        currentIdx = 0;
+        score = 0;
+        resultScreen.classList.remove('active');
+        quizScreen.classList.add('active');
+        hud.style.display = 'flex';
+        progressContainer.style.display = 'block';
+        loadQuestion();
+    }
+
+    // Canvas Confetti Overlays
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let confetti = [];
+    let confettiTimer = null;
+
+    function triggerConfetti() {
+        initConfetti();
+        canvas.style.display = 'block';
+        setTimeout(() => {
+            canvas.style.display = 'none';
+            confetti = [];
+        }, 2500);
+    }
+
+    function triggerConfettiLoop() {
+        initConfetti();
+        canvas.style.display = 'block';
+    }
+
+    function initConfetti() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+        confetti = [];
+        for (let i = 0; i < 60; i++) {
+            confetti.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                r: Math.random() * 6 + 4,
+                d: Math.random() * canvas.height,
+                colorHex: ['#4A90E2', '#2ECC71', '#F1C40F', '#E74C3C'][Math.floor(Math.random()*4)],
+                tilt: Math.random() * 10 - 5
+            });
+        }
+        if(!confettiTimer) {
+            confettiTimer = requestAnimationFrame(drawConfetti);
+        }
+    }
+
+    function drawConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confetti.forEach((p) => {
+            p.y += Math.cos(p.d) + 1 + p.r / 2;
+            p.x += Math.sin(p.tilt);
+            
+            ctx.beginPath();
+            ctx.lineWidth = p.r;
+            ctx.strokeStyle = p.colorHex;
+            ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+            ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+            ctx.stroke();
+        });
+
+        if(canvas.style.display === 'block') {
+            requestAnimationFrame(drawConfetti);
+        } else {
+            confettiTimer = null;
+        }
+    }
+</script>
+
+</body>
+</html>
