@@ -1,1 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhyming Families - Interactive MCQ</title>
+    <style>
+        :root {
+            --bg-color: #f0f7f4;
+            --primary-color: #4a90e2;
+            --primary-dark: #357abd;
+            --accent-color: #ffd166;
+            --text-color: #2b2d42;
+            --card-bg: #ffffff;
+            --success-color: #06d6a0;
+            --error-color: #ef476f;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Animations */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .streamer {
+            position: absolute;
+            background: rgba(74, 144, 226, 0.15);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        /* Branding Screen */
+        #brand-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #brand-screen img {
+            max-width: 200px;
+            height: auto;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0 { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Container & Cards */
+        .container {
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            padding: 30px;
+            text-align: center;
+            display: none;
+            transition: all 0.3s ease;
+            border: 4px solid #e2e8f0;
+        }
+
+        .card.active {
+            display: block;
+        }
+
+        h1 { color: var(--primary-color); margin-bottom: 10px; font-size: 1.8rem; }
+        h2 { font-size: 1.4rem; margin-bottom: 20px; color: var(--text-color); }
+        p.subtitle { color: #6c757d; margin-bottom: 25px; font-size: 1rem; }
+
+        /* Meta details */
+        .meta-tag {
+            display: inline-block;
+            background: #e2e8f0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 5px;
+            color: #4a5568;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn:active { transform: scale(0.98); }
+
+        /* HUD Tracker Layout */
+        .hud-tracker {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            border-radius: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            font-weight: bold;
+        }
+
+        .timer-box { color: var(--error-color); display: flex; align-items: center; gap: 5px; }
+        .score-box { color: var(--success-color); }
+        .progress-box { color: var(--primary-color); }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        /* Question Elements */
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .option-btn:hover:not([disabled]) {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .option-btn.correct {
+            background-color: #e6fffa !important;
+            border-color: var(--success-color) !important;
+            color: #047857;
+            font-weight: 600;
+        }
+
+        .option-btn.wrong {
+            background-color: #fff5f5 !important;
+            border-color: var(--error-color) !important;
+            color: #b91c1c;
+        }
+
+        /* Feedback Indicators */
+        .indicator {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .feedback-box {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #ebf8ff;
+            border-left: 4px solid var(--primary-color);
+            text-align: left;
+            font-size: 0.95rem;
+            display: none;
+        }
+
+        /* Confetti & Visual overlays */
+        .canvas-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Utilities */
+        .action-space {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .hidden { display: none !important; }
+
+        @media(max-width: 480px) {
+            .card { padding: 20px 15px; }
+            h1 { font-size: 1.5rem; }
+            h2 { font-size: 1.2rem; }
+            .question-text { font-size: 1.1rem; }
+            .option-btn { font-size: 0.95rem; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg" id="ambient-bg"></div>
+
+    <canvas id="fx-canvas" class="canvas-overlay"></canvas>
+
+    <div id="brand-screen">
+        <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none';">
+    </div>
+
+    <div class="container">
+        
+        <div id="hud-bar" class="hud-tracker hidden">
+            <div class="progress-box">Question: <span id="hud-current">1</span>/<span id="hud-total">10</span></div>
+            <div class="timer-box">⏱️ <span id="hud-timer">60</span>s</div>
+            <div class="score-box">Score: <span id="hud-score">0</span></div>
+        </div>
+
+        <div class="progress-bar-container id-bar hidden" id="progress-container">
+            <div class="progress-fill" id="progress-fill"></div>
+        </div>
+
+        <div id="intro-card" class="card active">
+            <div class="meta-wrapper">
+                <span class="meta-tag">Grade 1</span>
+                <span class="meta-tag">English</span>
+            </div>
+            <h1>Rhyming Families Quiz</h1>
+            <p class="subtitle">Match the matching sounds, find the odd families out, and complete the rhythmic words challenges!</p>
+            <button class="btn" onclick="startQuiz()">Start Challenge</button>
+        </div>
+
+        <div id="quiz-card" class="card">
+            <div class="question-text" id="q-text">Loading question text...</div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="feedback-box" id="feedback-container"></div>
+            <div class="action-space">
+                <button class="btn hidden" id="next-btn" onclick="advanceQuestion()">Next ➡️</button>
+            </div>
+        </div>
+
+        <div id="challenge-card" class="card">
+            <h1>🌟 Final Challenge! 🌟</h1>
+            <p class="subtitle" style="margin-bottom:20px;">You are entering the ultimate tier of rhyming Mastery. Your speed and precision matters right now!</p>
+            <p id="challenge-desc" style="font-weight: 600; margin-bottom: 25px;"></p>
+            <button class="btn" onclick="triggerFinalQuestion()">Unlock Final Question</button>
+        </div>
+
+        <div id="result-card" class="card">
+            <h1>Quiz Complete!</h1>
+            <p class="subtitle" id="result-status"></p>
+            <h2 style="font-size: 2.5rem; color: var(--primary-color); margin: 15px 0;" id="final-score-text">0 / 10</h2>
+            <p style="margin-bottom:25px;" id="performance-feedback"></p>
+            <button class="btn" onclick="restartQuiz()">Try Again 🔄</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Competency-Based Curated Question Bank Array mapped chronologically from low to high cognitive complexity
+        const questions = [
+            {
+                text: "You are in your classroom during a “Word Toy Sorting Game.” Your teacher gives you toy word cards and asks you to group words that belong to the same rhyming family. You see these cards: cat, bat, hat, dog. You think carefully and group three words together. Which group is correct, and why?",
+                options: [
+                    "cat, bat, hat — because they all end with the same sound “-at”",
+                    "cat, dog, bat — because they are animals",
+                    "hat, dog, cat — because they are things you see",
+                    "bat, dog, hat — because they are long words"
+                ],
+                answer: 0,
+                explanation: "The words 'cat', 'bat', and 'hat' all share the precise ending phoneme sequence '-at', qualifying them as a unified sound family."
+            },
+            {
+                text: "During a rhyme game, your teacher says: “Find the word that does NOT belong in the rhyming family.” You hear these words: man, fan, pan, pen. You carefully listen to the ending sounds. Which word does NOT belong, and why?",
+                options: [
+                    "man — because it is a name",
+                    "fan — because it is used in summer",
+                    "pan — because it is used in cooking",
+                    "pen — because it does not end with “-an”"
+                ],
+                answer: 3,
+                explanation: "While 'man', 'fan', and 'pan' all cluster perfectly into the '-an' rhyming line, 'pen' ends with an '-en' vocal trace."
+            },
+            {
+                text: "A child says: “I grouped ‘sun, bun, fun’ together because they sound similar at the end.” The teacher asks: “Why is this grouping correct?”",
+                options: [
+                    "Because all words begin with the same letter",
+                    "Because all words end with the same sound “-un”",
+                    "Because all words are animals",
+                    "Because all words are long words"
+                ],
+                answer: 1,
+                explanation: "Rhyming relies exclusively on matching termination sounds, which 'sun, bun, fun' achieve via the '-un' ending sound."
+            },
+            {
+                text: "During music class, your teacher sings a rhyming song: “bee, tree, knee, free…” She asks you to find the rhyming family. Which group belongs together, and what is the reason?",
+                options: [
+                    "bee, tree, knee, free — because they end with the same sound “-ee”",
+                    "bee, tree, cat, dog — because they are animals",
+                    "tree, bee, car, bus — because they are transport words",
+                    "bee, dog, sun, tree — because they are random words"
+                ],
+                answer: 0,
+                explanation: "Each of these targeted vocalizations finishes cleanly with the phonetic elongation of the long '-ee' family."
+            },
+            {
+                text: "Statement: “'hat' and 'cat' belong to the same rhyming family.” \nReason: “Both words end with the same sound '-at'.”",
+                options: [
+                    "Both statement and reason are correct, and the reason explains the statement",
+                    "Both statement and reason are correct, but not related",
+                    "Statement is correct, but reason is wrong",
+                    "Statement is wrong, but reason is correct"
+                ],
+                answer: 0,
+                explanation: "The definition of an auditory rhyming group is satisfied precisely by sharing identical ending metrics like '-at'."
+            },
+            {
+                text: "You are helping your teacher decorate a rhyming wall chart. Which group does NOT belong to the same rhyming family?",
+                options: [
+                    "dog, log, frog",
+                    "sun, bun, run",
+                    "car, jar, star",
+                    "bed, red, pen"
+                ],
+                answer: 3,
+                explanation: "Though 'bed' and 'red' form a pair, 'pen' breaks continuity because it switches to a contrasting ending cadence."
+            },
+            {
+                text: "Your teacher asks: “Why do we group rhyming words in English?”",
+                options: [
+                    "To make words look the same",
+                    "To help us hear patterns in sounds and enjoy language",
+                    "To learn only spelling",
+                    "To count letters in words"
+                ],
+                answer: 1,
+                explanation: "Rhyming strengthens phonemic structure decoding skills and highlights beautiful audible configurations in natural language expressions."
+            },
+            {
+                text: "A child is doing a worksheet and writes: 'hat, bat, sun'. The teacher asks: “Is this correct?” What is the mistake?",
+                options: [
+                    "All words start with same letter",
+                    "One word does not belong to the rhyming family",
+                    "All words are animals",
+                    "All words are short"
+                ],
+                answer: 1,
+                explanation: "'sun' contains an ending sequence totally alien to the '-at' parameters holding 'hat' and 'bat' together."
+            },
+            {
+                text: "You are making a funny rhyming story title for your class library corner. Which title uses a correct rhyming family?",
+                options: [
+                    "The Big Cat and the Hat",
+                    "The Blue Sky Day",
+                    "The Fast Car Ride",
+                    "The Happy School Bus"
+                ],
+                answer: 0,
+                explanation: "'Cat' and 'Hat' align constructively right next to each other to anchor an authentic literary rhyme match."
+            },
+            {
+                text: "Your teacher gives a challenge: “Pick the correct rhyming family from these word baskets.” \nBasket A: sun, bun, fun \nBasket B: pen, ten, hen \nBasket C: car, jar, star \nBasket D: book, pen, bag \nA student says: “Basket D is also a rhyming family.” What is the correct conclusion?",
+                options: [
+                    "The student is correct",
+                    "Basket D is a rhyming family",
+                    "Basket D is NOT a rhyming family because the words do not end with the same sound",
+                    "All baskets are rhyming families"
+                ],
+                answer: 2,
+                explanation: "Basket D collects diverse, non-rhyming words that do not terminate with matching core phonemic audio rhythms."
+            }
+        ];
+
+        // Runtime Tracking Global Variables
+        let currentIdx = 0;
+        let score = 0;
+        let clockSecs = 60; // Configured precisely at 60s for Grade 1 tier
+        let countdownTimer = null;
+        let doubleFaultCheck = 0; // Tracking single retry mechanism allowance rule
+
+        // Audio Objects initialization directly pointing to assets folder structures
+        const sndCorrect = new Audio('assets/correct.mp3');
+        const sndWrong = new Audio('assets/wrong.mp3');
+        const sndClaps = new Audio('assets/freesound_community-claps-44774.mp3');
+
+        // FX Canvas Management for Star Confetti & Intermittent Marks
+        const canvas = document.getElementById('fx-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function setCanvasBounds() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', setCanvasBounds);
+        setCanvasBounds();
+
+        // Dynamically populate light decorative background streamers
+        function instantiateAmbientBackground() {
+            const bg = document.getElementById('ambient-bg');
+            for (let i = 0; i < 8; i++) {
+                let streamer = document.createElement('div');
+                streamer.className = 'streamer';
+                let dia = Math.random() * 40 + 20;
+                streamer.style.width = `${dia}px`;
+                streamer.style.height = `${dia}px`;
+                streamer.style.left = `${Math.random() * 100}vw`;
+                streamer.style.top = `${Math.random() * 100}vh`;
+                streamer.style.animationDelay = `${Math.random() * 5}s`;
+                bg.appendChild(streamer);
+            }
+        }
+        instantiateAmbientBackground();
+
+        // Brand screen lifecycle handler
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const brand = document.getElementById('brand-screen');
+                brand.style.opacity = '0';
+                setTimeout(() => brand.remove(), 500);
+            }, 5000); // Enforced 5 seconds baseline criteria display rule
+        });
+
+        // App Navigation Loops
+        function startQuiz() {
+            document.getElementById('intro-card').classList.remove('active');
+            document.getElementById('hud-bar').classList.remove('hidden');
+            document.getElementById('progress-container').classList.remove('hidden');
+            document.getElementById('quiz-card').classList.add('active');
+            currentIdx = 0;
+            score = 0;
+            updateHUD();
+            displayQuestion();
+        }
+
+        function updateHUD() {
+            document.getElementById('hud-current').innerText = currentIdx + 1;
+            document.getElementById('hud-total').innerText = questions.length;
+            document.getElementById('hud-score').innerText = score;
+            let percent = ((currentIdx) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = `${percent}%`;
+        }
+
+        function initiateTimer() {
+            clearInterval(countdownTimer);
+            clockSecs = 60; // Grade 1 parameter default configuration
+            document.getElementById('hud-timer').innerText = clockSecs;
+            countdownTimer = setInterval(() => {
+                clockSecs--;
+                document.getElementById('hud-timer').innerText = clockSecs;
+                if (clockSecs <= 0) {
+                    clearInterval(countdownTimer);
+                    handleExpirationTime();
+                }
+            }, 1000);
+        }
+
+        function displayQuestion() {
+            initiateTimer();
+            doubleFaultCheck = 0;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('feedback-container').style.display = 'none';
+            
+            let q = questions[currentIdx];
+            document.getElementById('q-text').innerText = q.text;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                let btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span>${opt}</span><span class="indicator" id="ind-${idx}"></span>`;
+                btn.onclick = () => processSelection(idx, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function processSelection(chosenIdx, clickedBtn) {
+            let q = questions[currentIdx];
+            
+            if (chosenIdx === q.answer) {
+                // Correct Evaluation Branch
+                clearInterval(countdownTimer);
+                clickedBtn.classList.add('correct');
+                document.getElementById(`ind-${chosenIdx}`).innerText = '✓';
+                freezeOptions();
+                score++;
+                document.getElementById('hud-score').innerText = score;
+                playAudioSafely(sndCorrect);
+                triggerStarsEffect();
+                revealControls();
+            } else {
+                // Erroneous Evaluation Branch
+                doubleFaultCheck++;
+                playAudioSafely(sndWrong);
+                
+                if (doubleFaultCheck === 1) {
+                    // Give Second Attempt / Retry Option
+                    clickedBtn.classList.add('wrong');
+                    document.getElementById(`ind-${chosenIdx}`).innerText = '✗';
+                    alert("Oops! That's not quite right. Try one more time! ✨");
+                } else {
+                    // Maximum attempts exhausted, show answer and feedback
+                    clearInterval(countdownTimer);
+                    clickedBtn.classList.add('wrong');
+                    document.getElementById(`ind-${chosenIdx}`).innerText = '✗';
+                    
+                    // Emphasize correct answer visually
+                    let btns = document.querySelectorAll('.option-btn');
+                    btns[q.answer].classList.add('correct');
+                    document.getElementById(`ind-${q.answer}`).innerText = '✓';
+                    
+                    freezeOptions();
+                    revealExplanation(q.explanation);
+                    revealControls();
+                }
+            }
+        }
+
+        function handleExpirationTime() {
+            let q = questions[currentIdx];
+            freezeOptions();
+            let btns = document.querySelectorAll('.option-btn');
+            btns[q.answer].classList.add('correct');
+            revealExplanation("Time's up! " + q.explanation);
+            revealControls();
+        }
+
+        function freezeOptions() {
+            let btns = document.querySelectorAll('.option-btn');
+            btns.forEach(b => b.setAttribute('disabled', 'true'));
+        }
+
+        function revealExplanation(text) {
+            const fb = document.getElementById('feedback-container');
+            fb.innerText = text;
+            fb.style.display = 'block';
+        }
+
+        function revealControls() {
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function advanceQuestion() {
+            currentIdx++;
+            if (currentIdx === questions.length - 1) {
+                // Intercept to display specialized Final Challenge Gate Screen prior to final item
+                document.getElementById('quiz-card').classList.remove('active');
+                document.getElementById('challenge-card').classList.add('active');
+                document.getElementById('challenge-desc').innerText = `You have conquered ${currentIdx} out of ${questions.length} sound families. The final basket requires ultimate concentration! Are you ready?`;
+            } else if (currentIdx >= questions.length) {
+                showResults();
+            } else {
+                updateHUD();
+                displayQuestion();
+            }
+        }
+
+        function triggerFinalQuestion() {
+            document.getElementById('challenge-card').classList.remove('active');
+            document.getElementById('quiz-card').classList.add('active');
+            updateHUD();
+            displayQuestion();
+        }
+
+        function showResults() {
+            clearInterval(countdownTimer);
+            document.getElementById('quiz-card').classList.remove('active');
+            document.getElementById('hud-bar').classList.add('hidden');
+            document.getElementById('progress-container').classList.add('hidden');
+            document.getElementById('result-card').classList.add('active');
+            
+            document.getElementById('final-score-text').innerText = `${score} / ${questions.length}`;
+            
+            let status = document.getElementById('result-status');
+            let feedback = document.getElementById('performance-feedback');
+            
+            if (score >= 8) {
+                status.innerText = "🎉 Phenomenal job, Word Master!";
+                feedback.innerText = "You have an incredible ear for sounds and accents. Every single rhyming family is secure under your watch!";
+                playAudioSafely(sndClaps);
+            } else if (score >= 5) {
+                status.innerText = "👍 Great Effort!";
+                feedback.innerText = "You understand most rhyming patterns. Try again to get a perfect score!";
+            } else {
+                status.innerText = "📚 Keep Learning!";
+                feedback.innerText = "Rhymes can be tricky at first. Give it another try to tune your ears to matching sounds!";
+            }
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-card').classList.remove('active');
+            startQuiz();
+        }
+
+        function playAudioSafely(audioObj) {
+            audioObj.currentTime = 0;
+            audioObj.play().catch(e => console.log("Audio playback deferred pending direct user setup interaction."));
+        }
+
+        // Particle System Loop Engine (Star Confetti Simulation Framework)
+        function triggerStarsEffect() {
+            for (let i = 0; i < 40; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    dx: (Math.random() - 0.5) * 8,
+                    dy: (Math.random() - 0.5) * 8 - 4,
+                    size: Math.random() * 6 + 4,
+                    color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+                    alpha: 1,
+                    decay: Math.random() * 0.02 + 0.015
+                });
+            }
+        }
+
+        function updateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                let p = particles[i];
+                p.x += p.dx;
+                p.y += p.dy;
+                p.dy += 0.1; // mild gravity simulation draw rate
+                p.alpha -= p.decay;
+                
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                    i--;
+                    continue;
+                }
+
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                
+                // Draw star-like shapes
+                ctx.beginPath();
+                for (let j = 0; j < 5; j++) {
+                    ctx.lineTo(p.x + Math.cos((18 + j * 72) * Math.PI / 180) * p.size, p.y + Math.sin((18 + j * 72) * Math.PI / 180) * p.size);
+                    ctx.lineTo(p.x + Math.cos((54 + j * 72) * Math.PI / 180) * (p.size/2), p.y + Math.sin((54 + j * 72) * Math.PI / 180) * (p.size/2));
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.restore();
+            }
+            requestAnimationFrame(updateParticles);
+        }
+        requestAnimationFrame(updateParticles);
+    </script>
+</body>
+</html>
