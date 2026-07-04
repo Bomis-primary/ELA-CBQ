@@ -281,14 +281,14 @@
         <canvas id="confetti-canvas"></canvas>
 
         <div id="logo-screen" class="screen active">
-            <img class="logo-img" src="grade-2/english/conjunctions/assets/innovine-logo.png" alt="Innovine Logo">
+            <img class="logo-img" src="assets/logo.png" alt="Innovine Logo">
         </div>
 
         <div id="welcome-screen" class="screen">
             <h1>Joining Words Fun!</h1>
             <p class="instructions">
                 Welcome! Let's complete a quest all about <strong>and, or, but,</strong> and <strong>because</strong>.<br><br>
-                You will have 60 seconds to solve each question. If you make a mistake, don't worry! You get a hint and one more chance to try again.
+                You will have 60 seconds to solve each question[cite: 84]. If you make a mistake, don't worry! You get a hint and one more chance to try again[cite: 87, 88].
             </p>
             <button class="btn" onclick="startQuiz()">Start Learning Journey</button>
         </div>
@@ -322,8 +322,8 @@
         </div>
     </div>
 
-    <audio id="snd-correct" src="grade-2/english/conjunctions/assets/correct.mp3" preload="auto"></audio>
-    <audio id="snd-wrong" src="grade-2/english/conjunctions/assets/wrong.mp3" preload="auto"></audio>
+    <audio id="snd-correct" src="assets/claps.mp3" preload="auto"></audio>
+    <audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
 
     <script>
         const questions = [
@@ -515,7 +515,7 @@
         window.addEventListener('load', () => {
             setTimeout(() => {
                 showScreen('welcome-screen');
-            }, 5000);
+            }, 5000); // 5-second brand requirement [cite: 164]
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
         });
@@ -534,7 +534,7 @@
 
         function loadQuestion() {
             clearInterval(timerInterval);
-            timeLeft = 60;
+            timeLeft = 60; // 60 seconds for Grade 2 [cite: 84]
             attempts = 0;
             selectedOptionIndex = null;
             currentStepState = "check";
@@ -544,7 +544,7 @@
             document.getElementById('progress-indicator').innerText = `Question ${currentQuestionIndex + 1}/${questions.length}`;
             document.getElementById('score-tracker').innerText = `Score: ${score}`;
             
-            const headingPrefix = (currentQuestionIndex >= 12) ? "🏆 Final Challenge: " : "";
+            const headingPrefix = (currentQuestionIndex >= 12) ? "🏆 Final Challenge: " : ""; // Final Challenge flow [cite: 51]
             document.getElementById('question-text').innerHTML = `<span>${headingPrefix}</span>${q.text}`;
             
             const container = document.getElementById('options-container');
@@ -628,7 +628,7 @@
 
         function handleCorrectAnswer() {
             playSound('snd-correct');
-            triggerSparklers();
+            triggerSparklers(); // Visual confetti rewards [cite: 139]
             
             const selectedBtn = document.querySelectorAll('.option-btn')[selectedOptionIndex];
             selectedBtn.classList.add('correct');
@@ -650,10 +650,10 @@
             const selectedBtn = document.querySelectorAll('.option-btn')[selectedOptionIndex];
             selectedBtn.classList.add('wrong');
 
-            if (attempts === 1) {
+            if (attempts === 1) { // Retry system triggers [cite: 87]
                 const feedback = document.getElementById('feedback-message');
                 feedback.className = 'feedback-box hint';
-                feedback.innerText = `💡 Try Again! Hint: ${q.hint}`;
+                feedback.innerText = `💡 Try Again! Hint: ${q.hint}`; // Show hint on first error [cite: 88]
                 
                 currentStepState = "retry";
                 document.getElementById('next-btn').innerText = "Check Retry";
@@ -666,7 +666,7 @@
 
                 const feedback = document.getElementById('feedback-message');
                 feedback.className = 'feedback-box explanation';
-                feedback.innerText = `Let's learn: ${q.explanation}`;
+                feedback.innerText = `Let's learn: ${q.explanation}`; // Full feedback on second error [cite: 89]
 
                 currentStepState = "next";
                 document.getElementById('next-btn').innerText = "Continue";
@@ -702,6 +702,7 @@
             const ratio = (score / questions.length) * 100;
             const messageEl = document.getElementById('result-message');
             
+            // Dynamic grading bracket system [cite: 123, 124, 125]
             if (ratio >= 75) {
                 messageEl.innerText = "⭐ Good job! You are a master of joining words!";
                 triggerSparklers();
