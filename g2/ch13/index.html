@@ -45,7 +45,6 @@
             flex-direction: column;
         }
 
-        /* Screens management */
         .screen {
             display: none;
             flex-direction: column;
@@ -57,7 +56,6 @@
             display: flex;
         }
 
-        /* Intro Screen (Logo) */
         #logo-screen {
             justify-content: center;
             align-items: center;
@@ -70,7 +68,6 @@
             animation: pulse 1.5s infinite;
         }
 
-        /* Welcome Screen */
         #welcome-screen {
             text-align: center;
             justify-content: center;
@@ -90,7 +87,6 @@
             line-height: 1.5;
         }
 
-        /* Game Header Utilities */
         .game-header {
             display: flex;
             justify-content: space-between;
@@ -120,7 +116,6 @@
             animation: shake 0.5s infinite;
         }
 
-        /* Question Area */
         .question-text {
             font-size: 18px;
             font-weight: 600;
@@ -165,7 +160,6 @@
             color: #C0392B;
         }
 
-        /* Feedback UI */
         .feedback-box {
             padding: 15px;
             border-radius: 12px;
@@ -190,7 +184,6 @@
             display: block;
         }
 
-        /* Primary Controls */
         .btn {
             background: var(--primary);
             color: white;
@@ -221,7 +214,6 @@
             justify-content: flex-end;
         }
 
-        /* Audio controls toggle */
         .audio-toggle {
             position: absolute;
             top: 15px;
@@ -233,7 +225,6 @@
             z-index: 10;
         }
 
-        /* Final Results view */
         .result-card {
             text-align: center;
             padding: 20px 0;
@@ -253,7 +244,6 @@
             color: var(--dark);
         }
 
-        /* Celebratory effects container */
         #confetti-canvas {
             position: absolute;
             top: 0;
@@ -264,7 +254,6 @@
             z-index: 5;
         }
 
-        /* Animations */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.04); }
@@ -277,7 +266,6 @@
             75% { transform: translateX(2px); }
         }
 
-        /* Mobile Layout tweaks */
         @media (max-width: 480px) {
             h1 { font-size: 22px; }
             .question-text { font-size: 16px; }
@@ -314,8 +302,7 @@
             
             <div id="question-box">
                 <p class="question-text" id="question-text">Question goes here?</p>
-                <div class="options-grid" id="options-container">
-                    </div>
+                <div class="options-grid" id="options-container"></div>
             </div>
 
             <div class="feedback-box" id="feedback-message"></div>
@@ -339,7 +326,6 @@
     <audio id="snd-wrong" src="grade-2/english/conjunctions/assets/wrong.mp3" preload="auto"></audio>
 
     <script>
-        // Core Question Data mapping
         const questions = [
             {
                 text: "Your cousin asks what you want to do on Sunday. Which sentence shows that you want to do TWO activities together?",
@@ -363,7 +349,7 @@
                 ],
                 correct: 3,
                 hint: "Look for the single sentence that explains *why* something happened instead of listing items.",
-                explanation: Sentences 1, 2, and 3 use 'and' to add info, while the last one uses 'because' to state a reason."
+                explanation: "Sentences 1, 2, and 3 use 'and' to add info, while the last one uses 'because' to state a reason."
             },
             {
                 text: "A child says: 'I used \"because\" in my sentence about carrying an umbrella.' Why is 'because' a good choice here?",
@@ -513,7 +499,6 @@
             }
         ];
 
-        // State Machine Variables
         let currentQuestionIndex = 0;
         let score = 0;
         let attempts = 0;
@@ -521,16 +506,13 @@
         let timeLeft = 60;
         let selectedOptionIndex = null;
         let isAudioMuted = false;
-        let currentStepState = "check"; // Modes: 'check', 'next', 'retry'
+        let currentStepState = "check"; 
 
-        // Canvas element binding for custom sparklers/confetti animation
         const canvas = document.getElementById("confetti-canvas");
         const ctx = canvas.getContext("2d");
         let confettiParticles = [];
 
-        // Application Lifecycles
         window.addEventListener('load', () => {
-            // Auto-advance through mandatory branding display block
             setTimeout(() => {
                 showScreen('welcome-screen');
             }, 5000);
@@ -559,21 +541,17 @@
             
             const q = questions[currentQuestionIndex];
             
-            // Header elements mapping
             document.getElementById('progress-indicator').innerText = `Question ${currentQuestionIndex + 1}/${questions.length}`;
             document.getElementById('score-tracker').innerText = `Score: ${score}`;
             
-            // Render text context dynamically based on flow position
             const headingPrefix = (currentQuestionIndex >= 12) ? "🏆 Final Challenge: " : "";
             document.getElementById('question-text').innerHTML = `<span>${headingPrefix}</span>${q.text}`;
             
-            // Clear fields cleanly
             const container = document.getElementById('options-container');
             container.innerHTML = '';
             document.getElementById('feedback-message').className = 'feedback-box';
             document.getElementById('feedback-message').innerText = '';
             
-            // Populate choices dynamically
             q.options.forEach((opt, idx) => {
                 const button = document.createElement('button');
                 button.className = 'option-btn';
@@ -629,17 +607,13 @@
 
         function handleNextStep() {
             const q = questions[currentQuestionIndex];
-            const nextBtn = document.getElementById('next-btn');
-
             if (currentStepState === "check" || currentStepState === "retry") {
                 attempts++;
                 clearInterval(timerInterval);
 
                 if (selectedOptionIndex === q.correct) {
-                    // Right path handler logic
                     handleCorrectAnswer();
                 } else {
-                    // Wrong path handler logic 
                     handleIncorrectAnswer(q);
                 }
             } else if (currentStepState === "next") {
@@ -677,7 +651,6 @@
             selectedBtn.classList.add('wrong');
 
             if (attempts === 1) {
-                // Secondary fallback attempt setup 
                 const feedback = document.getElementById('feedback-message');
                 feedback.className = 'feedback-box hint';
                 feedback.innerText = `💡 Try Again! Hint: ${q.hint}`;
@@ -685,9 +658,8 @@
                 currentStepState = "retry";
                 document.getElementById('next-btn').innerText = "Check Retry";
                 document.getElementById('next-btn').disabled = true;
-                startTimer(); // Restart clock allocations sequentially
+                startTimer(); 
             } else {
-                // Out of operational moves execution loop
                 disableAllOptions();
                 const correctBtn = document.querySelectorAll('.option-btn')[q.correct];
                 correctBtn.classList.add('correct');
@@ -702,7 +674,7 @@
         }
 
         function forceTimeout() {
-            attempts = 2; // Treat as double fault penalty sequence
+            attempts = 2; 
             disableAllOptions();
             const q = questions[currentQuestionIndex];
             const correctBtn = document.querySelectorAll('.option-btn')[q.correct];
@@ -733,7 +705,6 @@
             if (ratio >= 75) {
                 messageEl.innerText = "⭐ Good job! You are a master of joining words!";
                 triggerSparklers();
-                // Infinite light particles trigger on high success parameters
                 setTimeout(triggerSparklers, 600);
             } else if (ratio >= 40) {
                 messageEl.innerText = "Review this chapter and try again! You're getting closer!";
@@ -746,13 +717,12 @@
             startQuiz();
         }
 
-        // Multimedia Safety Framework wrappers
         function playSound(elementId) {
             if (isAudioMuted) return;
             const audio = document.getElementById(elementId);
             if (audio) {
                 audio.currentTime = 0;
-                audio.play().catch(() => {/* Prevent console log noise from security constraints */});
+                audio.play().catch(() => {});
             }
         }
 
@@ -761,7 +731,6 @@
             document.getElementById('mute-btn').innerText = isAudioMuted ? "🔇" : "🔊";
         }
 
-        // Custom Graphics Render Block for interactive Sparkler celebrations
         function resizeCanvas() {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
@@ -793,7 +762,7 @@
                 const p = confettiParticles[i];
                 p.x += p.vx;
                 p.y += p.vy;
-                p.vy += 0.1; // Simulated structural pull gravity
+                p.vy += 0.1; 
                 p.alpha -= p.decay;
 
                 if (p.alpha <= 0) {
