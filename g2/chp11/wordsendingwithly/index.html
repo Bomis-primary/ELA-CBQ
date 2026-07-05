@@ -1,1 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Words Ending with -ly | Grade 2 Competency MCQs</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --secondary: #FFD166;
+            --success: #06D6A0;
+            --danger: #EF476F;
+            --background: #F4F7F6;
+            --text: #2D3748;
+            --text-light: #718096;
+            --card-bg: #FFFFFF;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Performance-friendly Background Animations */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .floating-star {
+            position: absolute;
+            background: rgba(255, 209, 102, 0.4);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: float Up 12s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) rotate(0deg) scale(0.5); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-5vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Layout Framework */
+        .container {
+            width: 90%;
+            max-width: 650px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        /* Screens */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Splash Screen styling */
+        #splash-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFFFFF;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+        #splash-screen img {
+            max-width: 220px;
+            height: auto;
+            animation: pulse 2s infinite ease-in-out;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Typography & Custom Formatting Elements */
+        h1 { font-size: 24px; margin-bottom: 10px; color: var(--primary-dark); }
+        h2 { font-size: 20px; margin-bottom: 20px; }
+        p.subtitle { color: var(--text-light); margin-bottom: 25px; font-size: 15px; }
+        
+        /* Stats & HUD elements */
+        .hud-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F0F4F8;
+        }
+        .hud-item {
+            font-weight: 700;
+            font-size: 14px;
+            background: #EDF2F7;
+            padding: 8px 14px;
+            border-radius: 30px;
+            color: var(--text);
+        }
+        .timer-badge { background: #FEEBC8; color: #C05621; }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+
+        /* Question Panel */
+        .question-box {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            text-align: left;
+            padding: 15px;
+            background: #F7FAFC;
+            border-left: 5px solid var(--primary);
+            border-radius: 4px;
+        }
+
+        /* Option Buttons */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .option-btn {
+            background: #FFFFFF;
+            border: 2px solid #E2E8F0;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #F7FAFC;
+        }
+        .option-btn:disabled { cursor: not-allowed; }
+        
+        .option-btn.correct {
+            background: #E6FFFA !important;
+            border-color: var(--success) !important;
+            color: #234E52 !important;
+            font-weight: 600;
+        }
+        .option-btn.wrong {
+            background: #FFF5F5 !important;
+            border-color: var(--danger) !important;
+            color: #742A2A !important;
+        }
+
+        /* Feedback Panel */
+        .feedback-box {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+            display: none;
+            text-align: left;
+            background: #EDF2F7;
+            border: 1px solid #CBD5E0;
+        }
+
+        /* Utility Buttons */
+        .btn-action {
+            background: var(--primary);
+            color: #FFF;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+            margin-top: 15px;
+            box-shadow: 0 4px 6px rgba(74, 144, 226, 0.2);
+        }
+        .btn-action:hover { background: var(--primary-dark); }
+
+        /* Visual Confetti / Cross Effects Layer */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 999;
+            animation: popOut 0.6s ease-out forwards;
+        }
+        @keyframes popOut {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 1; }
+            100% { transform: translate(var(--mx), var(--my)) scale(1) rotate(var(--rot)); opacity: 0; }
+        }
+
+        /* Final Challenge Indicator */
+        .final-challenge-badge {
+            background: linear-gradient(135deg, #6B46C1, #4A90E2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive UI adjustments */
+        @media(max-width: 480px) {
+            .container { padding: 20px 15px; width: 95%; }
+            h1 { font-size: 20px; }
+            .question-box { font-size: 16px; }
+            .option-btn { font-size: 14px; padding: 12px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-animation" id="ambient-bg"></div>
+
+    <div id="splash-screen">
+        <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none'; document.getElementById('splash-fallback').style.display='block';">
+        <h2 id="splash-fallback" style="display:none; color: #4A90E2; font-family: sans-serif;">Innovine</h2>
+    </div>
+
+    <div class="container">
+        <div id="intro-screen" class="screen">
+            <h1 style="color:var(--primary)">Words Ending with -ly</h1>
+            <p class="subtitle">Grade 2 Competency-Based Assessment</p>
+            <div style="background: #F7FAFC; padding: 20px; border-radius: 12px; text-align: left; margin-bottom: 25px; font-size: 14px; line-height: 1.6;">
+                <strong>🎮 Instructions for the Game:</strong>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>You have <strong>15 competency questions</strong> covering grammar application.</li>
+                    <li>Each question allows exactly <strong>60 seconds</strong> to think and respond.</li>
+                    <li>If you answer incorrectly, you get <strong>one retry</strong> opportunity.</li>
+                    <li>A second incorrect choice unlocks the answer and its detailed explanation.</li>
+                </ul>
+            </div>
+            <button class="btn-action" onclick="startQuiz()">Start Quiz Challenge</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="hud-bar">
+                <div class="hud-item" id="q-tracker">Question 1/15</div>
+                <div class="hud-item timer-badge" id="timer-display">⏱️ 60s</div>
+                <div class="hud-item" id="score-tracker">Score: 0</div>
+            </div>
+            <div class="progress-container"><div class="progress-bar" id="progress"></div></div>
+            
+            <div id="final-badge-container"></div>
+            <div class="question-box" id="question-text">Loading question text...</div>
+            <div class="options-grid" id="options-container"></div>
+            <div class="feedback-box" id="feedback-container"></div>
+            
+            <button class="btn-action" id="next-btn" style="display: none;" onclick="handleNext()">Next Question</button>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2 style="color: var(--primary-dark)">Mission Completed! 🎉</h2>
+            <p class="subtitle">Let's check how you performed today</p>
+            <div style="margin: 30px 0; font-size: 22px; font-weight: 700;">
+                Your Score: <span id="final-score" style="color: var(--success); font-size: 32px;">0</span> / 15
+            </div>
+            <div style="background: #EDF2F7; padding: 15px; border-radius: 12px; font-size: 14px; margin-bottom: 25px;" id="performance-msg"></div>
+            <button class="btn-action" onclick="restartQuiz()">Try Challenge Again</button>
+        </div>
+    </div>
+
+    <audio id="audio-correct" src="assets/correct.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+    <audio id="audio-cheer" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+    <script>
+        // Competency-based Question Matrix (15 Unique Gradated items)
+        const quizData = [
+            {
+                q: "You are crossing the road with your father at a zebra crossing. Which sentence would best describe how you should walk?",
+                a: ["We should walk carefully.", "We should walk careful.", "We should walk care.", "We should walk careless."],
+                correct: 0,
+                exp: "The word 'carefully' correctly explains the way (how) we should perform the action of walking safely."
+            },
+            {
+                q: "Which word does NOT belong with the others?",
+                a: ["happily", "quickly", "loudly", "bicycle"],
+                correct: 3,
+                exp: "'bicycle' is a naming word (noun), whereas happily, quickly, and loudly are words describing actions (-ly adverbs)."
+            },
+            {
+                q: "A child says: 'I chose \"quietly\" because the library is a place where people read.' Why is this a good choice?",
+                a: ["Because \"quietly\" describes how people should behave there", "Because \"quietly\" tells the colour of the library", "Because \"quietly\" names a place", "Because \"quietly\" tells how many books there are"],
+                correct: 0,
+                exp: "'Quietly' is a descriptive action word that states the manner or way people ought to read or act in a library."
+            },
+            {
+                q: "During football practice, the coach asks players to move faster to reach the ball. Which sentence would you most likely hear?",
+                a: ["Run quickly to the ball.", "Run quick to the ball.", "Run quickness to the ball.", "Run quicker ball."],
+                correct: 0,
+                exp: "'Quickly' modifies the action word 'run', indicating that the movement needs speed.",
+            },
+            {
+                q: "Statement: 'Happily' tells how someone does an action.\nReason: Words ending in -ly often describe the way an action happens.",
+                a: ["The reason is correct and explains the statement", "The reason is correct but does not explain the statement", "The reason is wrong but the statement is correct", "Both the reason and the statement are wrong"],
+                correct: 0,
+                exp: "Both assertions are true; standard action descriptors ending in -ly express exactly how an action occurs.",
+            },
+            {
+                q: "Which sentence shows incorrect understanding of -ly words?",
+                a: ["I carefully arranged the books on the shelf.", "My brother happily shared his toys.", "We softly closed the baby’s room door.", "I carefully am a bookshelf."],
+                correct: 3,
+                exp: "'I carefully am a bookshelf' makes no structural sense because 'bookshelf' is an object, not an action being performed.",
+            },
+            {
+                q: "Which sentence shows correct understanding of -ly words?",
+                a: ["I would use \"neatly\" to describe how I arrange my school bag.", "I would use \"neatly\" to describe the colour of my school bag.", "I would use \"neatly\" to tell how many books are inside.", "I would use \"neatly\" to name my school bag."],
+                correct: 0,
+                exp: "'Neatly' fits perfectly to describe the systematic manner in which you organize or arrange items.",
+            },
+            {
+                q: "A child writes about helping at home. Which sentence is incorrect?",
+                a: ["I carefully folded my clothes.", "I happily watered the plants.", "I softly spoke while the baby slept.", "I quickly my homework before dinner."],
+                correct: 3,
+                exp: "The action verb is completely missing here. It should read 'I quickly *did* my homework'.",
+            },
+            {
+                q: "During a nature walk, you see butterflies moving from flower to flower. Which sentence sounds most suitable?",
+                a: ["The butterflies flew gracefully.", "The butterflies flew graceful.", "The butterflies flew grace.", "The butterflies flew flowerly."],
+                correct: 0,
+                exp: "'Gracefully' accurately details the smooth and elegant manner of the butterfly's flight.",
+            },
+            {
+                q: "A child writes: 'The nurse spoke kind to the patient.' What should be corrected?",
+                a: ["nurse → nurses", "patient → patients", "kind → kindly", "spoke → speaking"],
+                correct: 2,
+                exp: "To explain how the nurse spoke (an action), the adjective 'kind' needs to transform into the adverb 'kindly'.",
+            },
+            {
+                q: "You are watching an artist create a rangoli design. Which sentence best describes the artist's work?",
+                a: ["She carefully placed each colour.", "She careful placed each colour.", "She care placed each colour.", "She colourful placed each colour."],
+                correct: 0,
+                exp: "The artist is performing an action ('placed'), so we modify it using 'carefully' to demonstrate precision.",
+            },
+            {
+                q: "Which sentence uses the -ly word differently from the others?",
+                a: ["The choir sang beautifully.", "The baby slept peacefully.", "The chef cooked carefully.", "The colourful kite floated in the sky."],
+                correct: 3,
+                exp: "In option (d), 'colourful' is simply an adjective describing a kite object. The other options all show descriptive action words.",
+            },
+            {
+                q: "Why is \"slowly\" used in the sentence: 'The tortoise moved slowly across the garden.'?",
+                a: ["Because it tells how the tortoise moved", "Because it tells the colour of the tortoise", "Because it tells where the tortoise moved", "Because it tells how many tortoises there were"],
+                correct: 0,
+                exp: "'Slowly' delivers specific context detailing the slow pace/manner of the movement action.",
+            },
+            {
+                q: "Statement: 'Neatly' is used correctly in the sentence, \"Riya neatly arranged her notebooks.\"\nReason: \"Neatly\" tells how the notebooks were arranged.",
+                a: ["Both are correct and the reason explains the statement", "Both are correct but not related", "Statement is correct, reason is wrong", "Statement is wrong, reason is correct"],
+                correct: 0,
+                exp: "The reason is perfectly aligned with the statement. 'Neatly' explains the visual organization pattern.",
+            },
+            {
+                q: "During a visit to an animal shelter, you see a volunteer handling a frightened puppy. Which sentence would best describe the volunteer's action?",
+                a: ["The volunteer gently held the puppy.", "The volunteer gentle held the puppy.", "The volunteer gentleness held the puppy.", "The volunteer gentlely held the puppy."],
+                correct: 0,
+                exp: "'Gently' is the correct formulation of the descriptive word detailing safe, soft action delivery.",
+            }
+        ];
+
+        // Engine State Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerValue = 60; // 60 Seconds for Grade 2
+        let timerInterval = null;
+        let attemptsMade = 0;
+        let hasAnsweredCurrent = false;
+
+        // Initialize Background Decorative Elements
+        function initBackgroundElements() {
+            const bgContainer = document.getElementById('ambient-bg');
+            for (let i = 0; i < 8; i++) {
+                const star = document.createElement('div');
+                star.className = 'floating-star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.width = star.style.height = (Math.random() * 15 + 10) + 'px';
+                star.style.animationDelay = (Math.random() * 10) + 's';
+                bgContainer.appendChild(star);
+            }
+        }
+
+        // On Load Logic: Mandatory 5-second Splash screen transition execution
+        window.addEventListener('DOMContentLoaded', () => {
+            initBackgroundElements();
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                    showScreen('intro-screen');
+                }, 500);
+            }, 5000); // Strict 5-second display execution
+        });
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            showScreen('quiz-screen');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            hasAnsweredCurrent = false;
+            attemptsMade = 0;
+            timerValue = 60;
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('feedback-container').style.display = 'none';
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            // Render Final Challenge Tag indicator on the last 3 questions
+            const badgeContainer = document.getElementById('final-badge-container');
+            if(currentQuestionIndex >= quizData.length - 3) {
+                badgeContainer.innerHTML = `<span class="final-challenge-badge">⚡ Final Challenge Stage</span>`;
+            } else {
+                badgeContainer.innerHTML = '';
+            }
+
+            // HUD configuration updates
+            document.getElementById('q-tracker').innerText = `Question ${currentQuestionIndex + 1}/${quizData.length}`;
+            document.getElementById('score-tracker').innerText = `Score: ${score}`;
+            document.getElementById('progress').style.width = `${((currentQuestionIndex) / quizData.length) * 100}%`;
+            document.getElementById('question-text').innerText = currentQuestion.q;
+
+            // Generate Option Buttons layout
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            currentQuestion.a.forEach((optionText, idx) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerHTML = `<span>${optionText}</span>`;
+                button.onclick = (e) => handleOptionSelection(idx, button, e);
+                optionsContainer.appendChild(button);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-display').innerText = `⏱️ ${timerValue}s`;
+            
+            timerInterval = setInterval(() => {
+                timerValue--;
+                document.getElementById('timer-display').innerText = `⏱️ ${timerValue}s`;
+                
+                if (timerValue <= 0) {
+                    clearInterval(timerInterval);
+                    revealCorrectAnswerAutomatically();
+                }
+            }, 1000);
+        }
+
+        function playSound(audioId) {
+            const sound = document.getElementById(audioId);
+            if(sound && sound.play) {
+                sound.currentTime = 0;
+                sound.play().catch(() => {/* Handle browser audio blockers gracefully */});
+            }
+        }
+
+        function triggerVisualFeedback(e, isCorrect) {
+            const container = document.getElementById('quiz-screen');
+            const rect = container.getBoundingClientRect();
+            // Fallback parameters if interaction coordinates aren't fully resolved
+            const x = e ? (e.clientX - rect.left) : (rect.width / 2);
+            const y = e ? (e.clientY - rect.top) : (rect.height / 3);
+
+            for(let i = 0; i < (isCorrect ? 10 : 3); i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                if(isCorrect) {
+                    // Star confetti setup
+                    particle.style.background = ['#FFD166', '#06D6A0', '#4A90E2'][Math.floor(Math.random()*3)];
+                    particle.style.clipPath = 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)';
+                    particle.style.width = particle.style.height = (Math.random() * 12 + 8) + 'px';
+                } else {
+                    // Red cross setup
+                    particle.innerHTML = '❌';
+                    particle.style.fontSize = '16px';
+                }
+
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                
+                const mx = (Math.random() * 160 - 80) + 'px';
+                const my = (Math.random() * 160 - 80) + 'px';
+                const rot = (Math.random() * 360) + 'deg';
+                
+                particle.style.setProperty('--mx', mx);
+                particle.style.setProperty('--my', my);
+                particle.style.setProperty('--rot', rot);
+
+                container.appendChild(particle);
+                setTimeout(() => particle.remove(), 600);
+            }
+        }
+
+        function handleOptionSelection(selectedIndex, clickedButton, event) {
+            if (hasAnsweredCurrent) return;
+
+            const currentQuestion = quizData[currentQuestionIndex];
+
+            if (selectedIndex === currentQuestion.correct) {
+                // Correct path flow execution
+                clearInterval(timerInterval);
+                hasAnsweredCurrent = true;
+                clickedButton.classList.add('correct');
+                playSound('audio-correct');
+                triggerVisualFeedback(event, true);
+                
+                score++;
+                document.getElementById('score-tracker').innerText = `Score: ${score}`;
+                showFeedback(true);
+            } else {
+                // Wrong entry execution processing
+                attemptsMade++;
+                playSound('audio-wrong');
+                triggerVisualFeedback(event, false);
+                clickedButton.classList.add('wrong');
+                clickedButton.disabled = true;
+
+                if (attemptsMade === 1) {
+                    // Allow one extra retry interaction limit
+                    alert("Not quite! Think carefully about how the word describes the action. You have 1 remaining retry attempt!");
+                } else {
+                    // Second attempt failure path execution logic
+                    clearInterval(timerInterval);
+                    hasAnsweredCurrent = true;
+                    revealCorrectAnswerAutomatically();
+                }
+            }
+        }
+
+        function revealCorrectAnswerAutomatically() {
+            hasAnsweredCurrent = true;
+            clearInterval(timerInterval);
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            const buttons = document.querySelectorAll('.options-container .option-btn', '#options-container button');
+            
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === currentQuestion.correct) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            showFeedback(false);
+        }
+
+        function showFeedback(wasCorrect) {
+            const feedbackBox = document.getElementById('feedback-container');
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            feedbackBox.style.display = 'block';
+            feedbackBox.innerHTML = `
+                <strong style="color: ${wasCorrect ? 'var(--success)' : 'var(--danger)'}">
+                    ${wasCorrect ? '✓ Excellent Job!' : '✕ Let\'s learn from this:'}
+                </strong>
+                <p style="margin-top: 5px;">${currentQuestion.exp}</p>
+            `;
+            
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function handleNext() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('progress').style.width = '100%';
+            showScreen('result-screen');
+            
+            document.getElementById('final-score').innerText = score;
+            playSound('audio-cheer');
+
+            let msg = "";
+            if(score === quizData.length) {
+                msg = "🏆 Perfection! You masterfully applied every single action word rule flawlessly today!";
+            } else if (score >= 10) {
+                msg = "🌟 Great work! You hold a very strong grasp on transforming sentences correctly using -ly variations.";
+            } else {
+                msg = "📘 Keep studying and reviewing. Remember that actions require words ending in -ly to describe how they are performed!";
+            }
+            document.getElementById('performance-msg').innerText = msg;
+        }
+
+        function restartQuiz() {
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
