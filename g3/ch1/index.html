@@ -1,1 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 3 - Nouns Competency Interactive</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --success: #2ECC71;
+            --danger: #E74C3C;
+            --warning: #F1C40F;
+            --dark: #2C3E50;
+            --light: #F8F9FA;
+            --grey: #BDC3C7;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #EBF2FA;
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: white;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #splash-screen img {
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        /* Header Components */
+        .header {
+            background: var(--light);
+            padding: 15px 20px;
+            border-bottom: 2px solid #EDF1F5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .score-box {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .timer-box {
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            background: #FFEAA7;
+            color: #D63031;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .audio-toggle {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #E2E8F0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Content Sections */
+        .content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--dark);
+        }
+
+        .context-card {
+            background: #F1F7FD;
+            border-left: 4px solid var(--primary);
+            padding: 12px 15px;
+            border-radius: 4px 8px 8px 4px;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .image-container {
+            width: 100%;
+            max-height: 180px;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #E2E8F0;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        /* Interactive Options */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--dark);
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #F8FAFC;
+            border-color: var(--grey);
+        }
+
+        .option-btn.correct {
+            background: #E8F8F5;
+            border-color: var(--success);
+            color: #117A65;
+        }
+
+        .option-btn.wrong {
+            background: #FCE4D6;
+            border-color: var(--danger);
+            color: #C0392B;
+        }
+
+        /* Feedback UI */
+        .feedback-box {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: auto;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .feedback-box.hint {
+            background: #FEF9E7;
+            border: 1px solid var(--warning);
+            color: #7D6608;
+            display: block;
+        }
+
+        .feedback-box.explanation {
+            background: #EBF5FB;
+            border: 1px solid var(--primary);
+            color: #1B4F72;
+            display: block;
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: auto;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: #357ABD;
+        }
+
+        /* Result View */
+        .result-screen {
+            text-align: center;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        .score-circle {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: #F1F7FD;
+            border: 6px solid var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .result-msg {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        /* Confetti Effect */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #F1C40F;
+            top: -10px;
+            border-radius: 50%;
+            animation: fall 2.5s linear infinite;
+            z-index: 99;
+        }
+
+        @keyframes fall {
+            0% { top: -10px; transform: translateX(0) rotate(0deg); }
+            100% { top: 100%; transform: translateX(100px) rotate(360deg); }
+        }
+
+        /* Utilities */
+        .disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 5-Second Start Splash Screen with Innovine Logo -->
+        <div id="splash-screen">
+            <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none'; document.getElementById('alt-logo').style.display='block';">
+            <h2 id="alt-logo" style="display:none; color:var(--primary); margin-bottom:20px;">Innovine Learning</h2>
+            <div style="font-weight: 500; color: var(--grey);">Loading Interactive...</div>
+        </div>
+
+        <!-- Global Header Component -->
+        <div class="header">
+            <div class="score-box">Score: <span id="score-val">0</span>/20</div>
+            <div class="timer-box">⏱️ <span id="timer-val">60</span>s</div>
+            <button class="audio-toggle" id="audio-btn" onclick="toggleMute()">🔊</button>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="game-progress"></div>
+        </div>
+
+        <!-- Main Workspace Contents -->
+        <div class="content">
+            <!-- Game Start View Screen -->
+            <div id="start-screen" class="screen active">
+                <h2 style="margin-top: 20px;">Chapter 1: Nouns Challenge</h2>
+                <p style="text-align: center; margin-bottom: 30px; line-height: 1.6; color: #566573;">
+                    Welcome! Put your language skills to the test with real-life scenarios, text puzzles, and picture observations. You have 60 seconds per question!
+                </p>
+                <button class="action-btn" onclick="startGame()">Start Challenge</button>
+            </div>
+
+            <!-- Core Interactive Question Board -->
+            <div id="question-screen" class="screen">
+                <div class="context-card" id="context-box"></div>
+                <div class="image-container" id="image-box" style="display: none;">
+                    <img id="q-img" src="" alt="Question Concept Resource">
+                </div>
+                <div class="question-text" id="q-text"></div>
+                
+                <div class="options-grid" id="options-container"></div>
+                
+                <div class="feedback-box" id="feedback-container"></div>
+                
+                <button class="action-btn" id="next-btn" onclick="handleNextStage()" style="display: none;">Next</button>
+            </div>
+
+            <!-- Performance Matrix End Screen -->
+            <div id="result-screen" class="screen">
+                <div class="result-screen">
+                    <div class="score-circle" id="final-score-circle">0%</div>
+                    <div class="result-msg" id="final-message">Let's try again!</div>
+                    <button class="action-btn" onclick="restartGame()">Try Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Pipelines -->
+    <audio id="snd-correct" src="assets/claps.mp3" preload="auto"></audio>
+    <audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+    <script>
+        // Full Dataset comprising 20 Curated Context/Competency Elements
+        const questionBank = [
+            {
+                context: "Read the passage: \"On Sunday, Meera went to the city park with her brother Rohan. They saw a dog, a cat, and a group of children playing near the fountain.\"",
+                question: "Which word from this part of the passage is a proper noun?",
+                options: ["park", "fountain", "Meera", "children"],
+                answer: 2,
+                hint: "Proper nouns are special names for specific people, places, or things and always start with a capital letter.",
+                explanation: "\"Meera\" is the specific name of a person, making it a proper noun. \"Park\", \"fountain\", and \"children\" are general common nouns."
+            },
+            {
+                context: "Read the passage: \"Meera also noticed a bunch of flowers and a flock of birds near the big tree.\"",
+                question: "Which word names a group of birds?",
+                options: ["bunch", "flock", "tree", "big"],
+                answer: 1,
+                hint: "Look for the collective noun that groups feathered animals flying together.",
+                explanation: "The word \"flock\" is a collective noun used specifically to describe a group of birds."
+            },
+            {
+                context: "Read the passage: \"On Sunday, Meera went to the city park with her brother Rohan.\"",
+                question: "Which word from this sentence is a common noun?",
+                options: ["Rohan", "Sunday", "dog", "park"],
+                answer: 3,
+                hint: "Common nouns are general names for places, things, or animals and do not start with a capital letter.",
+                explanation: "\"park\" is a general name for a place, making it a common noun. \"Rohan\" and \"Sunday\" are specific proper nouns."
+            },
+            {
+                context: "Read the full passage: \"On Sunday, Meera went to the city park... She smiled because the park looked bright and peaceful.\"",
+                question: "Based on the context of the story, what did Meera see in the park?",
+                options: ["only a car", "only a house", "a dog, a cat, children, flowers, and birds", "only her teacher"],
+                answer: 2,
+                hint: "Find the list of living things and objects Meera explicitly spotted during her walk.",
+                explanation: "The passage explicitly lists a dog, a cat, children, a bunch of flowers, and a flock of birds as objects Meera saw."
+            },
+            {
+                context: "Rohan is filling out his school ID card. He needs to write down the exact city he lives in.",
+                question: "Which of these words fits best as a proper noun representing a specific city?",
+                options: ["school", "Mumbai", "boy", "city"],
+                answer: 1,
+                hint: "Proper nouns name a specific place and always start with a capital letter.",
+                explanation: "\"Mumbai\" is the specific name of a city, so it is a proper noun. \"School\", \"boy\", and \"city\" are general common nouns."
+            },
+            {
+                context: "Riya is writing a diary entry about geography: \"The ______ flows all the way across India to the ocean.\"",
+                question: "Which word is a common noun that can fit into any general waterway?",
+                options: ["river", "India", "June", "Riya"],
+                answer: 0,
+                hint: "Look for the general naming word that isn't capitalized.",
+                explanation: "\"river\" is a general common noun. \"India\", \"June\", and \"Riya\" are specific proper nouns."
+            },
+            {
+                context: "Aarav is writing the days of the week on the board but forgets his capitalization rules.",
+                question: "Which word should begin with a capital letter?",
+                options: ["apple", "school", "monday", "ball"],
+                answer: 2,
+                hint: "Days of the week are unique proper nouns and must always be capitalized.",
+                explanation: \"monday\" must be capitalized as \"Monday\" because it is a proper noun naming a specific day."
+            },
+            {
+                context: "Kabir typed a sentence about his friend on his tablet.",
+                question: "Which sentence is written with perfect capitalization?",
+                options: ["my friend lives in delhi.", "My friend lives in Delhi.", "my Friend lives in Delhi.", "My friend lives in delhi."],
+                answer: 1,
+                hint: "Check both the very first letter of the sentence and the specific city name at the end.",
+                explanation: "The sentence must start with a capital letter (\"My\"), and the specific city name (\"Delhi\") requires a capital 'D'."
+            },
+            {
+                context: "An astronomer is looking through a telescope and sees millions of space objects bunched together.",
+                question: "Complete the entry: \"A group of stars is called a _______.\"",
+                options: ["bunch", "crowd", "galaxy", "pack"],
+                answer: 2,
+                hint: "We use \"bunch\" for flowers and \"pack\" for dogs. What is the special group name for stars?",
+                explanation: "A collection of stars grouped together in space is known as a \"galaxy\"."
+            },
+            {
+                context: "A beekeeper is checking on the insects making honey in the garden.",
+                question: "Fill in the blank with the correct collective noun: \"A group of bees is called a _______.\"",
+                options: ["hive", "flock", "herd", "team"],
+                answer: 0,
+                hint: "Think of the specific collective term or home structure associated with bees.",
+                explanation: "A large group of bees living or moving together is called a \"hive\" or swarm."
+            },
+            {
+                context: "Look at this incomplete sentence: \"The _______ is playing in the garden.\"",
+                question: "Which noun correctly shows that only one person is currently playing?",
+                options: ["children", "child", "childs", "childes"],
+                answer: 1,
+                hint: "Look for the correct singular form of the word. We say \"one...\" but \"many children\".",
+                explanation: \"child\" is the correct singular common noun. \"Children\" is plural, and \"childs/childes\" are grammatically incorrect."
+            },
+            {
+                context: "Reema's name was written on four different custom notebooks.",
+                question: "Which notebook shows her name written with correct proper noun grammar rules?",
+                options: ["reema", "Reema", "reemaa", "REEMA"],
+                answer: 1,
+                hint: "A person's specific name must start with a single capital letter, with the rest in lowercase.",
+                explanation: \"Reema\" follows proper noun rules by capitalizing only the initial letter."
+            },
+            {
+                context: "Look at the following sentence: \"The _______ barked loudly.\"",
+                question: "Which singular naming word fits perfectly with the action word \"barked\"?",
+                options: ["dog", "dogs", "doges", "barker"],
+                answer: 0,
+                hint: "The sentence indicates a single animal is making the noise. Avoid spelling mistakes.",
+                explanation: \"dog\" is the correct singular noun that pairs seamlessly here."
+            },
+            {
+                context: "Meera is sorting flashcards into a box labeled \"Naming Words (Nouns)\".",
+                question: "Which card does not belong in the noun box because it describes an action instead?",
+                options: ["run", "happy", "chair", "quickly"],
+                answer: 0,
+                hint: "A noun names a person, place, or thing. Find the word that represents an action or movement.",
+                explanation: \"chair\" is a noun. \"Run\" is an action word (verb), making it the odd one out in a noun category."
+            },
+            {
+                context: "A teacher asks a student to write down a specific pair of naming words on the board.",
+                question: "Which pair has exactly one common noun and one proper noun in order?",
+                options: ["cat, dog", "school, school", "school, Oakridge School", "boy, girl"],
+                answer: 2,
+                hint: "Look for a general place followed directly by the specific, capitalized name of a real school.",
+                explanation: \"school\" is a general common noun, while \"Oakridge School\" is a specific proper noun."
+            },
+            {
+                context: "Amit is reviewing sentences written by his classmates about nature.",
+                question: "Which sentence uses collective nouns correctly?",
+                options: ["The boy saw a pack of dogs.", "The boy saw a pack of milk.", "The boy saw a bunch of cars.", "The boy saw a crowd of stars."],
+                answer: 0,
+                hint: "Think about what word is traditionally used for a group of hounds or wild dogs.",
+                explanation: "A group of dogs is correctly called a \"pack\". Grapes come in a bunch, stars form a galaxy."
+            },
+            {
+                context: "Look closely at the table arrangement.",
+                question: "What collective noun best describes the group of flowers shown inside the vase?",
+                options: ["bunch", "pack", "herd", "crowd"],
+                answer: 0,
+                image: "assets/flowers.png",
+                hint: "We use this same word for a collection of keys or a cluster of grapes hanging together.",
+                explanation: "A group of flowers gathered together is called a \"bunch\"."
+            },
+            {
+                context: "Observe the active workspace shown in the school display.",
+                question: "Looking at the classroom setup, which word serves as a proper noun based on the specific name written?",
+                options: ["teacher", "class", "Anita", "children"],
+                answer: 2,
+                image: "assets/classroom.png",
+                hint: "Find the word that names the specific individual teaching the class.",
+                explanation: \"Anita\" is the specific name of the teacher, making it a proper noun."
+            },
+            {
+                context: "Look up at the outdoor environmental display scene.",
+                question: "What is the best collective noun to describe the flying animals moving together across the sky?",
+                options: ["flock", "crowd", "bundle", "team"],
+                answer: 0,
+                image: "assets/birds.png",
+                hint: "This word matches the collective noun used in the reading passage for birds.",
+                explanation: "A group of birds flying or feeding together is called a \"flock\"."
+            },
+            {
+                context: "Let's look closely at how calendar terms are written in text documents.",
+                question: "Assertion: The word \"Monday\" must always be written with a capital letter 'M'.\nReason: \"Monday\" is a proper noun because it is the specific name of a day of the week.",
+                options: [
+                    "Both are correct, and the reason explains the assertion.",
+                    "Both are correct, but the reason does not explain.",
+                    "The assertion is correct, but the reason is wrong.",
+                    "Both are wrong."
+                ],
+                answer: 0,
+                hint: "Is Monday a unique, specific name? Does that unique status require a capital letter?",
+                explanation: "Days of the week are unique, specific names (proper nouns). Therefore, they must always begin with a capital letter."
+            }
+        ];
+
+        let currentIdx = 0;
+        let attemptsLeft = 2;
+        let score = 0;
+        let timer = null;
+        let timeLeft = 60;
+        let isMuted = false;
+
+        // Intro Pipeline setup
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.transition = 'opacity 0.5s ease';
+                splash.style.opacity = '0';
+                setTimeout(() => splash.remove(), 500);
+            }, 5000); // Strict 5-second mandatory splash loading
+        });
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.getElementById('audio-btn').innerText = isMuted ? "🔇" : "🔊";
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            const snd = document.getElementById(type === 'correct' ? 'snd-correct' : 'snd-wrong');
+            snd.currentTime = 0;
+            snd.play().catch(e => console.log("Audio kick off blocked"));
+        }
+
+        function triggerConfetti() {
+            for (let i = 0; i < 30; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.background = ['#2ECC71','#3498DB','#F1C40F','#E74C3C','#9B59B6'][Math.floor(Math.random()*5)];
+                conf.style.animationDelay = Math.random() * 0.5 + 's';
+                conf.style.width = conf.style.height = (Math.random() * 6 + 6) + 'px';
+                document.body.appendChild(conf);
+                setTimeout(() => conf.remove(), 2500);
+            }
+        }
+
+        function startGame() {
+            document.getElementById('start-screen').classList.remove('active');
+            document.getElementById('question-screen').classList.add('active');
+            currentIdx = 0;
+            score = 0;
+            document.getElementById('score-val').innerText = score;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timer);
+            timeLeft = 60; // Grade 3 mandatory 60 seconds counter
+            document.getElementById('timer-val').innerText = timeLeft;
+            attemptsLeft = 2;
+            
+            const qData = questionBank[currentIdx];
+            
+            // Progress Bar Update
+            document.getElementById('game-progress').style.width = ((currentIdx / questionBank.length) * 100) + '%';
+            
+            // Layout assembly
+            document.getElementById('context-box').innerText = qData.context;
+            document.getElementById('q-text').innerText = qData.question;
+            
+            const imgBox = document.getElementById('image-box');
+            if (qData.image) {
+                document.getElementById('q-img').src = qData.image;
+                imgBox.style.display = 'flex';
+            } else {
+                imgBox.style.display = 'none';
+            }
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            qData.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.classList.add('option-btn');
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback-container').className = 'feedback-box';
+            document.getElementById('next-btn').style.display = 'none';
+
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-val').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    forceTimeout();
+                }
+            }, 1000);
+        }
+
+        function checkAnswer(selectedIdx, btnElement) {
+            const qData = questionBank[currentIdx];
+            const feedback = document.getElementById('feedback-container');
+            const btns = document.querySelectorAll('.option-btn');
+
+            if (selectedIdx === qData.answer) {
+                // Correct Answer Path
+                clearInterval(timer);
+                btnElement.classList.add('correct');
+                btns.forEach(b => b.disabled = true);
+                
+                if (attemptsLeft === 2) {
+                    score++;
+                    document.getElementById('score-val').innerText = score;
+                }
+                
+                playSound('correct');
+                triggerConfetti();
+                
+                feedback.className = 'feedback-box explanation';
+                feedback.innerHTML = `<strong>Correct!</strong> ${qData.explanation}`;
+                showNextButton();
+            } else {
+                // Wrong Answer Path
+                attemptsLeft--;
+                btnElement.classList.add('wrong');
+                btnElement.disabled = true;
+                playSound('wrong');
+
+                if (attemptsLeft === 1) {
+                    feedback.className = 'feedback-box hint';
+                    feedback.innerHTML = `<strong>Try Again! Hint:</strong> ${qData.hint}`;
+                } else {
+                    clearInterval(timer);
+                    btns.forEach(b => b.disabled = true);
+                    // Explicitly reveal correct item choice
+                    btns[qData.answer].classList.add('correct');
+                    feedback.className = 'feedback-box explanation';
+                    feedback.innerHTML = `<strong>Incorrect.</strong> ${qData.explanation}`;
+                    showNextButton();
+                }
+            }
+        }
+
+        function forceTimeout() {
+            const qData = questionBank[currentIdx];
+            const feedback = document.getElementById('feedback-container');
+            const btns = document.querySelectorAll('.option-btn');
+            
+            btns.forEach(b => b.disabled = true);
+            btns[qData.answer].classList.add('correct');
+            
+            feedback.className = 'feedback-box explanation';
+            feedback.innerHTML = `<strong>Time's Up!</strong> ${qData.explanation}`;
+            playSound('wrong');
+            showNextButton();
+        }
+
+        function showNextButton() {
+            const nextBtn = document.getElementById('next-btn');
+            if (currentIdx === questionBank.length - 1) {
+                nextBtn.innerText = "Finish Challenge";
+            } else {
+                nextBtn.innerText = "Next Question";
+            }
+            nextBtn.style.display = 'block';
+        }
+
+        function handleNextStage() {
+            currentIdx++;
+            if (currentIdx < questionBank.length) {
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        function endGame() {
+            clearInterval(timer);
+            document.getElementById('question-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            document.getElementById('game-progress').style.width = '100%';
+
+            const finalPct = Math.round((score / questionBank.length) * 100);
+            document.getElementById('final-score-circle').innerText = `${finalPct}%`;
+
+            const msgElement = document.getElementById('final-message');
+            if (finalPct >= 75) {
+                msgElement.innerText = "Good job!";
+                msgElement.style.color = "var(--success)";
+            } else if (finalPct >= 40) {
+                msgElement.innerText = "Review this chapter and try again";
+                msgElement.style.color = "var(--warning)";
+            } else {
+                msgElement.innerText = "Let’s practise more";
+                msgElement.style.color = "var(--danger)";
+            }
+        }
+
+        function restartGame() {
+            document.getElementById('result-screen').classList.remove('active');
+            startGame();
+        }
+    </script>
+</body>
+</html>
