@@ -316,66 +316,58 @@
 <body>
 
     <div class="container">
-        <!-- 5-Second Start Splash Screen with Innovine Logo -->
         <div id="splash-screen">
-            <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none'; document.getElementById('alt-logo').style.display='block';">
+            <img src="assets/logo.png" alt="Innovine Logo" id="main-logo">
             <h2 id="alt-logo" style="display:none; color:var(--primary); margin-bottom:20px;">Innovine Learning</h2>
             <div style="font-weight: 500; color: var(--grey);">Loading Interactive...</div>
         </div>
 
-        <!-- Global Header Component -->
         <div class="header">
             <div class="score-box">Score: <span id="score-val">0</span>/20</div>
             <div class="timer-box">⏱️ <span id="timer-val">60</span>s</div>
-            <button class="audio-toggle" id="audio-btn" onclick="toggleMute()">🔊</button>
+            <button class="audio-toggle" id="audio-btn">🔊</button>
         </div>
         <div class="progress-bar-container">
             <div class="progress-bar" id="game-progress"></div>
         </div>
 
-        <!-- Main Workspace Contents -->
         <div class="content">
-            <!-- Game Start View Screen -->
             <div id="start-screen" class="screen active">
                 <h2 style="margin-top: 20px;">Chapter 1: Nouns Challenge</h2>
                 <p style="text-align: center; margin-bottom: 30px; line-height: 1.6; color: #566573;">
                     Welcome! Put your language skills to the test with real-life scenarios, text puzzles, and picture observations. You have 60 seconds per question!
                 </p>
-                <button class="action-btn" onclick="startGame()">Start Challenge</button>
+                <button class="action-btn" id="start-challenge-btn">Start Challenge</button>
             </div>
 
-            <!-- Core Interactive Question Board -->
             <div id="question-screen" class="screen">
                 <div class="context-card" id="context-box"></div>
                 <div class="image-container" id="image-box" style="display: none;">
                     <img id="q-img" src="" alt="Question Concept Resource">
                 </div>
                 <div class="question-text" id="q-text"></div>
-                
+                 
                 <div class="options-grid" id="options-container"></div>
-                
+                 
                 <div class="feedback-box" id="feedback-container"></div>
-                
-                <button class="action-btn" id="next-btn" onclick="handleNextStage()" style="display: none;">Next</button>
+                 
+                <button class="action-btn" id="next-btn" style="display: none;">Next</button>
             </div>
 
-            <!-- Performance Matrix End Screen -->
             <div id="result-screen" class="screen">
                 <div class="result-screen">
                     <div class="score-circle" id="final-score-circle">0%</div>
                     <div class="result-msg" id="final-message">Let's try again!</div>
-                    <button class="action-btn" onclick="restartGame()">Try Again</button>
+                    <button class="action-btn" id="try-again-btn">Try Again</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Audio Pipelines -->
     <audio id="snd-correct" src="assets/claps.mp3" preload="auto"></audio>
     <audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
 
     <script>
-        // Full Dataset comprising 20 Curated Context/Competency Elements
         const questionBank = [
             {
                 context: "Read the passage: \"On Sunday, Meera went to the city park with her brother Rohan. They saw a dog, a cat, and a group of children playing near the fountain.\"",
@@ -431,7 +423,7 @@
                 options: ["apple", "school", "monday", "ball"],
                 answer: 2,
                 hint: "Days of the week are unique proper nouns and must always be capitalized.",
-                explanation: \"monday\" must be capitalized as \"Monday\" because it is a proper noun naming a specific day."
+                explanation: "\"monday\" must be capitalized as \"Monday\" because it is a proper noun naming a specific day."
             },
             {
                 context: "Kabir typed a sentence about his friend on his tablet.",
@@ -463,7 +455,7 @@
                 options: ["children", "child", "childs", "childes"],
                 answer: 1,
                 hint: "Look for the correct singular form of the word. We say \"one...\" but \"many children\".",
-                explanation: \"child\" is the correct singular common noun. \"Children\" is plural, and \"childs/childes\" are grammatically incorrect."
+                explanation: "\"child\" is the correct singular common noun. \"Children\" is plural, and \"childs/childes\" are grammatically incorrect."
             },
             {
                 context: "Reema's name was written on four different custom notebooks.",
@@ -471,7 +463,7 @@
                 options: ["reema", "Reema", "reemaa", "REEMA"],
                 answer: 1,
                 hint: "A person's specific name must start with a single capital letter, with the rest in lowercase.",
-                explanation: \"Reema\" follows proper noun rules by capitalizing only the initial letter."
+                explanation: "\"Reema\" follows proper noun rules by capitalizing only the initial letter."
             },
             {
                 context: "Look at the following sentence: \"The _______ barked loudly.\"",
@@ -479,7 +471,7 @@
                 options: ["dog", "dogs", "doges", "barker"],
                 answer: 0,
                 hint: "The sentence indicates a single animal is making the noise. Avoid spelling mistakes.",
-                explanation: \"dog\" is the correct singular noun that pairs seamlessly here."
+                explanation: "\"dog\" is the correct singular noun that pairs seamlessly here."
             },
             {
                 context: "Meera is sorting flashcards into a box labeled \"Naming Words (Nouns)\".",
@@ -487,7 +479,7 @@
                 options: ["run", "happy", "chair", "quickly"],
                 answer: 0,
                 hint: "A noun names a person, place, or thing. Find the word that represents an action or movement.",
-                explanation: \"chair\" is a noun. \"Run\" is an action word (verb), making it the odd one out in a noun category."
+                explanation: "\"chair\" is a noun. \"Run\" is an action word (verb), making it the odd one out in a noun category."
             },
             {
                 context: "A teacher asks a student to write down a specific pair of naming words on the board.",
@@ -495,7 +487,7 @@
                 options: ["cat, dog", "school, school", "school, Oakridge School", "boy, girl"],
                 answer: 2,
                 hint: "Look for a general place followed directly by the specific, capitalized name of a real school.",
-                explanation: \"school\" is a general common noun, while \"Oakridge School\" is a specific proper noun."
+                explanation: "\"school\" is a general common noun, while \"Oakridge School\" is a specific proper noun."
             },
             {
                 context: "Amit is reviewing sentences written by his classmates about nature.",
@@ -521,7 +513,7 @@
                 answer: 2,
                 image: "assets/classroom.png",
                 hint: "Find the word that names the specific individual teaching the class.",
-                explanation: \"Anita\" is the specific name of the teacher, making it a proper noun."
+                explanation: "\"Anita\" is the specific name of the teacher, making it a proper noun."
             },
             {
                 context: "Look up at the outdoor environmental display scene.",
@@ -556,12 +548,46 @@
 
         // Intro Pipeline setup
         window.addEventListener('DOMContentLoaded', () => {
+            // Setup logo fallback handler
+            const mainLogo = document.getElementById('main-logo');
+            if (mainLogo) {
+                mainLogo.addEventListener('error', () => {
+                    mainLogo.style.display = 'none';
+                    document.getElementById('alt-logo').style.display = 'block';
+                });
+            }
+
+            // Bind listeners safely
+            document.getElementById('audio-btn').addEventListener('click', toggleMute);
+            document.getElementById('start-challenge-btn').addEventListener('click', startGame);
+            document.getElementById('next-btn').addEventListener('click', handleNextStage);
+            document.getElementById('try-again-btn').addEventListener('click', restartGame);
+
+            // Initially hide the main app components while the splash displays
+            const header = document.querySelector('.header');
+            const progress = document.querySelector('.progress-bar-container');
+            const content = document.querySelector('.content');
+            
+            if (header) header.style.display = 'none';
+            if (progress) progress.style.display = 'none';
+            if (content) content.style.display = 'none';
+
+            // Strict 5-second mandatory splash loading countdown
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
-                splash.style.transition = 'opacity 0.5s ease';
-                splash.style.opacity = '0';
-                setTimeout(() => splash.remove(), 500);
-            }, 5000); // Strict 5-second mandatory splash loading
+                if (splash) {
+                    splash.style.transition = 'opacity 0.5s ease';
+                    splash.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        splash.remove();
+                        // Reveal the primary application elements only AFTER the full 5 seconds pass
+                        if (header) header.style.display = 'flex';
+                        if (progress) progress.style.display = 'block';
+                        if (content) content.style.display = 'flex';
+                    }, 500); // Allow fade animation to complete
+                }
+            }, 5000); 
         });
 
         function toggleMute() {
@@ -572,8 +598,10 @@
         function playSound(type) {
             if (isMuted) return;
             const snd = document.getElementById(type === 'correct' ? 'snd-correct' : 'snd-wrong');
-            snd.currentTime = 0;
-            snd.play().catch(e => console.log("Audio kick off blocked"));
+            if (snd) {
+                snd.currentTime = 0;
+                snd.play().catch(e => console.log("Audio play blocked"));
+            }
         }
 
         function triggerConfetti() {
@@ -598,9 +626,20 @@
             loadQuestion();
         }
 
-        function loadQuestion() {
+        function startTimer() {
             clearInterval(timer);
-            timeLeft = 60; // Grade 3 mandatory 60 seconds counter
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-val').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    forceTimeout();
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            timeLeft = 60;
             document.getElementById('timer-val').innerText = timeLeft;
             attemptsLeft = 2;
             
@@ -635,14 +674,7 @@
             document.getElementById('feedback-container').className = 'feedback-box';
             document.getElementById('next-btn').style.display = 'none';
 
-            timer = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer-val').innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timer);
-                    forceTimeout();
-                }
-            }, 1000);
+            startTimer();
         }
 
         function checkAnswer(selectedIdx, btnElement) {
@@ -651,7 +683,6 @@
             const btns = document.querySelectorAll('.option-btn');
 
             if (selectedIdx === qData.answer) {
-                // Correct Answer Path
                 clearInterval(timer);
                 btnElement.classList.add('correct');
                 btns.forEach(b => b.disabled = true);
@@ -668,7 +699,6 @@
                 feedback.innerHTML = `<strong>Correct!</strong> ${qData.explanation}`;
                 showNextButton();
             } else {
-                // Wrong Answer Path
                 attemptsLeft--;
                 btnElement.classList.add('wrong');
                 btnElement.disabled = true;
@@ -680,7 +710,6 @@
                 } else {
                     clearInterval(timer);
                     btns.forEach(b => b.disabled = true);
-                    // Explicitly reveal correct item choice
                     btns[qData.answer].classList.add('correct');
                     feedback.className = 'feedback-box explanation';
                     feedback.innerHTML = `<strong>Incorrect.</strong> ${qData.explanation}`;
@@ -739,7 +768,7 @@
                 msgElement.innerText = "Review this chapter and try again";
                 msgElement.style.color = "var(--warning)";
             } else {
-                msgElement.innerText = "Let’s practise more";
+                msgElement.innerText = "Let’s practice more";
                 msgElement.style.color = "var(--danger)";
             }
         }
