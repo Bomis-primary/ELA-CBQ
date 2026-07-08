@@ -49,7 +49,7 @@
             flex-direction: column;
         }
 
-        /* Splash Screen & Logo */
+        /* Splash Screen - Displays only the centered logo */
         #splash-screen {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -63,9 +63,8 @@
         }
 
         #splash-screen img {
-            max-width: 200px;
+            max-width: 220px;
             height: auto;
-            margin-bottom: 20px;
         }
 
         /* Screen States */
@@ -225,11 +224,9 @@
         <!-- Confetti layer -->
         <canvas id="confetti-canvas"></canvas>
 
-        <!-- Splash Screen (Mandatory 5-second brand presence) -->
+        <!-- Splash Screen (Mandatory 5-second clean logo display) -->
         <div id="splash-screen">
             <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none';">
-            <h2 style="color:#2C3E50;">English Grammar Lab</h2>
-            <p style="color:#7F8C8D; margin-top:5px;">Singular & Plural Nouns</p>
         </div>
 
         <!-- Intro Screen -->
