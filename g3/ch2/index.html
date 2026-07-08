@@ -1,1 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Grade 3 English - Singular and Plural Nouns Interactive</title>
+    <style>
+        :root {
+            --primary: #4A6FA5;
+            --primary-dark: #3B5984;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --warning: #F1C40F;
+            --background: #F5F7FA;
+            --surface: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Splash Screen & Logo */
+        #splash-screen {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #FFFFFF;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        #splash-screen img {
+            max-width: 200px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        /* Screen States */
+        .screen { display: none; flex-direction: column; flex-grow: 1; }
+        .screen.active { display: flex; }
+
+        h2 { font-size: 1.4rem; margin-bottom: 12px; color: var(--primary-dark); }
+        p.desc { color: var(--text-light); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.4; }
+
+        /* Top Bar Indicators */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .timer-box {
+            background: #EDF2F7;
+            padding: 4px 10px;
+            border-radius: 20px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .timer-critical {
+            background: #FADBD8;
+            color: var(--error);
+            animation: pulse 1s infinite;
+        }
+
+        /* Context Case Box */
+        .case-box {
+            background: #F8FAFC;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #34495E;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .option-btn {
+            background: #FFFFFF;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text);
+            width: 100%;
+        }
+
+        @media (hover: hover) {
+            .option-btn:hover:not([disabled]) {
+                border-color: var(--primary);
+                background: #F4F7FB;
+            }
+        }
+
+        .option-btn:disabled { cursor: not-allowed; }
+        .option-btn.correct { background: #E8F8F5; border-color: var(--success); color: #117A65; }
+        .option-btn.incorrect { background: #FDEDEC; border-color: var(--error); color: #922B21; }
+
+        /* Feedback Area */
+        .feedback-box {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+            display: none;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        .feedback-box.hint { background: #FEF9E7; border: 1px solid var(--warning); color: #7D6608; }
+        .feedback-box.explanation { background: #EAF2F8; border: 1px solid var(--primary); color: var(--primary-dark); }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.2s;
+            width: 100%;
+        }
+        .btn:hover { background: var(--primary-dark); }
+
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Result Styles */
+        .result-card {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #F4F7FB;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 20px auto;
+            border: 4px solid var(--primary);
+            color: var(--primary-dark);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Confetti layer -->
+        <canvas id="confetti-canvas"></canvas>
+
+        <!-- Splash Screen (Mandatory 5-second brand presence) -->
+        <div id="splash-screen">
+            <img src="assets/logo.png" alt="Innovine Logo" onerror="this.style.display='none';">
+            <h2 style="color:#2C3E50;">English Grammar Lab</h2>
+            <p style="color:#7F8C8D; margin-top:5px;">Singular & Plural Nouns</p>
+        </div>
+
+        <!-- Intro Screen -->
+        <div id="intro-screen" class="screen">
+            <h2>Chapter 2: Singular & Plural Nouns</h2>
+            <p class="desc">Welcome to the interactive grammar challenge! Instead of simple memory questions, you will encounter real-life scenarios like zoo trips, art projects, and kitchen situations. Think carefully before you answer!</p>
+            <div style="margin-top: auto;">
+                <button class="btn" onclick="startQuiz()">Start Challenge</button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="top-bar">
+                <span id="progress-text">Question 1/12</span>
+                <span id="score-text">Score: 0</span>
+                <div id="timer" class="timer-box">⏱️ <span id="timer-count">60</span>s</div>
+            </div>
+            
+            <div id="case-container" class="case-box"></div>
+            <div id="question-text" class="question-text"></div>
+            
+            <div id="options-container" class="options-grid"></div>
+            
+            <div id="feedback-container" class="feedback-box"></div>
+            
+            <button id="next-btn" class="btn" style="display: none;" onclick="handleNext()">Continue</button>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen result-card">
+            <h2>Challenge Complete!</h2>
+            <div id="score-display" class="score-circle">0%</div>
+            <p id="result-message" class="desc" style="font-size: 1.1rem; font-weight: 600;"></p>
+            <button class="btn" style="margin-top: auto;" onclick="restartQuiz()">Try Again</button>
+        </div>
+    </div>
+
+    <!-- Audio Elements pointing to your exact file locations -->
+    <audio id="audio-correct" src="assets/claps.mp3" preload="auto"></audio>
+    <audio id="audio-incorrect" src="assets/wrong.mp3" preload="auto"></audio>
+
+    <script>
+        const questions = [
+            {
+                type: "Case-Based MCQ",
+                case: "Rohan is writing a journal entry about his school trip to the city zoo. He writes: <em>'We saw one monkey eating a banana. Nearby, two fox ran past three box of fruit. A little girl was holding a bunch of grapes near a shepherd guarding his sheep.'</em>",
+                question: "Rohan made a spelling mistake when talking about the foxes. Which choice correctly fixes his sentence?",
+                options: ["Nearby, two foxs ran past...", "Nearby, two foxes ran past...", "Nearby, two foxies ran past...", "Nearby, two foxen ran past..."],
+                correct: 1,
+                hint: "Nouns ending in '-x' require '-es' to become plural.",
+                explanation: "Correct! For nouns ending in x, ch, sh, or s, we add '-es' to make them plural. Hence, 'fox' becomes 'foxes'."
+            },
+            {
+                type: "Case-Based MCQ",
+                case: "Rohan is writing a journal entry about his school trip to the city zoo. He writes: <em>'We saw one monkey eating a banana. Nearby, two fox ran past three box of fruit...'</em>",
+                question: "Help Rohan fix the spelling of the word 'box' to correctly show there were three of them.",
+                options: ["three boxes of fruit", "three boxs of fruit", "three boxies of fruit", "three boxen of fruit"],
+                correct: 0,
+                hint: "Think about the rule for words ending with the letter '-x'. It mimics the rule for 'fox'.",
+                explanation: "Great job! 'Box' ends with an 'x', so we add '-es' to turn it into the correct plural form: 'boxes'."
+            },
+            {
+                type: "Case-Based MCQ",
+                case: "Rohan is writing a journal entry about his school trip to the city zoo. He writes: <em>'...A little girl was holding a bunch of grapes near a shepherd guarding his sheep.'</em>",
+                question: "Rohan wants to talk about just one single animal from the flock guarded by the shepherd. What is the singular form of 'sheep'?",
+                options: ["sheep", "sheeps", "sheepes", "lamb"],
+                correct: 0,
+                hint: "Some structural animal nouns do not change form between single and plural states.",
+                explanation: "Spot on! 'Sheep' is an irregular noun that remains exactly the same whether there is one or a hundred."
+            },
+            {
+                type: "What Does Not Belong MCQ",
+                case: "Look at this word collection picked from Rohan's zoo journal: <strong>grapes, foxes, monkey, boxes</strong>.",
+                question: "Three of these words are plural, but one is singular. Which one does not belong with the others?",
+                options: ["grapes", "foxes", "monkey", "boxes"],
+                correct: 2,
+                hint: "Look for the item representing only one animal or object.",
+                explanation: "Correct! Monkey is singular (one monkey). Grapes, foxes, and boxes all represent multiple items."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                case: "Ms. Priya is preparing an art room layout. She places a single brush on each work desk and says they will write down everything they use.",
+                question: "If Ms. Priya needs to order multiple units of 'brush' for tomorrow's project, how should she write it down?",
+                options: ["brushs", "brushes", "brushies", "brushed"],
+                correct: 1,
+                hint: "Words ending with a hissing sound like '-sh' need special care at the tail.",
+                explanation: "Perfect! Words ending in '-sh' require '-es' to form the plural. Therefore, 'brush' changes to 'brushes'."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                case: "A student gathers three separate items from an autumn leaf pile on the ground to paste onto a canvas board.",
+                question: "Which entry shows the correct plural format for their project observation book?",
+                options: ["I picked three leafs.", "I picked three leafes.", "I picked three leaves.", "I picked three leavs."],
+                correct: 2,
+                hint: "When a word ends in '-f', we usually change the '-f' to a '-v' before adding the ending.",
+                explanation: "Correct! Most singular nouns ending in '-f' or '-fe' drop the ending to switch to '-ves' in plural form."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                case: "The art class is drawing a giant wooden basket filled with multiple pieces of tomato.",
+                question: "Which option provides the correctly spelled title for their final collective painting?",
+                options: ["A Bowl of Tomatoes", "A Bowl of Tomatos", "A Bowl of Tomaties", "A Bowl of Tomato"],
+                correct: 0,
+                hint: "Nouns ending in an 'o' preceded by a consonant usually take '-es'.",
+                explanation: "That's it! Tomato ends in a consonant followed by 'o', so it forms its plural by taking '-es' to form 'tomatoes'."
+            },
+            {
+                type: "Error Detection MCQ",
+                case: "Alisha is reviewing her peer's homework essay. She finds this sentence: <em>'The childrens are playing happily with their toys.'</em>",
+                question: "Identify the plural error in the sentence and choose the perfect correction below.",
+                options: ["The childs are playing...", "The children are playing...", "The childrenes are playing...", "Leave it as it is because it's correct."],
+                correct: 1,
+                hint: "The word 'children' is already a plural term on its own.",
+                explanation: "Well found! 'Children' is already the plural form of 'child'. Adding an extra 's' makes it incorrect grammar."
+            },
+            {
+                type: "Error Detection MCQ",
+                case: "Another sentence in the homework essay reads: <em>'We saw three deers standing silently in the forest during our camp.'</em>",
+                question: "Which plural noun rules explanation should Alisha give her classmate to fix this sentence?",
+                options: ["Add -es to make it 'deeres'.", "The plural form of deer is irregular and stays 'deer'.", "Change it to 'deerses'.", "Deer cannot be used with numbers."],
+                correct: 1,
+                hint: "This word behaves exactly like the word 'sheep' encountered at the zoo.",
+                explanation: "Exactly! 'Deer' is an irregular noun that keeps the exact same form for both singular and plural usage."
+            },
+            {
+                type: "Error Detection MCQ",
+                case: "The last sentence of the peer review reads: <em>'My aunt bought two loafs of fresh bread.'</em>",
+                question: "Which option contains the correct plural spelling structural fix for the word 'loafs'?",
+                options: ["loafes", "loafies", "loaves", "loafs is already correct"],
+                correct: 2,
+                hint: "Drop the final letter '-f' and add the signature plural suffix for matching words.",
+                explanation: "Correct! 'Loaf' ends in an 'f', so we swap the 'f' out for '-ves' to form the proper plural word 'loaves'."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                case: "Chef Marco yells out kitchen prep instructions: <em>'We need two sharp knife on the counter, and make sure our team gets their meals ready!'</em>",
+                question: "The assistant needs to type out the order log quickly. What is the correct plural spelling for 'knife'?",
+                options: ["knifes", "knifees", "knives", "knifeses"],
+                correct: 2,
+                hint: "Words ending with '-fe' apply a rule similar to words ending in '-f'.",
+                explanation: "Brilliant! Singular nouns ending in '-fe' change their suffix structure directly to '-ves' when turning plural."
+            },
+            {
+                type: "Final Challenge (Assertion-Reason)",
+                case: "Consider the word: <strong>class</strong>.",
+                question: "<strong>Assertion:</strong> The plural form of class is classes.<br><strong>Reason:</strong> We add '-es' to nouns that end with a hissing sound like '-ss'.",
+                options: [
+                    "Both assertion and reason are correct, and the reason explains the assertion.",
+                    "Both assertion and reason are correct, but the reason does not explain it.",
+                    "The assertion is correct, but the reason is completely wrong.",
+                    "Both assertion and reason are incorrect."
+                ],
+                correct: 0,
+                hint: "Say the word 'class' out loud and think about how the tail sounds.",
+                explanation: "Superb! 'Class' ends in an 'ss' sound, requiring '-es' so it can be easily spoken out loud as 'classes'."
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let attempts = 0;
+        let timerInterval = null;
+        let timeLeft = 60;
+
+        const splashScreen = document.getElementById('splash-screen');
+        const introScreen = document.getElementById('intro-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const audioCorrect = document.getElementById('audio-correct');
+        const audioIncorrect = document.getElementById('audio-incorrect');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                splashScreen.style.opacity = 0;
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    introScreen.classList.add('active');
+                }, 500);
+            }, 5000);
+        });
+
+        function startQuiz() {
+            introScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            attempts = 0;
+            timeLeft = 60;
+            
+            const q = questions[currentQuestionIdx];
+            
+            document.getElementById('progress-text').innerText = `Question ${currentQuestionIdx + 1}/${questions.length}`;
+            document.getElementById('score-text').innerText = `Score: ${score}`;
+            document.getElementById('timer-count').innerText = timeLeft;
+            document.getElementById('timer').classList.remove('timer-critical');
+            
+            document.getElementById('case-container').innerHTML = q.case;
+            document.getElementById('question-text').innerHTML = q.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = opt;
+                btn.onclick = () => handleOptionClick(idx, btn);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback-container').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            
+            startTimer();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-count').innerText = timeLeft;
+                
+                if(timeLeft <= 10) {
+                    document.getElementById('timer').classList.add('timer-critical');
+                }
+                
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    lockQuizOnTimeout();
+                }
+            }, 1000);
+        }
+
+        function handleOptionClick(selectedIdx, selectedBtn) {
+            const q = questions[currentQuestionIdx];
+            const feedbackContainer = document.getElementById('feedback-container');
+            
+            if(selectedIdx === q.correct) {
+                clearInterval(timerInterval);
+                playAudio(audioCorrect);
+                selectedBtn.classList.add('correct');
+                disableAllOptions();
+                
+                feedbackContainer.className = "feedback-box explanation";
+                feedbackContainer.innerHTML = `🌟 ${q.explanation}`;
+                feedbackContainer.style.display = 'block';
+                
+                if(attempts === 0) score += 10;
+                else score += 5;
+                
+                document.getElementById('score-text').innerText = `Score: ${score}`;
+                triggerConfetti();
+                showNextButton();
+            } else {
+                attempts++;
+                playAudio(audioIncorrect);
+                selectedBtn.classList.add('incorrect');
+                selectedBtn.disabled = true;
+                
+                if(attempts === 1) {
+                    feedbackContainer.className = "feedback-box hint";
+                    feedbackContainer.innerHTML = `💡 <strong>Hint:</strong> ${q.hint}`;
+                    feedbackContainer.style.display = 'block';
+                } else {
+                    clearInterval(timerInterval);
+                    disableAllOptions();
+                    highlightCorrectAnswer();
+                    
+                    feedbackContainer.className = "feedback-box explanation";
+                    feedbackContainer.innerHTML = `🎯 <strong>Let's learn:</strong> ${q.explanation}`;
+                    feedbackContainer.style.display = 'block';
+                    showNextButton();
+                }
+            }
+        }
+
+        function lockQuizOnTimeout() {
+            disableAllOptions();
+            highlightCorrectAnswer();
+            const feedbackContainer = document.getElementById('feedback-container');
+            feedbackContainer.className = "feedback-box explanation";
+            feedbackContainer.innerHTML = `⏰ <strong>Time's Up!</strong> ${questions[currentQuestionIdx].explanation}`;
+            feedbackContainer.style.display = 'block';
+            showNextButton();
+        }
+
+        function disableAllOptions() {
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons.forEach(b => b.disabled = true);
+        }
+
+        function highlightCorrectAnswer() {
+            const idx = questions[currentQuestionIdx].correct;
+            const buttons = document.querySelectorAll('.option-btn');
+            buttons[idx].classList.add('correct');
+        }
+
+        function showNextButton() {
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        function handleNext() {
+            currentQuestionIdx++;
+            if(currentQuestionIdx < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.remove('active');
+            resultScreen.classList.add('active');
+            
+            const maxPossibleScore = questions.length * 10;
+            const percentage = Math.round((score / maxPossibleScore) * 100);
+            
+            document.getElementById('score-display').innerText = `${percentage}%`;
+            
+            const msgEl = document.getElementById('result-message');
+            if(percentage >= 75) {
+                msgEl.innerText = "🌟 Good job! You have mastered singular and plural nouns structural variants!";
+                msgEl.style.color = "var(--success)";
+            } else if(percentage >= 40) {
+                msgEl.innerText = "📚 Review this chapter and try again to improve your accuracy score.";
+                msgEl.style.color = "var(--warning)";
+            } else {
+                msgEl.innerText = "✍️ Let's practice more! Go back through grammar rules to strengthen your core skills.";
+                msgEl.style.color = "var(--error)";
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestionIdx = 0;
+            score = 0;
+            resultScreen.classList.remove('active');
+            quizScreen.classList.add('active');
+            loadQuestion();
+        }
+
+        function playAudio(audioNode) {
+            audioNode.currentTime = 0;
+            audioNode.play().catch(() => {});
+        }
+
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            
+            let particles = [];
+            for (let i = 0; i < 40; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: canvas.height,
+                    r: Math.random() * 4 + 2,
+                    d: Math.random() * canvas.height,
+                    color: `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, 0.8)`,
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                    tiltAngle: 0
+                });
+            }
+
+            let animationFrame;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let processing = false;
+                
+                particles.forEach((p, idx) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y -= 3;
+                    p.x += Math.sin(p.tiltAngle);
+                    
+                    if (p.y > 0) processing = true;
+                    
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.r + p.tilt, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r);
+                    ctx.stroke();
+                });
+
+                if (processing) {
+                    animationFrame = requestAnimationFrame(draw);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    cancelAnimationFrame(animationFrame);
+                }
+            }
+            draw();
+        }
+    </script>
+</body>
+</html>
