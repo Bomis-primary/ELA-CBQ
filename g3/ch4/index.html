@@ -1,1 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 3 English - Chapter 4: Pronouns Interactive</title>
+    <style>
+        :root {
+            --primary: #4A6FA5;
+            --primary-light: #EEF2F7;
+            --secondary: #13BBAF;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --warning: #F39C12;
+            --dark: #2C3E50;
+            --light: #FFFFFF;
+            --gray: #95A5A6;
+            --radius: 12px;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #F0F4F8;
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Branding: Innovine logo screen absolute lock */
+        #logo-splash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--light);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        .logo-placeholder {
+            width: 180px;
+            height: auto;
+            max-height: 120px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .splash-loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Consistent Scannable Visual Architecture */
+        .header-bar {
+            background: var(--primary-light);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        .score-board {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .audio-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            color: var(--primary);
+            padding: 4px;
+        }
+
+        .screen {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            text-align: center;
+        }
+
+        p.intro-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #546E7A;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .btn-main {
+            background: var(--secondary);
+            color: var(--light);
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            cursor: pointer;
+            box-shadow: 0 4px 0 #0E9A90;
+            transition: all 0.1s ease;
+            margin: auto auto 10px auto;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .btn-main:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #0E9A90;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-pill {
+            background: #E2E8F0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .timer-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        .timer-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #E2E8F0;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--warning);
+            transition: width 1s linear;
+        }
+
+        .question-box {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .graphic-container {
+            background: #F8FAFC;
+            border: 1px dashed var(--gray);
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .graphic-container svg {
+            max-width: 100%;
+            height: 120px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-card {
+            background: var(--light);
+            border: 2px solid #E2E8F0;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-card:hover {
+            border-color: var(--primary);
+            background: #F1F5F9;
+        }
+
+        .option-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .option-card.correct-flash {
+            background: #D4EDDA !important;
+            border-color: var(--success) !important;
+            color: #155724;
+            animation: popSuccess 0.4s ease-out;
+        }
+
+        @keyframes popSuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .option-card.wrong-flash {
+            background: #F8D7DA !important;
+            border-color: var(--error) !important;
+            color: #721C24;
+        }
+
+        .feedback-panel {
+            padding: 15px;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feedback-panel.hint {
+            background: #FFF3CD;
+            border-left: 5px solid var(--warning);
+            color: #856404;
+        }
+
+        .feedback-panel.explanation {
+            background: #D1ECF1;
+            border-left: 5px solid #17A2B8;
+            color: #0C5460;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0 auto 20px auto;
+            border: 4px solid var(--primary);
+        }
+
+        .result-msg {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- Branding Guardrail: Only visible for 5000ms -->
+        <div id="logo-splash">
+            <img class="logo-placeholder" src="assets/logo.png" alt="Logo" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
+            <h2 id="logo-fallback" style="display:none; color:#4A6FA5; margin-bottom:20px; font-weight:800;">INNOVINE</h2>
+            <div class="splash-loader"></div>
+        </div>
+
+        <!-- Correctly Configured Audio Assets -->
+        <audio id="audio-correct" src="assets/claps.mp3" preload="auto"></audio>
+        <audio id="audio-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+        <div class="header-bar">
+            <div class="score-board">Score: <span id="live-score">0</span></div>
+            <button class="audio-toggle" id="btn-mute" aria-label="Toggle Audio">🔊</button>
+        </div>
+
+        <!-- 1. Welcome Instructions Screen (Revealed only after splash ends) -->
+        <div id="screen-intro" class="screen hidden">
+            <h1 style="margin-top: 20px;">Chapter 4: Pronouns World</h1>
+            <p class="intro-text">Welcome! Let's apply grammar rules in real-world situations, solve language puzzles, and complete interactive challenges!</p>
+            <button class="btn-main" id="btn-start">Start Challenge</button>
+        </div>
+
+        <!-- 2. Question Flow Screen -->
+        <div id="screen-question" class="screen hidden">
+            <div class="meta-row">
+                <span class="progress-pill" id="question-progress">Question 1/12</span>
+                <div class="timer-box">
+                    <span>⏱️</span><span id="timer-count">60</span>s
+                </div>
+            </div>
+            <div class="timer-bar-container">
+                <div class="timer-bar" id="timer-indicator"></div>
+            </div>
+
+            <div class="graphic-container" id="question-graphic-box"></div>
+
+            <div class="question-box" id="question-text"></div>
+
+            <div class="options-grid" id="options-box"></div>
+
+            <div class="feedback-panel hidden" id="feedback-box"></div>
+
+            <button class="btn-main hidden" id="btn-next">Next</button>
+        </div>
+
+        <!-- 3. Final Result Screen -->
+        <div id="screen-result" class="screen hidden">
+            <h1>Challenge Complete!</h1>
+            <div class="result-card">
+                <div class="score-circle" id="final-score-value">0/12</div>
+                <div class="result-msg" id="final-status-msg">Review this chapter and try again!</div>
+                <p class="intro-text">Keep practicing to master your competency-based grammar elements.</p>
+            </div>
+            <button class="btn-main" id="btn-restart">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Exactly 12 structured application-driven items with high quality distractor reasoning
+        const questionsData = [
+            {
+                id: 1,
+                type: "Scenario-Based MCQ",
+                question: "Rohan and Amit are walking to school together. They notice that they are getting late. Which word should they use to talk about themselves?",
+                options: ["She", "It", "We", "They"],
+                answer: 2,
+                hint: "Think about which pronoun replaces a group that includes yourself.",
+                explanation: "We use 'We' when speaking about a group that includes yourself.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='70' cy='50' r='15' fill='#4A6FA5'/><circle cx='130' cy='50' r='15' fill='#13BBAF'/><text x='100' y='90' font-size='12' text-anchor='middle' font-weight='bold'>Rohan & Amit</text></svg>`
+            },
+            {
+                id: 2,
+                type: "Case-Based MCQ",
+                question: "Read this scene: 'Sita found a lost puppy on the street. ___ was shivering, so ___ wrapped it in her warm jacket.' Choose the correct pair of pronouns to complete the sentences safely.",
+                options: ["He / It", "It / She", "She / It", "They / He"],
+                answer: 1,
+                hint: "The first blank describes the lost puppy, and the second blank describes Sita.",
+                explanation: "'It' replaces the puppy, and 'She' replaces Sita.",
+                svg: `<svg viewBox='0 0 200 100'><rect x='40' y='30' width='40' height='40' rx='5' fill='#F39C12'/><circle cx='140' cy='50' r='15' fill='#E74C3C'/><text x='100' y='90' font-size='12' text-anchor='middle' font-weight='bold'>Puppy & Sita</text></svg>`
+            },
+            {
+                id: 3,
+                type: "Error Detection MCQ",
+                question: "Aarav wrote four sentences in his notebook. Which sentence did he write with a pronoun mistake?",
+                options: ["Raju likes his beautiful new kite.", "The birds flew to their cozy nest.", "Him is my best friend at school.", "She is reading a wonderful comic book."],
+                answer: 2,
+                hint: "We don't use object pronouns like 'him' as the subject at the beginning of a sentence.",
+                explanation: "'Him is my friend' is wrong. It should be 'He is my friend'.",
+                svg: `<svg viewBox='0 0 200 100'><rect x='20' y='20' width='160' height='60' rx='5' fill='#EEF2F7' stroke='#95A5A6'/><text x='100' y='55' font-size='14' fill='red' text-anchor='middle' font-weight='bold'>❌ Mistake Finder</text></svg>`
+            },
+            {
+                id: 4,
+                type: "What Does Not Belong MCQ",
+                question: "Your teacher asks you to clean up the flashcards that are NOT pronouns. Which card must you remove from this set?",
+                options: ["They", "She", "Park", "Mine"],
+                answer: 2,
+                hint: "Pronouns replace nouns. One of these options is a naming word for a place.",
+                explanation: "'Park' is a naming word (noun), while 'They', 'She', and 'Mine' are pronouns.",
+                svg: `<svg viewBox='0 0 200 100'><rect x='10' y='35' width='40' height='30' fill='#4A6FA5'/><rect x='60' y='35' width='40' height='30' fill='#4A6FA5'/><rect x='110' y='35' width='40' height='30' fill='#E74C3C'/><rect x='160' y='35' width='40' height='30' fill='#4A6FA5'/><text x='100' y='85' font-size='12' text-anchor='middle'>Find the odd one out</text></svg>`
+            },
+            {
+                id: 5,
+                type: "Assertion-Reason MCQ",
+                question: "Assertion: We use the pronoun 'It' to talk about a school bag.\nReason: 'It' is the correct singular pronoun used for objects and non-living things.",
+                options: ["Both Assertion and Reason are true, and the Reason correctly explains the Assertion.", "Both Assertion and Reason are true, but the Reason does not explain the Assertion.", "The Assertion is true, but the Reason is false.", "Both Assertion and Reason are false."],
+                answer: 0,
+                hint: "A school bag is a non-living object. Connect the statement with the reason.",
+                explanation: "Both statements are correct. 'It' is explicitly used for singular non-living objects.",
+                svg: `<svg viewBox='0 0 200 100'><rect x='75' y='25' width='50' height='50' rx='8' fill='#13BBAF'/><text x='100' y='55' fill='white' font-size='10' text-anchor='middle'>BAG</text></svg>`
+            },
+            {
+                id: 6,
+                type: "Scenario-Based MCQ",
+                question: "Tina won a beautiful trophy in the painting competition. She holds it up proudly and says, 'This trophy belongs to me. It is ______!'",
+                options: ["hers", "yours", "theirs", "mine"],
+                answer: 3,
+                hint: "When someone says an item belongs to 'me', they are talking about their own possession.",
+                explanation: "Something belonging to 'me' becomes 'mine'.",
+                svg: `<svg viewBox='0 0 200 100'><polygon points='100,20 120,60 80,60' fill='#F39C12'/><rect x='93' y='60' width='14' height='20' fill='#D35400'/></svg>`
+            },
+            {
+                id: 7,
+                type: "Scenario-Based MCQ",
+                question: "Your father is a doctor. He works day and night at the city hospital. When talking about your father's job to a classmate, which pronoun should you use?",
+                options: ["She works in a hospital.", "He works in a hospital.", "It works in a hospital.", "They works in a hospital."],
+                answer: 1,
+                hint: "Father is a male person, so choose the singular male subject pronoun.",
+                explanation: "'He' is the correct masculine singular pronoun for a father.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='100' cy='40' r='20' fill='#4A6FA5'/><text x='100' y='80' font-size='12' text-anchor='middle' font-weight='bold'>Father</text></svg>`
+            },
+            {
+                id: 8,
+                type: "Error Detection MCQ",
+                question: "Look at how Meera solved her grammar assignment: 'Raju likes he new bicycle.' Why is this sentence incorrect?",
+                options: ["The pronoun 'he' should be changed to 'his' to show ownership.", "The pronoun 'he' should be changed to 'him'.", "The pronoun 'he' should be changed to 'it'.", "The sentence is already completely correct."],
+                answer: 0,
+                hint: "To show that the bicycle belongs to Raju, we need a possessive word.",
+                explanation: "To show ownership for a male person, 'his' is used instead of 'he'.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='70' cy='60' r='15' fill='none' stroke='#2C3E50' stroke-width='3'/><circle cx='130' cy='60' r='15' fill='none' stroke='#2C3E50' stroke-width='3'/><line x1='70' y1='60' x2='130' y2='60' stroke='#2C3E50' stroke-width='3'/></svg>`
+            },
+            {
+                id: 9,
+                type: "Scenario-Based MCQ",
+                question: "You see three active dogs barking loudly near the garden gate. Which pronoun perfectly replaces 'The dogs' to tell your mother about them?",
+                options: ["It", "He", "They", "She"],
+                answer: 2,
+                hint: "Since there is more than one dog, look for a plural pronoun.",
+                explanation: "'They' is used to replace plural nouns, whether people, animals, or items.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='60' cy='50' r='10' fill='#95A5A6'/><circle cx='100' cy='50' r='10' fill='#95A5A6'/><circle cx='140' cy='50' r='10' fill='#95A5A6'/><text x='100' y='85' font-size='12' text-anchor='middle'>Multiple Dogs</text></svg>`
+            },
+            {
+                id: 10,
+                type: "Final Challenge",
+                question: "Mina and I bought a brand new skipping rope together to share. Which sentence shows correct pronoun ownership for this item?",
+                options: ["The skipping rope is mine.", "The skipping rope is theirs.", "The skipping rope is ours.", "The skipping rope is yours."],
+                answer: 2,
+                hint: "When something belongs to 'Mina and I', it means it belongs to us.",
+                explanation: "Possessions belonging to 'us' are referred to as 'ours'.",
+                svg: `<svg viewBox='0 0 200 100'><path d='M40,50 Q100,90 160,50' fill='none' stroke='#13BBAF' stroke-width='4'/></svg>`
+            },
+            {
+                id: 11,
+                type: "Final Challenge",
+                question: "Imagine you are rewriting a story to make it sound better. Instead of saying 'The bird built a nest. The bird laid eggs in the nest,' how should you use pronouns?",
+                options: ["The bird built a nest. It laid eggs in it.", "The bird built a nest. He laid eggs in she.", "The bird built a nest. They laid eggs in they.", "The bird built a nest. She laid eggs in he."],
+                answer: 0,
+                hint: "Replace the singular animal 'the bird' and the singular object 'the nest' with non-human pronouns.",
+                explanation: "Both bird and nest are single non-human entities here, so 'it' is used for both.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='100' cy='45' r='20' fill='#EEF2F7' stroke='#4A6FA5'/><text x='100' y='80' font-size='11' text-anchor='middle'>Bird + Nest Puzzle</text></svg>`
+            },
+            {
+                id: 12,
+                type: "Final Challenge",
+                question: "Why do we actually use pronouns like he, she, it, or they in our daily language instead of repeating names?",
+                options: ["To make the sentence longer and harder to write.", "To avoid repeating the same naming words over and over again.", "Because naming words are not allowed in sentences.", "To change the meaning of the action words."],
+                answer: 1,
+                hint: "Think about what happens if you have to repeat someone's name four times in one short sentence.",
+                explanation: "Pronouns exist to prevent repetitive phrasing and make communication smoother.",
+                svg: `<svg viewBox='0 0 200 100'><rect x='30' y='30' width='140' height='40' rx='5' fill='#E2E8F0'/><text x='100' y='55' font-size='12' text-anchor='middle' font-weight='bold'>Why use Pronouns?</text></svg>`
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let attempts = 0; 
+        let isMuted = false;
+        let timerInterval = null;
+        let timeLeft = 60;
+        const totalQuestions = questionsData.length;
+
+        const splashScreen = document.getElementById('logo-splash');
+        const screenIntro = document.getElementById('screen-intro');
+        const screenQuestion = document.getElementById('screen-question');
+        const screenResult = document.getElementById('screen-result');
+        const btnStart = document.getElementById('btn-start');
+        const btnNext = document.getElementById('btn-next');
+        const btnRestart = document.getElementById('btn-restart');
+        const btnMute = document.getElementById('btn-mute');
+        const liveScoreSpan = document.getElementById('live-score');
+        const questionProgress = document.getElementById('question-progress');
+        const timerCount = document.getElementById('timer-count');
+        const timerIndicator = document.getElementById('timer-indicator');
+        const questionGraphicBox = document.getElementById('question-graphic-box');
+        const questionText = document.getElementById('question-text');
+        const optionsBox = document.getElementById('options-box');
+        const feedbackBox = document.getElementById('feedback-box');
+        const finalScoreValue = document.getElementById('final-score-value');
+        const finalStatusMsg = document.getElementById('final-status-msg');
+        const audioCorrect = document.getElementById('audio-correct');
+        const audioWrong = document.getElementById('audio-wrong');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Strict Branding: Splash screen displayed for exactly 5 seconds
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.classList.add('hidden');
+                    screenIntro.classList.remove('hidden'); // Instructions shown only after logo screen ends
+                }, 500);
+            }, 5000);
+        });
+
+        btnStart.addEventListener('click', startQuiz);
+        btnNext.addEventListener('click', loadNextQuestion);
+        btnRestart.addEventListener('click', restartQuiz);
+        btnMute.addEventListener('click', toggleMute);
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            btnMute.innerText = isMuted ? "🔇" : "🔊";
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            if (type === 'correct') {
+                audioCorrect.currentTime = 0;
+                audioCorrect.play().catch(()=>{});
+            } else {
+                audioWrong.currentTime = 0;
+                audioWrong.play().catch(()=>{});
+            }
+        }
+
+        function startQuiz() {
+            screenIntro.classList.add('hidden');
+            screenQuestion.classList.remove('hidden');
+            currentQuestionIdx = 0;
+            score = 0;
+            liveScoreSpan.innerText = score;
+            showQuestion();
+        }
+
+        function restartQuiz() {
+            screenResult.classList.add('hidden');
+            startQuiz();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 60;
+            timerCount.innerText = timeLeft;
+            timerIndicator.style.width = '100%';
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerCount.innerText = timeLeft;
+                timerIndicator.style.width = `${(timeLeft / 60) * 100}%`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleTimeOut() {
+            const cards = optionsBox.getElementsByClassName('option-card');
+            for(let card of cards) {
+                card.style.pointerEvents = 'none';
+            }
+            const q = questionsData[currentQuestionIdx];
+            playSound('wrong');
+            feedbackBox.className = "feedback-panel explanation";
+            feedbackBox.innerHTML = `<strong>⏱️ Time's Up!</strong> ${q.explanation}`;
+            feedbackBox.classList.remove('hidden');
+            
+            if(cards[q.answer]) cards[q.answer].classList.add('correct-flash');
+            btnNext.classList.remove('hidden');
+        }
+
+        function showQuestion() {
+            attempts = 0;
+            feedbackBox.classList.add('hidden');
+            btnNext.classList.add('hidden');
+            
+            const q = questionsData[currentQuestionIdx];
+            
+            questionProgress.innerText = `Question ${currentQuestionIdx + 1}/${totalQuestions}`;
+            questionGraphicBox.innerHTML = q.svg;
+            questionText.innerText = `[${q.type}] ${q.question}`;
+            
+            optionsBox.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.innerText = opt;
+                card.addEventListener('click', () => optionSelected(idx));
+                optionsBox.appendChild(card);
+            });
+            
+            startTimer();
+        }
+
+        function optionSelected(selectedIdx) {
+            const q = questionsData[currentQuestionIdx];
+            const cards = optionsBox.getElementsByClassName('option-card');
+            
+            for(let card of cards) card.classList.remove('selected');
+            cards[selectedIdx].classList.add('selected');
+
+            if (selectedIdx === q.answer) {
+                clearInterval(timerInterval);
+                playSound('correct'); // Triggers claps audio loop
+                cards[selectedIdx].classList.remove('selected');
+                cards[selectedIdx].classList.add('correct-flash'); // High feedback animation styling
+                
+                for(let card of cards) card.style.pointerEvents = 'none';
+                
+                if (attempts === 0) {
+                    score += 1;
+                    liveScoreSpan.innerText = score;
+                }
+                
+                feedbackBox.className = "feedback-panel explanation";
+                feedbackBox.innerHTML = `<strong>🎉 Correct!</strong> ${q.explanation}`;
+                feedbackBox.classList.remove('hidden');
+                btnNext.classList.remove('hidden');
+            } else {
+                attempts++;
+                playSound('wrong'); // Triggers wrong sound effect
+                
+                if (attempts === 1) {
+                    cards[selectedIdx].classList.add('wrong-flash');
+                    feedbackBox.className = "feedback-panel hint";
+                    feedbackBox.innerHTML = `<strong>💡 Hint:</strong> ${q.hint}`;
+                    feedbackBox.classList.remove('hidden');
+                } else {
+                    clearInterval(timerInterval);
+                    cards[selectedIdx].classList.add('wrong-flash');
+                    for(let card of cards) card.style.pointerEvents = 'none';
+                    
+                    cards[q.answer].classList.add('correct-flash');
+                    feedbackBox.className = "feedback-panel explanation";
+                    feedbackBox.innerHTML = `<strong>Let's Learn:</strong> ${q.explanation}`;
+                    feedbackBox.classList.remove('hidden');
+                    btnNext.classList.remove('hidden');
+                }
+            }
+        }
+
+        function loadNextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < totalQuestions) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            screenQuestion.classList.add('hidden');
+            screenResult.classList.remove('hidden');
+            
+            finalScoreValue.innerText = `${score}/${totalQuestions}`;
+            const performancePercentage = (score / totalQuestions) * 100;
+            
+            if (performancePercentage >= 75) {
+                finalStatusMsg.innerText = "🌟 Good job!";
+                finalStatusMsg.style.color = "var(--success)";
+            } else if (performancePercentage >= 40) {
+                finalStatusMsg.innerText = "📚 Review this chapter and try again";
+                finalStatusMsg.style.color = "var(--warning)";
+            } else {
+                finalStatusMsg.innerText = "💪 Let’s practise more";
+                finalStatusMsg.style.color = "var(--error)";
+            }
+        }
+    </script>
+</body>
+</html>
