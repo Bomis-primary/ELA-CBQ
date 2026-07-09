@@ -1,1 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 3 English - Chapter 5: Articles Challenge</title>
+    <style>
+        :root {
+            --primary: #4A6FA5;
+            --primary-light: #EEF2F7;
+            --secondary: #13BBAF;
+            --success: #2ECC71;
+            --error: #E74C3C;
+            --warning: #F39C12;
+            --dark: #2C3E50;
+            --light: #FFFFFF;
+            --gray: #95A5A6;
+            --radius: 12px;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #F0F4F8;
+            color: var(--dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--light);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            min-height: 540px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Branding: Innovine logo screen absolute lock (5 seconds) */
+        #logo-splash {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--light);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        .logo-placeholder {
+            width: 180px;
+            height: auto;
+            max-height: 120px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .splash-loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .header-bar {
+            background: var(--primary-light);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        .score-board {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .audio-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            color: var(--primary);
+            padding: 4px;
+        }
+
+        .screen {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            text-align: center;
+        }
+
+        p.intro-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #546E7A;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .passage-box {
+            background: #FFFDE7;
+            border: 2px solid #FFF59D;
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+            line-height: 1.5;
+            color: #37474F;
+        }
+
+        .btn-main {
+            background: var(--secondary);
+            color: var(--light);
+            border: none;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            cursor: pointer;
+            box-shadow: 0 4px 0 #0E9A90;
+            transition: all 0.1s ease;
+            margin: auto auto 10px auto;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        .btn-main:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #0E9A90;
+        }
+
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-pill {
+            background: #E2E8F0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .timer-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            color: var(--warning);
+        }
+
+        .timer-bar-container {
+            width: 100%;
+            height: 6px;
+            background: #E2E8F0;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: var(--warning);
+            transition: width 1s linear;
+        }
+
+        .question-box {
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .graphic-container {
+            background: #F8FAFC;
+            border: 1px dashed var(--gray);
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .graphic-container svg {
+            max-width: 100%;
+            height: 110px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-card {
+            background: var(--light);
+            border: 2px solid #E2E8F0;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-card:hover {
+            border-color: var(--primary);
+            background: #F1F5F9;
+        }
+
+        .option-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .option-card.correct-flash {
+            background: #D4EDDA !important;
+            border-color: var(--success) !important;
+            color: #155724;
+            animation: popSuccess 0.4s ease-out;
+        }
+
+        @keyframes popSuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .option-card.wrong-flash {
+            background: #F8D7DA !important;
+            border-color: var(--error) !important;
+            color: #721C24;
+        }
+
+        .feedback-panel {
+            padding: 15px;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feedback-panel.hint {
+            background: #FFF3CD;
+            border-left: 5px solid var(--warning);
+            color: #856404;
+        }
+
+        .feedback-panel.explanation {
+            background: #D1ECF1;
+            border-left: 5px solid #17A2B8;
+            color: #0C5460;
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0 auto 20px auto;
+            border: 4px solid var(--primary);
+        }
+
+        .result-msg {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- Branding Guardrail: Visible for exactly 5000ms -->
+        <div id="logo-splash">
+            <img class="logo-placeholder" src="assets/logo.png" alt="Logo" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';">
+            <h2 id="logo-fallback" style="display:none; color:#4A6FA5; margin-bottom:20px; font-weight:800;">INNOVINE</h2>
+            <div class="splash-loader"></div>
+        </div>
+
+        <!-- Correctly Configured Audio Assets -->
+        <audio id="audio-correct" src="assets/claps.mp3" preload="auto"></audio>
+        <audio id="audio-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+        <div class="header-bar">
+            <div class="score-board">Score: <span id="live-score">0</span></div>
+            <button class="audio-toggle" id="btn-mute" aria-label="Toggle Audio">🔊</button>
+        </div>
+
+        <!-- 1. Welcome Instructions Screen (Revealed only after splash ends) -->
+        <div id="screen-intro" class="screen hidden">
+            <h1 style="margin-top: 15px;">Chapter 5: Articles Expedition</h1>
+            <p class="intro-text">Master 'a', 'an', and 'the' by analyzing contextual stories, solving puzzles, and identifying precise grammatical rules!</p>
+            <button class="btn-main" id="btn-start">Start Adventure</button>
+        </div>
+
+        <!-- 2. Question Flow Screen -->
+        <div id="screen-question" class="screen hidden">
+            <div class="meta-row">
+                <span class="progress-pill" id="question-progress">Question 1/12</span>
+                <div class="timer-box">
+                    <span>⏱️</span><span id="timer-count">45</span>s
+                </div>
+            </div>
+            <div class="timer-bar-container">
+                <div class="timer-bar" id="timer-indicator"></div>
+            </div>
+
+            <!-- Context reading block for Passage Questions -->
+            <div class="passage-box hidden" id="passage-container">
+                <strong>📖 Context Passage:</strong><br>
+                "Riya saw a cat in the garden. The cat was sitting under a tree. She found an apple, an orange, and a toy in a basket. Then she went to the kitchen and helped her mother set the table."
+            </div>
+
+            <div class="graphic-container" id="question-graphic-box"></div>
+
+            <div class="question-box" id="question-text"></div>
+
+            <div class="options-grid" id="options-box"></div>
+
+            <div class="feedback-panel hidden" id="feedback-box"></div>
+
+            <button class="btn-main hidden" id="btn-next">Next</button>
+        </div>
+
+        <!-- 3. Final Score/Completion Screen -->
+        <div id="screen-result" class="screen hidden">
+            <h1>Mission Complete!</h1>
+            <div class="result-card">
+                <div class="score-circle" id="final-score-value">0/12</div>
+                <div class="result-msg" id="final-status-msg">Let's practice more!</div>
+                <p class="intro-text">Keep exploring to completely master your competency-based elements.</p>
+            </div>
+            <button class="btn-main" id="btn-restart">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Exactly 12 curated, non-repetitive competency questions with updated options
+        const questionsData = [
+            {
+                id: 1,
+                showPassage: true,
+                question: "Look at the passage context. Which article is used before 'cat' the very first time Riya spots it?",
+                options: ["the", "an", "a", "no article"],
+                answer: 2,
+                hint: "We use this indefinite article when introducing a singular general noun for the first time.",
+                explanation: "The passage says 'Riya saw a cat...'. We use 'a' because the cat is mentioned for the first time.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='100' cy='45' r='22' fill='#4A6FA5'/><text x='100' y='85' font-size='12' text-anchor='middle' font-weight='600'>First Mention Rule</text></svg>`
+            },
+            {
+                id: 2,
+                showPassage: true,
+                question: "In the passage, identify which specific article is placed right before the word 'orange'.",
+                options: ["a", "an", "the", "no article"],
+                answer: 1,
+                hint: "Listen to the starting sound of the word 'orange'. Is it a vowel sound?",
+                explanation: "The passage notes 'an orange'. 'Orange' begins with a vowel sound, so it takes 'an'.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='100' cy='45' r='20' fill='#F39C12'/><text x='100' y='85' font-size='11' text-anchor='middle'>Vowel Sound Check</text></svg>`
+            },
+            {
+                id: 3,
+                showPassage: true,
+                question: "In the passage, why does the text switch to saying 'The cat' in the second sentence instead of 'a cat'?",
+                options: [
+                    "Because 'The' is used when we talk about a specific cat we already know about.",
+                    "Because the cat moved under a tree.",
+                    "Because 'The' must always be used with animals.",
+                    "Because 'a' was a spelling mistake in the first sentence."
+                ],
+                answer: 0,
+                hint: "Think about what changes once a reader already knows which specific animal is being described.",
+                explanation: "We use the definite article 'the' when referring to a noun that has already been introduced and specified.",
+                svg: `<svg viewBox='0 0 200 100'><polygon points='100,15 130,60 70,60' fill='#13BBAF'/><rect x='93' y='60' width='14' height='15' fill='#795548'/></svg>`
+            },
+            {
+                id: 4,
+                showPassage: false,
+                question: "Aarav wrote down some field notes about insects on the wall. Which sentence is completely free of errors?",
+                options: [
+                    "I saw a ant on the wall.",
+                    "I saw an ant on the wall.",
+                    "I saw the ant on wall.",
+                    "I saw ant on the wall."
+                ],
+                answer: 1,
+                hint: "The word 'ant' starts with a vowel sound, so it must be preceded by 'an'.",
+                explanation: "'An ant' is correct because 'ant' opens with a distinct vowel sound.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='70' cy='50' r='6' fill='#2C3E50'/><circle cx='100' cy='50' r='8' fill='#2C3E50'/><circle cx='130' cy='50' r='6' fill='#2C3E50'/></svg>`
+            },
+            {
+                id: 5,
+                showPassage: false,
+                question: "Spot the sentence that correctly manages standard article rules for eating fruit:",
+                options: ["She ate an mango.", "She ate a mango.", "She ate the mango.", "She ate mango."],
+                answer: 1,
+                hint: "'Mango' starts with 'm', which is a solid consonant sound.",
+                explanation: "'A mango' is correct because it is a singular noun starting with a consonant sound.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='100' cy='45' r='20' fill='#F1C40F'/><path d='M100,25 Q110,15 105,10' fill='none' stroke='green' stroke-width='2'/></svg>`
+            },
+            {
+                id: 6,
+                showPassage: false,
+                question: "Choose the correct option: '______ honest boy helped the old man cross the busy street.'",
+                options: ["A", "An", "The", "No article"],
+                answer: 1,
+                hint: "The letter 'h' is silent in this word. Focus on the very first vocal sound you hear.",
+                explanation: "In 'honest', the 'h' is completely silent. It sounds like it starts with 'o' (vowel), hence 'An'.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='100' cy='35' r='15' fill='#13BBAF'/><path d='M85,75 Q100,55 115,75' stroke='#13BBAF' stroke-width='4' fill='none'/></svg>`
+            },
+            {
+                id: 7,
+                showPassage: false,
+                question: "You are sitting in a room and need someone to close the room's single exit. Which request is grammatically precise?",
+                options: ["Please close a door.", "Please close an door.", "Please close the door.", "Please close door."],
+                answer: 2,
+                hint: "You are talking about one specific, particular door in the room.",
+                explanation: "'The' is appropriate here because both the speaker and listener know exactly which specific door needs closing.",
+                svg: `<svg viewBox='0 0 200 100'><rect x='80' y='20' width='40' height='60' fill='#4A6FA5'/><circle cx='110' cy='50' r='3' fill='#F39C12'/></svg>`
+            },
+            {
+                id: 8,
+                showPassage: false,
+                question: "'______ sun is incredibly bright and warm today.' Pick the absolute best choice.",
+                options: ["A", "An", "The", "No article"],
+                answer: 2,
+                hint: "Think about things that are completely unique. There is only one sun in our sky.",
+                explanation: "We use 'The' before items that are completely unique or one-of-a-kind, like the sun.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='100' cy='50' r='25' fill='#F39C12'/></svg>`
+            },
+            {
+                id: 9,
+                showPassage: false,
+                question: "Which written statement matches proper school grammar standards for night-time observations?",
+                options: [
+                    "The moon shines at night.",
+                    "A moon shines at night.",
+                    "An moon shines at night.",
+                    "Moon shines at night."
+                ],
+                answer: 0,
+                hint: "We are talking about our Earth's specific, unique moon.",
+                explanation: "'The moon' is correct because it's a unique celestial body known to all.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='100' cy='50' r='22' fill='#ECEFF1'/><circle cx='112' cy='50' r='22' fill='#F0F4F8'/></svg>`
+            },
+            {
+                id: 10,
+                showPassage: false,
+                question: "Visual Puzzle: Look at the fruit layout below containing one apple and one banana. Which sequential pair of articles fits best?",
+                options: ["a, a", "an, an", "an, a", "the, the"],
+                answer: 2,
+                hint: "'Apple' starts with a vowel sound, while 'banana' begins with a consonant sound.",
+                explanation: "It translates to 'an apple' and 'a banana' based on their starting phonetic sounds.",
+                svg: `<svg viewBox='0 0 200 100'><circle cx='70' cy='50' r='18' fill='#E74C3C'/><path d='M120,35 Q145,35 150,65 Q135,55 120,35' fill='#F1C40F'/></svg>`
+            },
+            {
+                id: 11,
+                showPassage: false,
+                question: "Visual Puzzle: Look at this fresh singular egg graphic sitting in a baking bowl. Which label fits perfectly?",
+                options: ["a egg", "an egg", "the egg", "no article egg"],
+                answer: 1,
+                hint: "Egg begins with a short 'e' sound.",
+                explanation: "An egg is correct because it starts directly with a vowel sound.",
+                svg: `<svg viewBox='0 0 200 100'><ellipse cx='100' cy='50' rx='16' ry='22' fill='#FFF9C4' stroke='#FBC02D'/></svg>`
+            },
+            {
+                id: 12,
+                showPassage: false,
+                question: "Visual Puzzle: Look at a classroom with one clearly visible teacher near a blackboard. Which phrase describes this scene accurately?",
+                options: ["We see a teacher.", "We see an teacher.", "We see teacher.", "We see an teachers."],
+                answer: 0,
+                hint: "'Teacher' begins with a consonant sound and describes a singular general person here.",
+                explanation: "'A teacher' is correct because 'teacher' begins with a standard consonant sound.",
+                svg: `<svg viewBox='0 0 200 100' style='background:#E0F7FA;'><rect x='40' y='20' width='120' height='50' fill='#2C3E50'/><circle cx='100' cy='85' r='10' fill='#4A6FA5'/></svg>`
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let attempts = 0; 
+        let isMuted = false;
+        let timerInterval = null;
+        let timeLeft = 45;
+        const totalQuestions = questionsData.length;
+
+        const splashScreen = document.getElementById('logo-splash');
+        const screenIntro = document.getElementById('screen-intro');
+        const screenQuestion = document.getElementById('screen-question');
+        const screenResult = document.getElementById('screen-result');
+        const btnStart = document.getElementById('btn-start');
+        const btnNext = document.getElementById('btn-next');
+        const btnRestart = document.getElementById('btn-restart');
+        const btnMute = document.getElementById('btn-mute');
+        const liveScoreSpan = document.getElementById('live-score');
+        const questionProgress = document.getElementById('question-progress');
+        const timerCount = document.getElementById('timer-count');
+        const timerIndicator = document.getElementById('timer-indicator');
+        const passageContainer = document.getElementById('passage-container');
+        const questionGraphicBox = document.getElementById('question-graphic-box');
+        const questionText = document.getElementById('question-text');
+        const optionsBox = document.getElementById('options-box');
+        const feedbackBox = document.getElementById('feedback-box');
+        const finalScoreValue = document.getElementById('final-score-value');
+        const finalStatusMsg = document.getElementById('final-status-msg');
+        const audioCorrect = document.getElementById('audio-correct');
+        const audioWrong = document.getElementById('audio-wrong');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Strict Branding Safeguard: 5000ms Display Lock
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.classList.add('hidden');
+                    screenIntro.classList.remove('hidden');
+                }, 500);
+            }, 5000);
+        });
+
+        btnStart.addEventListener('click', startQuiz);
+        btnNext.addEventListener('click', loadNextQuestion);
+        btnRestart.addEventListener('click', restartQuiz);
+        btnMute.addEventListener('click', toggleMute);
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            btnMute.innerText = isMuted ? "🔇" : "🔊";
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            if (type === 'correct') {
+                audioCorrect.currentTime = 0;
+                audioCorrect.play().catch(()=>{});
+            } else {
+                audioWrong.currentTime = 0;
+                audioWrong.play().catch(()=>{});
+            }
+        }
+
+        function startQuiz() {
+            screenIntro.classList.add('hidden');
+            screenQuestion.classList.remove('hidden');
+            currentQuestionIdx = 0;
+            score = 0;
+            liveScoreSpan.innerText = score;
+            showQuestion();
+        }
+
+        function restartQuiz() {
+            screenResult.classList.add('hidden');
+            startQuiz();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 45;
+            timerCount.innerText = timeLeft;
+            timerIndicator.style.width = '100%';
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerCount.innerText = timeLeft;
+                timerIndicator.style.width = `${(timeLeft / 45) * 100}%`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function handleTimeOut() {
+            const cards = optionsBox.getElementsByClassName('option-card');
+            for(let card of cards) {
+                card.style.pointerEvents = 'none';
+            }
+            const q = questionsData[currentQuestionIdx];
+            playSound('wrong');
+            feedbackBox.className = "feedback-panel explanation";
+            feedbackBox.innerHTML = `<strong>⏱️ Time's Up!</strong> ${q.explanation}`;
+            feedbackBox.classList.remove('hidden');
+            
+            if(cards[q.answer]) cards[q.answer].classList.add('correct-flash');
+            btnNext.classList.remove('hidden');
+        }
+
+        function showQuestion() {
+            attempts = 0;
+            feedbackBox.classList.add('hidden');
+            btnNext.classList.add('hidden');
+            
+            const q = questionsData[currentQuestionIdx];
+            
+            if (q.showPassage) {
+                passageContainer.classList.remove('hidden');
+            } else {
+                passageContainer.classList.add('hidden');
+            }
+            
+            questionProgress.innerText = `Question ${currentQuestionIdx + 1}/${totalQuestions}`;
+            questionGraphicBox.innerHTML = q.svg;
+            questionText.innerText = q.question;
+            
+            optionsBox.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.innerText = opt;
+                card.addEventListener('click', () => optionSelected(idx));
+                optionsBox.appendChild(card);
+            });
+            
+            startTimer();
+        }
+
+        function optionSelected(selectedIdx) {
+            const q = questionsData[currentQuestionIdx];
+            const cards = optionsBox.getElementsByClassName('option-card');
+            
+            for(let card of cards) card.classList.remove('selected');
+            cards[selectedIdx].classList.add('selected');
+
+            if (selectedIdx === q.answer) {
+                clearInterval(timerInterval);
+                playSound('correct');
+                cards[selectedIdx].classList.remove('selected');
+                cards[selectedIdx].classList.add('correct-flash');
+                
+                for(let card of cards) card.style.pointerEvents = 'none';
+                
+                if (attempts === 0) {
+                    score += 1;
+                    liveScoreSpan.innerText = score;
+                }
+                
+                feedbackBox.className = "feedback-panel explanation";
+                feedbackBox.innerHTML = `<strong>🎉 Brilliant!</strong> ${q.explanation}`;
+                feedbackBox.classList.remove('hidden');
+                btnNext.classList.remove('hidden');
+            } else {
+                attempts++;
+                playSound('wrong');
+                
+                if (attempts === 1) {
+                    cards[selectedIdx].classList.add('wrong-flash');
+                    feedbackBox.className = "feedback-panel hint";
+                    feedbackBox.innerHTML = `<strong>💡 Try Again Hint:</strong> ${q.hint}`;
+                    feedbackBox.classList.remove('hidden');
+                } else {
+                    clearInterval(timerInterval);
+                    cards[selectedIdx].classList.add('wrong-flash');
+                    for(let card of cards) card.style.pointerEvents = 'none';
+                    
+                    cards[q.answer].classList.add('correct-flash');
+                    feedbackBox.className = "feedback-panel explanation";
+                    feedbackBox.innerHTML = `<strong>Concept Guide:</strong> ${q.explanation}`;
+                    feedbackBox.classList.remove('hidden');
+                    btnNext.classList.remove('hidden');
+                }
+            }
+        }
+
+        function loadNextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < totalQuestions) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            screenQuestion.classList.add('hidden');
+            screenResult.classList.remove('hidden');
+            
+            finalScoreValue.innerText = `${score}/${totalQuestions}`;
+            const performancePercentage = (score / totalQuestions) * 100;
+            
+            if (performancePercentage >= 80) {
+                finalStatusMsg.innerText = "🌟 Outstanding Mastermind!";
+                finalStatusMsg.style.color = "var(--success)";
+            } else if (performancePercentage >= 50) {
+                finalStatusMsg.innerText = "📚 Let's review this chapter and try again";
+                finalStatusMsg.style.color = "var(--warning)";
+            } else {
+                finalStatusMsg.innerText = "💪 Let’s practise more";
+                finalStatusMsg.style.color = "var(--error)";
+            }
+        }
+    </script>
+</body>
+</html>
