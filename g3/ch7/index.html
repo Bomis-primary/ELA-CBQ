@@ -1,1 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 3 English - Wh- Question Words</title>
+    <style>
+        :root {
+            --primary: #4A6FA5;
+            --primary-dark: #3B5984;
+            --secondary: #47B39D;
+            --accent: #FF7B54;
+            --bg-light: #F6F8FA;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --white: #FFFFFF;
+            --correct-bg: #E6F4EA;
+            --correct-text: #137333;
+            --wrong-bg: #FCE8E6;
+            --wrong-text: #C5221F;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .logo-placeholder {
+            width: 220px;
+            height: auto;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        .loader-bar {
+            width: 150px;
+            height: 6px;
+            background-color: #E2E8F0;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loader-progress {
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            position: absolute;
+            left: -100%;
+            animation: load 5s linear forwards;
+        }
+
+        @keyframes load {
+            to { left: 0; }
+        }
+
+        /* App Container */
+        .app-container {
+            width: 100%;
+            max-width: 720px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            margin: 16px;
+            display: none;
+            position: relative;
+        }
+
+        /* Top Header Area */
+        .interactive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #EDF2F7;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .chapter-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .tracker-badge {
+            background-color: #EBF8FF;
+            color: #2B6CB0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Status Bar (Timer & Progress) */
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .progress-track {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #E2E8F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .timer-box {
+            font-variant-numeric: tabular-nums;
+            font-weight: bold;
+            background-color: #FFF5F5;
+            color: #C53030;
+            padding: 4px 10px;
+            border-radius: 6px;
+            min-width: 45px;
+            text-align: center;
+            font-size: 0.9rem;
+            border: 1px solid #FED7D7;
+        }
+
+        /* Card Challenge Layout */
+        .card-context {
+            background-color: #F7FAFC;
+            border-left: 4px solid var(--primary);
+            padding: 14px;
+            border-radius: 4px 8px 8px 4px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        /* Options Stack */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .option-btn {
+            background-color: var(--white);
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+            font-weight: 500;
+            outline: none;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: #F8FAFC;
+            transform: translateY(-1px);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        /* Option Feedback States */
+        .option-btn.selected-correct {
+            background-color: var(--correct-bg) !important;
+            border-color: var(--secondary) !important;
+            color: var(--correct-text) !important;
+            font-weight: 600;
+        }
+
+        .option-btn.selected-wrong {
+            background-color: var(--wrong-bg) !important;
+            border-color: var(--accent) !important;
+            color: var(--wrong-text) !important;
+        }
+
+        /* Feedback Display Banner */
+        .feedback-banner {
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Action Footer */
+        .action-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .action-btn:disabled {
+            background-color: #CBD5E0;
+            cursor: not-allowed;
+        }
+
+        /* Results Screen */
+        .results-container {
+            text-align: center;
+            display: none;
+            padding: 20px 10px;
+        }
+
+        .results-score {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+
+        .results-msg {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen (Mandatory 5-second logo load) -->
+    <div id="splash-screen">
+        <img class="logo-placeholder" src="g3/ch7/assets/logo.png" alt="Innovine Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'><rect width=\'100%\' height=\'100%\' fill=\'%234A6FA5\' rx=\'8\'/><text x=\'50%\' y=\'55%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'white\' font-family=\'sans-serif\' font-size=\'20\' font-weight=\'bold\'>INNOVINE</text></svg>'">
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+    </div>
+
+    <!-- Main Challenge Dashboard Container -->
+    <div class="app-container" id="challenge-board">
+        <div class="interactive-header">
+            <span class="chapter-title">Chapter 7: Wh- Question Words</span>
+            <span class="tracker-badge" id="score-display">Score: 0</span>
+        </div>
+
+        <!-- Question View Mode -->
+        <div id="question-view">
+            <div class="status-container">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-indicator"></div>
+                </div>
+                <div class="timer-box" id="timer-display">60</div>
+            </div>
+
+            <div class="card-context" id="context-box"></div>
+            <div class="question-text" id="question-box"></div>
+
+            <div class="options-grid" id="options-container"></div>
+            
+            <div class="feedback-banner" id="feedback-box"></div>
+
+            <div class="action-footer">
+                <button class="action-btn" id="next-submit-btn" disabled>Submit Answer</button>
+            </div>
+        </div>
+
+        <!-- Results Evaluation View Mode -->
+        <div class="results-container" id="results-view">
+            <h2>Challenge Evaluation Complete!</h2>
+            <div class="results-score" id="final-score-text">0/15</div>
+            <div class="results-msg" id="final-message-text"></div>
+            <button class="action-btn" onclick="location.reload();">Retry Challenge</button>
+        </div>
+    </div>
+
+    <!-- Audio Elements for Instant Feedback -->
+    <audio id="audio-correct" src="g3/ch7/assets/claps.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="g3/ch7/assets/wrong.mp3" preload="auto"></audio>
+
+    <script>
+        const questionsDataset = [
+            {
+                type: "Passage-Based MCQ",
+                context: "Passage Context: 'On Saturday morning, a class visited a park. Riya saw a squirrel near a tree. Her teacher asked, \"Why are the birds quiet today?\" A boy replied, \"They are resting in the shade.\" Later, the children played in the garden and asked their friend where he had kept the kite.'",
+                question: "In the passage, when the children want to discover the location of the missing kite, which question word matches their exact structural need?",
+                options: ["where", "why", "when", "what"],
+                answerIndex: 0,
+                hint: "Think about the word we use when searching for an object's position or location."
+            },
+            {
+                type: "Passage-Based MCQ",
+                context: "Passage Context: 'On Saturday morning, a class visited a park. Riya saw a squirrel near a tree. Her teacher asked, \"Why are the birds quiet today?\" A boy replied, \"They are resting in the shade.\"'",
+                question: "The teacher uses a specific question word to understand the hidden reason behind the birds' complete silence. Which word serves this role?",
+                options: ["why", "who", "which", "what"],
+                answerIndex: 0,
+                hint: "We use this question word to ask for an explanation or a cause beginning with 'because'."
+            },
+            {
+                type: "Passage-Based MCQ",
+                context: "Passage Context: 'On Saturday morning, a class visited a park. Riya saw a squirrel near a tree. Her teacher asked, \"Why are the birds quiet today?\" A boy replied...'",
+                question: "If we want to build an identity question tracking down the specific person who answered the teacher's question, which word must we use?",
+                options: ["who", "where", "when", "why"],
+                answerIndex: 0,
+                hint: "This question word is strictly used when inquiring about human beings or characters."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                context: "You arrive at your classroom desk in the morning and discover that your partner is sitting silently with a sad expression on their face.",
+                question: "To explore and find out the logical reason behind their mood, which contextual question should you ask?",
+                options: ["Why are you sad?", "Where are you sad?", "When are you sad?", "What are you sad?"],
+                answerIndex: 0,
+                hint: "You are looking for the cause or explanation of their emotion, not a place or time."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                context: "Your school principal is planning a big annual field trip and you need to log the exact calendar day or time it starts in your diary.",
+                question: "Which expression uses the correct question word to find out the time of this event?",
+                options: ["When is the school trip?", "Which is the school trip?", "Why is the school trip?", "Who is the school trip?"],
+                answerIndex: 0,
+                hint: "Look for the specialized word used to query hours, dates, or time periods."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                context: "Your phone rang while you were playing outdoors. You want to identify the unknown person who called your number.",
+                question: "Which spoken statement targets the identity of the caller accurately?",
+                options: ["Who called you?", "What called you?", "Where called you?", "When called you?"],
+                answerIndex: 0,
+                hint: "People are addressed using a specific personal question pronoun."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                context: "You are preparing your coloring kit for art class and need to choose between a dark red pencil or a sky-blue pencil.",
+                question: "Which question structure properly highlights a specific choice between these two items?",
+                options: ["Which pencil should I use?", "Why pencil should I use?", "Where pencil should I use?", "Who pencil should I use?"],
+                answerIndex: 0,
+                hint: "When selecting between a limited set of options, we use a distinct choice-based question word."
+            },
+            {
+                type: "Contextual Fill-In MCQ",
+                context: "Imagine meeting a brand new classmate on your very first day of Grade 3. You want to learn their name identity.",
+                question: "Complete the introductory inquiry logically: '_______ is your best friend?'",
+                options: ["Who", "What", "Where", "Why"],
+                answerIndex: 0,
+                hint: "The answer to this question will be a person's name."
+            },
+            {
+                type: "Contextual Fill-In MCQ",
+                context: "You are ready to submit your homework, but you suddenly cannot remember where you left your textbook.",
+                question: "Complete your inner thought process: '______ did you put your notebook?'",
+                options: ["Where", "Why", "Which", "Who"],
+                answerIndex: 0,
+                hint: "Your goal is to locate a missing physical position or destination."
+            },
+            {
+                type: "Contextual Fill-In MCQ",
+                context: "The school bell rang 15 minutes ago, and a student walks into class late because they missed their usual bus.",
+                question: "Which word completes the teacher's investigation naturally: '_______ did you come late?'",
+                options: ["Why", "Where", "What", "Who"],
+                answerIndex: 0,
+                hint: "The teacher wants to understand the underlying reason for the delay."
+            },
+            {
+                type: "Contextual Fill-In MCQ",
+                context: "You are filling out a birthday card for a friend and need to check the exact calendar month and day they were born.",
+                question: "Complete the phrase: '______ is your birthday?'",
+                options: ["When", "Where", "Why", "Which"],
+                answerIndex: 0,
+                hint: "Birthdays represent specific points in time."
+            },
+            {
+                type: "Error Detection MCQ",
+                context: "A student meets a teacher's parent and mistakenly asks: 'What is your father?' instead of trying to identify him.",
+                question: "Why is 'Who is your father?' the correct structural choice to ask instead?",
+                options: [
+                    "Because 'Who' targets human relationship identity, while 'What' asks about objects or professions.",
+                    "Because 'What' can only be used to ask about places.",
+                    "Because the word 'Who' talks about the timing of an event.",
+                    "There is no difference between the two questions."
+                ],
+                answerIndex: 0,
+                hint: "We use 'Who' to ask about a person's identity directly."
+            },
+            {
+                type: "Real-Life Application MCQ",
+                context: "You are looking for the city bus stop on a map to catch your ride home.",
+                question: "Which of the following questions effectively assists you in locating this physical place?",
+                options: ["Where is the bus stop?", "What are you doing?", "Who is in the room?", "When will you come?"],
+                answerIndex: 0,
+                hint: "A search for a physical location must always start with the keyword 'Where'."
+            },
+            {
+                type: "Assertion-Reason MCQ",
+                context: "Analyzing how we structure questions: 'Which color do you want, red or blue?'",
+                question: "Assertion: The word 'Which' is used in this sentence. \nReason: 'Which' is chosen because the speaker is offering a limited choice between two specific items.",
+                options: [
+                    "Both assertion and reason are true, and the reason correctly explains the assertion.",
+                    "Both assertion and reason are true, but the reason does not explain the assertion.",
+                    "The assertion is true, but the reason is false.",
+                    "Both assertion and reason are false."
+                ],
+                answerIndex: 0,
+                hint: "Think about whether choosing between red and blue matches the standard rule for using 'Which'."
+            },
+            {
+                type: "Assertion-Reason MCQ",
+                context: "Evaluating a conversation snippet: 'Where did you buy that toy?'",
+                question: "Assertion: This question is asking about the time of the purchase. \nReason: The question word 'Where' is strictly reserved for asking about places and locations.",
+                options: [
+                    "The assertion is completely false, but the reason is a true grammatical rule.",
+                    "Both assertion and reason are perfectly true.",
+                    "The assertion is true, but the reason is false.",
+                    "Both assertion and reason are completely false."
+                ],
+                answerIndex: 0,
+                hint: "Does 'Where' track the time an event happened, or does it track its location?"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let runningScore = 0;
+        let secondsLeft = 60; // 60-Second Grade 3 Standard Limit
+        let timerInterval = null;
+        let currentAttemptNumber = 1; 
+        let chosenOptionIndex = null;
+        let correctOptionText = ""; 
+
+        const splashScreen = document.getElementById('splash-screen');
+        const challengeBoard = document.getElementById('challenge-board');
+        const questionView = document.getElementById('question-view');
+        const resultsView = document.getElementById('results-view');
+        const timerDisplay = document.getElementById('timer-display');
+        const progressIndicator = document.getElementById('progress-indicator');
+        const contextBox = document.getElementById('context-box');
+        const questionBox = document.getElementById('question-box');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackBox = document.getElementById('feedback-box');
+        const nextSubmitBtn = document.getElementById('next-submit-btn');
+        const scoreDisplay = document.getElementById('score-display');
+        const finalScoreText = document.getElementById('final-score-text');
+        const finalMessageText = document.getElementById('final-message-text');
+
+        const audioCorrect = document.getElementById('audio-correct');
+        const audioWrong = document.getElementById('audio-wrong');
+
+        function playSound(isCorrect) {
+            try {
+                if (isCorrect) {
+                    audioCorrect.currentTime = 0;
+                    audioCorrect.play().catch(()=>{});
+                } else {
+                    audioWrong.currentTime = 0;
+                    audioWrong.play().catch(()=>{});
+                }
+            } catch(e) {}
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Global question randomization
+            shuffleArray(questionsDataset);
+            
+            // Limit to exactly 15 high-quality items if dataset expands
+            if(questionsDataset.length > 15) {
+                questionsDataset.splice(15);
+            }
+
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    challengeBoard.style.display = 'block';
+                    loadQuestion();
+                }, 500);
+            }, 5000);
+        });
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            secondsLeft = 60;
+            currentAttemptNumber = 1;
+            chosenOptionIndex = null;
+            
+            feedbackBox.style.display = 'none';
+            nextSubmitBtn.disabled = true;
+            nextSubmitBtn.textContent = "Submit Answer";
+
+            const q = questionsDataset[currentQuestionIndex];
+            
+            // Cache correct string before option shuffle
+            correctOptionText = q.options[q.answerIndex];
+            
+            // Individual choice randomization
+            shuffleArray(q.options);
+            
+            const progressPercent = ((currentQuestionIndex) / questionsDataset.length) * 100;
+            progressIndicator.style.width = `${progressPercent}%`;
+            
+            contextBox.innerHTML = `<strong>Context:</strong> ${q.context}`;
+            questionBox.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
+            
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(btn);
+            });
+
+            timerDisplay.textContent = secondsLeft;
+            timerInterval = setInterval(handleCountdown, 1000);
+        }
+
+        function handleCountdown() {
+            secondsLeft--;
+            timerDisplay.textContent = secondsLeft;
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                evaluateAnswer(true);
+            }
+        }
+
+        function selectOption(index) {
+            if (nextSubmitBtn.textContent === "Next Question" || nextSubmitBtn.textContent === "View Results") return;
+            
+            chosenOptionIndex = index;
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+            buttons.forEach((btn, idx) => {
+                btn.style.borderColor = (idx === index) ? 'var(--primary)' : '#E2E8F0';
+                btn.style.backgroundColor = (idx === index) ? '#F0F4F8' : 'var(--white)';
+            });
+            nextSubmitBtn.disabled = false;
+        }
+
+        nextSubmitBtn.onclick = () => {
+            if (nextSubmitBtn.textContent === "Submit Answer") {
+                evaluateAnswer(false);
+            } else {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questionsDataset.length) {
+                    loadQuestion();
+                } else {
+                    displayFinalResults();
+                }
+            }
+        };
+
+        function evaluateAnswer(isTimeout) {
+            clearInterval(timerInterval);
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+
+            if (isTimeout) {
+                playSound(false);
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    if (btn.textContent === correctOptionText) {
+                        btn.classList.add('selected-correct');
+                    }
+                });
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
+                feedbackBox.style.color = 'var(--wrong-text)';
+                feedbackBox.innerHTML = `<strong>Time's Up!</strong> The correct answer was: <em>${correctOptionText}</em>.`;
+                prepareNextActionState();
+                return;
+            }
+
+            const isCorrect = (buttons[chosenOptionIndex].textContent === correctOptionText);
+
+            if (isCorrect) {
+                playSound(true);
+                buttons[chosenOptionIndex].classList.add('selected-correct');
+                buttons.forEach(btn => btn.disabled = true);
+                
+                runningScore++;
+                scoreDisplay.textContent = `Score: ${runningScore}`;
+
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.backgroundColor = 'var(--correct-bg)';
+                feedbackBox.style.color = 'var(--correct-text)';
+                feedbackBox.innerHTML = `<strong>Excellent!</strong> Correct understanding.`;
+                prepareNextActionState();
+            } else {
+                playSound(false);
+                buttons[chosenOptionIndex].classList.add('selected-wrong');
+
+                if (currentAttemptNumber === 1) {
+                    currentAttemptNumber = 2;
+                    feedbackBox.style.display = 'block';
+                    feedbackBox.style.backgroundColor = '#FFFDF5';
+                    feedbackBox.style.color = '#B7791F';
+                    feedbackBox.innerHTML = `<strong>Not quite right!</strong> Hint: ${questionsDataset[currentQuestionIndex].hint} <br><em>Try one more time!</em>`;
+                    
+                    buttons[chosenOptionIndex].style.opacity = '0.6';
+                    nextSubmitBtn.disabled = true;
+                    
+                    secondsLeft = 30; // 30 second grace period on attempt 2
+                    timerDisplay.textContent = secondsLeft;
+                    timerInterval = setInterval(handleCountdown, 1000);
+                } else {
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        if (btn.textContent === correctOptionText) {
+                            btn.classList.add('selected-correct');
+                        }
+                    });
+                    
+                    feedbackBox.style.display = 'block';
+                    feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
+                    feedbackBox.style.color = 'var(--wrong-text)';
+                    feedbackBox.innerHTML = `<strong>Incorrect.</strong> The correct choice was: <strong>${correctOptionText}</strong>.`;
+                    prepareNextActionState();
+                }
+            }
+        }
+
+        function prepareNextActionState() {
+            if (currentQuestionIndex < questionsDataset.length - 1) {
+                nextSubmitBtn.textContent = "Next Question";
+            } else {
+                nextSubmitBtn.textContent = "View Results";
+            }
+            nextSubmitBtn.disabled = false;
+        }
+
+        function displayFinalResults() {
+            questionView.style.display = 'none';
+            resultsView.style.display = 'block';
+            
+            const totalQuestions = questionsDataset.length;
+            finalScoreText.textContent = `${runningScore} / ${totalQuestions}`;
+            
+            const successPercentage = (runningScore / totalQuestions) * 100;
+            
+            if (successPercentage >= 75) {
+                finalMessageText.textContent = "Good job! You have mastered Wh- Question Words beautifully! ⭐";
+                finalMessageText.style.color = 'var(--correct-text)';
+            } else if (successPercentage >= 40) {
+                finalMessageText.textContent = "Review this chapter and try again.";
+                finalMessageText.style.color = '#B7791F';
+            } else {
+                finalMessageText.textContent = "Let's practise more.";
+                finalMessageText.style.color = 'var(--wrong-text)';
+            }
+            
+            progressIndicator.style.width = `100%`;
+        }
+    </script>
+</body>
+</html>
