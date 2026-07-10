@@ -173,6 +173,25 @@
             line-height: 1.5;
         }
 
+        /* Interactive Image Panel */
+        .question-image-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #FAFAFA;
+            border: 1px dashed #E2E8F0;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .question-image {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
         .question-text {
             font-size: 1.2rem;
             font-weight: 600;
@@ -317,6 +336,11 @@
 
             <div class="card-context" id="context-box"></div>
 
+            <!-- Image Frame -->
+            <div class="question-image-container" id="image-frame">
+                <img src="" alt="Interactive Illustration" class="question-image" id="target-img">
+            </div>
+
             <div class="question-text" id="question-box"></div>
 
             <div class="options-grid" id="options-container"></div>
@@ -342,119 +366,124 @@
     <audio id="audio-wrong" src="g3/ch9/assets/wrong.mp3" preload="auto"></audio>
 
     <script>
-        // Exactly 14 randomized application items selected from the text dataset
+        // Exactly 14 high-quality structural & objective image-based competency items
         const questionsDataset = [
             {
                 type: "Passage-Based MCQ",
-                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family. They all live in a beautiful house near a long road.",
-                question: "Which word from the passage represents the positive form of the adjective used to describe someone's height?",
+                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family.",
+                question: "Which word represents the simple positive form of the adjective when no direct comparison is being made?",
                 options: ["tall", "taller", "tallest", "tallish"],
                 answerIndex: 0,
-                hint: "The positive form is the basic describing word used without making any comparison."
+                hint: "The positive form is the basic describing word used for a single person."
             },
             {
                 type: "Passage-Based MCQ",
-                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family. They all live in a beautiful house near a long road.",
-                question: "Which word from the passage is used to compare exactly two family members?",
+                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family.",
+                question: "Which word is the comparative form used to match Seema directly against her brother?",
                 options: ["taller", "tall", "tallest", "more tall"],
                 answerIndex: 0,
-                hint: "Comparative forms of short words usually end with the suffix '-er'."
+                hint: "Comparative forms comparing two entities usually end with the suffix '-er'."
             },
             {
                 type: "Passage-Based MCQ",
-                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family. They all live in a beautiful house near a long road.",
-                question: "Which word from the passage describes their father as the absolute highest in height among the whole family group?",
+                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family.",
+                question: "Which word is the superlative form that proves the father ranks at the absolute top of the entire family structure?",
                 options: ["tallest", "tall", "taller", "most taller"],
                 answerIndex: 0,
-                hint: "Superlative forms comparing three or more people or items usually end with '-est'."
-            },
-            {
-                type: "Passage-Based MCQ",
-                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family. They all live in a beautiful house near a long road.",
-                question: "Which descriptive word is used to identify the quality of the family's house?",
-                options: ["beautiful", "taller", "tallest", "long"],
-                answerIndex: 0,
-                hint: "Look for the adjective that sits directly before the word 'house'."
+                hint: "Superlative forms comparing three or more things end with '-est'."
             },
             {
                 type: "Form Selection MCQ",
-                context: "You want to state that a small object has an even smaller size compared to another single object.",
-                question: "What is the correct structural comparative form of 'small'?",
+                context: "You are identifying scale shifts for small objects.",
+                question: "What is the grammatically correct comparative form of 'small'?",
                 options: ["smaller", "smallest", "more small", "most small"],
                 answerIndex: 0,
-                hint: "Add the suffix '-er' directly to the base adjective to build its comparative form."
+                hint: "Add '-er' directly to short, one-syllable adjectives to make them comparative."
             },
             {
                 type: "Form Selection MCQ",
-                context: "You are describing a person who possesses the maximum amount of kindness in an entire community.",
+                context: "You are describing a person who has the highest level of kindness in a room.",
                 question: "What is the correct superlative form of the word 'kind'?",
                 options: ["kindest", "kinder", "more kind", "most kind"],
                 answerIndex: 0,
-                hint: "Add the suffix '-est' to the end of the base descriptive adjective."
+                hint: "We add the suffix '-est' to short base words to showcase the top superlative level."
             },
             {
                 type: "Form Selection MCQ",
-                context: "An adjective ends in a consonantal '-y' sound, like the word 'happy'. When changing its form, look closely at the spelling shifts.",
+                context: "Some adjectives undergo spelling modifications when their base letters change.",
                 question: "What is the correct comparative form of the word 'happy'?",
                 options: ["happier", "happiest", "more happy", "most happy"],
                 answerIndex: 0,
-                hint: "Change the ending letter '-y' into an 'i' before attaching the standard '-er' ending."
+                hint: "Swap the ending '-y' with an 'i' before adding your regular comparative suffix."
             },
             {
                 type: "Form Selection MCQ",
-                context: "Some adjectives are irregular and shift completely rather than taking regular '-er' or '-est' updates.",
+                context: "Certain irregular adjectives shift completely between positive, comparative, and superlative states.",
                 question: "What is the correct superlative form of the word 'good'?",
-                options: ["best", "goodest", "better", "more good"],
+                options: ["best", "better", "goodest", "more good"],
                 answerIndex: 0,
-                hint: "The pattern goes: good (positive), better (comparative), and then the top superlative level."
+                hint: "The word 'good' turns into 'better' when comparing two things, and becomes this word for three or more."
             },
             {
                 type: "Sentence Completion MCQ",
-                context: "Sentence Scenario: 'My bag is ______ than yours.' (Using the base attribute: heavy)",
-                question: "Which comparison word fills the blank space accurately?",
+                context: "Scenario: 'My bag weighs more than yours because it contains heavy textbooks.'",
+                question: "Choose the correct spelling variant to complete the statement: 'My bag is ______ than yours.'",
                 options: ["heavier", "heaviest", "heavyest", "more heavy"],
                 answerIndex: 0,
-                hint: "Since you are comparing two specific bags and the base word ends in '-y', turn '-y' to 'i' and add '-er'."
+                hint: "Change the '-y' in heavy to an 'i' and add '-er' to compare two items."
             },
             {
                 type: "Sentence Completion MCQ",
-                context: "Sentence Scenario: 'This is the ______ cake in the shop.' (Using the base attribute: sweet)",
-                question: "Which form choice logically completes this absolute store comparison?",
+                context: "Scenario: Exploring a whole bakery showcase to find the absolute highest level of sugar flavor.",
+                question: "Complete the sentence logically: 'This is the ______ cake in the shop.'",
                 options: ["sweetest", "sweeter", "more sweet", "sweet"],
                 answerIndex: 0,
-                hint: "The word 'the' before a blank tells us that we need the top superlative level ending in '-est'."
+                hint: "The word 'the' positioned right before a blank demands a superlative '-est' form."
             },
             {
                 type: "Sentence Completion MCQ",
-                context: "Sentence Scenario: 'A lion is ______ than a cat.' (Using the base attribute: strong)",
-                question: "Which form successfully matches the comparison of these two animals?",
+                context: "Scenario: Analyzing the strength metrics of two different animal groups.",
+                question: "Complete the sentence structurally: 'A lion is ______ than a cat.'",
                 options: ["stronger", "strongest", "more strong", "strong"],
                 answerIndex: 0,
-                hint: "The tracking word 'than' means we are comparing two entities using an '-er' suffix form."
-            },
-            {
-                type: "Sentence Completion MCQ",
-                context: "Sentence Scenario: 'This is the ______ story I have heard.' (Using the long base attribute: interesting)",
-                question: "Select the correct structural form to complete the statement:",
-                options: ["most interesting", "interestingest", "more interesting", "interestinger"],
-                answerIndex: 0,
-                hint: "Long adjectives with multiple syllables use 'most' placed directly in front instead of adding a suffix."
+                hint: "The word 'than' means we are comparing exactly two animals, which requires an '-er' suffix."
             },
             {
                 type: "Real-Life Application MCQ",
-                context: "Imagine sitting on your desk floor and holding exactly two different action toys in your hands to evaluate their dimensions.",
-                question: "When comparing exactly two individual items, which style of comparison term should you select?",
+                context: "Imagine sitting down to test and compare exactly two alternative action toys side-by-side.",
+                question: "Which type of describing word should you use when comparing exactly two items?",
                 options: ["taller", "tallest", "tall", "most tall"],
                 answerIndex: 0,
-                hint: "Use a comparative form ending in '-er' when dealing with exactly two distinct items."
+                hint: "Use a comparative form ending in '-er' when exactly two items are balanced against each other."
+            },
+            
+            /* Integrated Image-Based Competency Questions */
+            {
+                type: "Image-Based Competency MCQ",
+                imagePath: "g3/ch9/assets/pencil_comparison.png",
+                context: "Look at the two school pencils placed flat against each other on the table surface.",
+                question: "If you want to describe the second pencil by comparing it to the first one, which word fits perfectly?",
+                options: ["longer", "long", "longest", "more long"],
+                answerIndex: 0,
+                hint: "Since you are comparing exactly two distinct objects, choose the comparative form ending in '-er'."
             },
             {
-                type: "Real-Life Application MCQ",
-                context: "You pick out your favorite sweet snack out of a large bowl filled with a total of three fruits.",
-                question: "Which adjective form fits best to describe your selected choice?",
-                options: ["sweetest", "sweeter", "sweet", "more sweet"],
+                type: "Image-Based Competency MCQ",
+                imagePath: "g3/ch9/assets/three_cakes.png",
+                context: "Observe the display shelf holding three different birthday cakes lined up together.",
+                question: "If you want to describe the third cake by comparing its size to all the other cakes on the shelf, which word is correct?",
+                options: ["largest", "large", "larger", "more large"],
                 answerIndex: 0,
-                hint: "When deciding an ultimate attribute among three or more items, pick the superlative '-est' form."
+                hint: "Since you are comparing three cakes total to find the one with the biggest size, you need the superlative form ending in '-est'."
+            },
+            {
+                type: "Image-Based Competency MCQ",
+                imagePath: "g3/ch9/assets/elephant_mouse.png",
+                context: "Look at the massive elephant standing directly beside the little field mouse.",
+                question: "Which comparative assessment accurately states what you see in this scene?",
+                options: ["The elephant is bigger than the mouse.", "The elephant is smaller than the mouse.", "The elephant is smallest than the mouse.", "The elephant is bigest than the mouse."],
+                answerIndex: 0,
+                hint: "The elephant is much larger. Double the final consonant 'g' in big before adding '-er'."
             }
         ];
 
@@ -473,6 +502,8 @@
         const timerDisplay = document.getElementById('timer-display');
         const progressIndicator = document.getElementById('progress-indicator');
         const contextBox = document.getElementById('context-box');
+        const imageFrame = document.getElementById('image-frame');
+        const targetImg = document.getElementById('target-img');
         const questionBox = document.getElementById('question-box');
         const optionsContainer = document.getElementById('options-container');
         const feedbackBox = document.getElementById('feedback-box');
@@ -536,6 +567,17 @@
             
             contextBox.innerHTML = `<strong>Context:</strong> ${q.context}`;
             questionBox.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
+
+            if (q.imagePath) {
+                targetImg.src = q.imagePath;
+                imageFrame.style.display = 'flex';
+                targetImg.onerror = function() {
+                    this.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'><rect width='100%' height='100%' fill='%23EDF2F7'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23718096' font-family='sans-serif' font-size='12'>[Chapter 9 Asset: " + q.imagePath.split('/').pop() + "]</text></svg>";
+                };
+            } else {
+                imageFrame.style.display = 'none';
+                targetImg.src = '';
+            }
 
             optionsContainer.innerHTML = '';
             q.options.forEach((opt, idx) => {
@@ -617,7 +659,7 @@
                 feedbackBox.style.display = 'block';
                 feedbackBox.style.backgroundColor = 'var(--correct-bg)';
                 feedbackBox.style.color = 'var(--correct-text)';
-                feedbackBox.innerHTML = `<strong>Correct!</strong> Splendid grammatical evaluation.`;
+                feedbackBox.innerHTML = `<strong>Correct!</strong> Perfect comparison evaluation.`;
                 prepareNextActionState();
             } else {
                 playSound(false);
@@ -672,7 +714,7 @@
             const successPercentage = (runningScore / totalQuestions) * 100;
             
             if (successPercentage >= 75) {
-                finalMessageText.textContent = "Outstanding! You have mastered descriptors and structural adjectives! ⭐";
+                finalMessageText.textContent = "Outstanding! You have mastered adjectives and comparison structural mechanics! ⭐";
                 finalMessageText.style.color = 'var(--correct-text)';
             } else if (successPercentage >= 40) {
                 finalMessageText.textContent = "Review this chapter and try again.";
