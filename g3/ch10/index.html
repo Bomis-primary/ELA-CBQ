@@ -63,9 +63,24 @@
         }
 
         #splash-screen img {
-            max-width: 250px;
+            max-width: 220px;
             height: auto;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        /* Fallback Logo Card styling if image breaks */
+        .innovine-logo-fallback {
+            background: linear-gradient(135deg, #4A6FA5, #16A085);
+            color: #ffffff;
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            margin-bottom: 25px;
+            display: none;
+            text-align: center;
         }
 
         .loader {
@@ -290,7 +305,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Mobile specific adjustments */
         @media(max-width: 480px) {
             .container { padding: 15px; }
             .question-text { font-size: 1rem; }
@@ -301,10 +315,10 @@
 <body>
 
 <div class="container">
-    <!-- Required 5-Second Splash Screen with Innovine Logo -->
+    <!-- 5-Second Splash Screen looking exactly for assets/logo.png -->
     <div id="splash-screen">
-        <img src="assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'; document.getElementById('splash-alt').style.display='block';">
-        <h2 id="splash-alt" style="display:none; color: var(--primary); margin-bottom: 20px;">Innovine</h2>
+        <img id="logo-img" src="assets/logo.png" alt="Innovine Logo" onerror="handleLogoError()">
+        <div id="logo-fallback" class="innovine-logo-fallback">INNOVINE</div>
         <div class="loader"></div>
     </div>
 
@@ -363,7 +377,6 @@
 </div>
 
 <script>
-    // Comprehensive Quiz Repository
     const quizDatabase = [
         {
             scenario: "Scenario 1: Community Clean-Up Drive\nLast Saturday, Class 3 students joined a community clean-up drive near a neighbourhood park. The children collected plastic bottles, picked up wrappers and sorted waste into different bins. Rohan carried a large bag while his friend Neel helped younger children. At the end of the activity, everyone received a thank-you badge from the organisers.",
@@ -386,23 +399,23 @@
             question: "Statement: 'picked' is a regular past-tense verb.\nReason: '-ed' has been added to the base verb 'pick.'",
             options: ["Both are correct and the reason explains the statement.", "Both are correct but not related.", "Statement is correct, reason is wrong.", "Statement is wrong, reason is correct."],
             answer: 0,
-            hint: Think about how regular past-tense verbs are structurally formed. Does adding '-ed' fulfill the definition?",
-            explanation: Regular verbs form their past tense precisely by adding '-ed' to the base form. Both parts are correct."
+            hint: "Think about how regular past-tense verbs are structurally formed. Does adding '-ed' fulfill the definition?",
+            explanation: "Regular verbs form their past tense precisely by adding '-ed' to the base form. Both parts are correct."
         },
         {
             scenario: "Scenario 1: Community Clean-Up Drive\nRohan carried a large bag while his friend Neel helped younger children.",
             question: "A student writes: 'Rohan carry a large bag during the clean-up drive.' What should be corrected?",
             options: ["Rohan → Rohans", "carry → carried", "bag → bags", "drive → drives"],
             answer: 1,
-            hint: The drive happened last Saturday, meaning the entire context calls for a past tense verb.",
-            explanation: To match the past timeline of the story event, the present form 'carry' must be changed to 'carried'."
+            hint: "The drive happened last Saturday, meaning the entire context calls for a past tense verb.",
+            explanation: "To match the past timeline of the story event, the present form 'carry' must be changed to 'carried'."
         },
         {
             scenario: "Scenario 2: School Football Tournament\nThe school football team played an exciting match against a neighbouring school. Arjun scored the first goal, and the crowd cheered loudly. During the second half, the goalkeeper made several important saves. Although the team lost by one goal, the players felt proud of their effort and promised to practise harder.",
             question: "Why is 'scored' used in the passage?",
             options: ["The action is happening now.", "The action happened in the past.", "The action will happen tomorrow.", "The action happens every day."],
             answer: 1,
-            hint: The tournament context highlights an event that already took place.",
+            hint: "The tournament context highlights an event that already took place.",
             explanation: "The ending '-ed' tells us that Arjun completed the action of scoring in the past match."
         },
         {
@@ -410,7 +423,7 @@
             question: "Which sentence correctly talks about something that happened yesterday?",
             options: ["I go to football practice yesterday.", "I gone to football practice yesterday.", "I went to football practice yesterday.", "I going to football practice yesterday."],
             answer: 2,
-            hint: 'Go' is an irregular verb. Its past tense form changes completely instead of adding '-ed'.",
+            hint: "'Go' is an irregular verb. Its past tense form changes completely instead of adding '-ed'.",
             explanation: "The correct past tense form of the irregular verb 'go' is 'went'."
         },
         {
@@ -418,7 +431,7 @@
             question: "Which verb follows a different past-tense rule from the others?",
             options: ["played", "cheered", "promised", "went"],
             answer: 3,
-            hint: Look for the unique irregular verb that doesn't use an '-ed' ending to mark past tense.",
+            hint: "Look for the unique irregular verb that doesn't use an '-ed' ending to mark past tense.",
             explanation: "'Went' is an irregular verb, whereas 'played', 'cheered', and 'promised' are standard regular verbs."
         },
         {
@@ -434,7 +447,7 @@
             question: "A student writes: 'The guide show us how the machine worked.' Which correction is needed?",
             options: ["guide → guides", "show → showed", "machine → machines", "worked → work"],
             answer: 1,
-            hint: The visit has already finished. Look closely at the matching past tense verb 'worked' inside the same context.",
+            hint: "The visit has already finished. Look closely at the matching past tense verb 'worked' inside the same context.",
             explanation: "To stay consistent with the completed museum trip timeline, 'show' must become 'showed'."
         },
         {
@@ -442,7 +455,7 @@
             question: "Which sentence correctly uses a primary verb?",
             options: ["The students are excited about the visit.", "The students excited about the visit.", "The students exciting about the visit.", "The students excitement about the visit."],
             answer: 0,
-            hint: Look for the primary connecting or helping verb (a form of 'be') that joins the plural subject to its state.",
+            hint: "Look for the primary connecting or helping verb (a form of 'be') that joins the plural subject to its state.",
             explanation: "'Are' acts perfectly as a primary linking verb connecting the plural subject 'students' to their state."
         },
         {
@@ -450,7 +463,7 @@
             question: "Why is 'saw' used in the sentence 'They saw a short film'?",
             options: ["Because 'see' changes differently in the past tense.", "Because all verbs add -ed.", "Because 'saw' describes the future.", "Because 'saw' is a describing word."],
             answer: 0,
-            hint: Is 'see' configured as a regular or irregular tracking word?",
+            hint: "Is 'see' configured as a regular or irregular tracking word?",
             explanation: "'See' represents an irregular verb configuration. It completely transforms into 'saw' to indicate the past tense."
         },
         {
@@ -458,7 +471,7 @@
             question: "Statement: 'learned' is a regular verb in the passage.\nReason: The past form is made by adding '-ed' to the base verb.",
             options: ["Both are correct and the reason explains the statement.", "Both are correct but not related.", "Statement is correct, reason is wrong.", "Statement is wrong, reason is correct."],
             answer: 0,
-            hint: Does adding '-ed' to 'learn' perfectly represent the foundational rule of regular verb classification?",
+            hint: "Does adding '-ed' to 'learn' perfectly represent the foundational rule of regular verb classification?",
             explanation: "Yes, 'learned' is classified as regular precisely because it is built using standard '-ed' suffixation."
         },
         {
@@ -466,7 +479,7 @@
             question: "Which action happens regularly in the passage?",
             options: ["found", "brought", "thanked", "feeds"],
             answer: 3,
-            hint: Search for the specific verb written in present tense that tags an action recurring 'every morning'.",
+            hint: "Search for the specific verb written in present tense that tags an action recurring 'every morning'.",
             explanation: "'Feeds' marks a recurring habitual present event, distinguishing it from single past actions."
         },
         {
@@ -482,7 +495,7 @@
             question: "Which sentence correctly describes something that happened last week?",
             options: ["My cousin finds a lost puppy.", "My cousin find a lost puppy.", "My cousin found a lost puppy.", "My cousin finding a lost puppy."],
             answer: 2,
-            hint: 'Last week' details past timing. What is the correct irregular past version of 'find'?",
+            hint: "'Last week' details past timing. What is the correct irregular past version of 'find'?",
             explanation: "'Found' accurately presents the irregular past reflection of the parent verb 'find'."
         },
         {
@@ -490,7 +503,7 @@
             question: "Which statement best explains why different verb forms are used in this passage?",
             options: ["All actions happened at the same time.", "Some actions are regular habits, while others happened in the past.", "Every verb must end with '-ed.'", "Verbs never change their form."],
             answer: 1,
-            hint: Notice how daily morning behaviors contrast structurally with specific one-off evening events.",
+            hint: "Notice how daily morning behaviors contrast structurally with specific one-off evening events.",
             explanation: "The text shifts gracefully, tracking active habits with present tense ('feeds') and individual historical events with past tense ('found')."
         }
     ];
@@ -503,7 +516,20 @@
     let countdown = 60;
     let isMuted = false;
 
-    // Fixed 5-second initial setup for splash screen auto-exit
+    // Handles fallback if path breaks down anywhere
+    function handleLogoError() {
+        const img = document.getElementById('logo-img');
+        const fallback = document.getElementById('logo-fallback');
+        
+        if (!img.src.includes('grade-3')) {
+            img.src = 'grade-3/english/chapter-3/assets/logo.png';
+        } else {
+            img.style.display = 'none';
+            fallback.style.display = 'block';
+        }
+    }
+
+    // Fixed strict 5-Second Splash screen timeout tracking 
     window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             const splash = document.getElementById('splash-screen');
@@ -526,16 +552,14 @@
         selectedOptionIndex = null;
         
         const qData = quizDatabase[currentQuestionIndex];
-        
-        // Final Challenge Stage indicator activation (Last 3 questions)
         const stageBanner = document.getElementById('stage-banner');
+        
         if (currentQuestionIndex >= quizDatabase.length - 3) {
             stageBanner.style.display = 'block';
         } else {
             stageBanner.style.display = 'none';
         }
 
-        // DOM Populate
         document.getElementById('scenario-text').innerText = qData.scenario;
         document.getElementById('question-text').innerText = qData.question;
         
@@ -550,17 +574,14 @@
             container.appendChild(btn);
         });
 
-        // Feedback resets
         const feedback = document.getElementById('feedback-message');
         feedback.style.display = 'none';
         feedback.className = 'feedback-box';
 
-        // Action button configs
         const nextBtn = document.getElementById('next-btn');
         nextBtn.innerText = "Submit";
         nextBtn.disabled = true;
 
-        // Progress Calculations
         const prg = ((currentQuestionIndex) / quizDatabase.length) * 100;
         document.getElementById('progress-indicator').style.width = `${prg}%`;
 
@@ -568,7 +589,7 @@
     }
 
     function selectOption(idx) {
-        if (attempts >= 2) return; // Locked on complete failure
+        if (attempts >= 2) return; 
         
         selectedOptionIndex = idx;
         const btns = document.querySelectorAll('.option-btn');
@@ -592,20 +613,18 @@
             return;
         }
 
-        // Evaluation Mode
         clearInterval(timerInterval);
         const qData = quizDatabase[currentQuestionIndex];
         const btns = document.querySelectorAll('.option-btn');
         const feedback = document.getElementById('feedback-message');
 
         if (selectedOptionIndex === qData.answer) {
-            // Correct Track
             playAudio('snd-correct');
             btns[selectedOptionIndex].classList.add('correct');
             triggerConfettiEffect();
             
             if (attempts === 0) score += 10;
-            else score += 5; // Partial compensation for retry success
+            else score += 5; 
             
             updateScoreUI();
             
@@ -616,19 +635,16 @@
             lockAllOptions();
             prepNextState();
         } else {
-            // Wrong Track
             playAudio('snd-wrong');
             attempts++;
             btns[selectedOptionIndex].classList.add('wrong');
 
             if (attempts === 1) {
-                // First Mistake -> Prompt Hint
                 feedback.innerText = `💡 Hint: ${qData.hint}`;
                 feedback.className = "feedback-box hint";
                 feedback.style.display = "block";
                 nextBtn.innerText = "Retry Attempt";
             } else {
-                // Second Mistake -> Force Closure
                 btns[qData.answer].classList.add('correct');
                 feedback.innerText = `❌ Incorrect. ${qData.explanation}`;
                 feedback.className = "feedback-box explanation";
@@ -671,7 +687,7 @@
     }
 
     function handleTimeOut() {
-        attempts = 2; // Auto lock attempts
+        attempts = 2; 
         lockAllOptions();
         const qData = quizDatabase[currentQuestionIndex];
         const btns = document.querySelectorAll('.option-btn');
