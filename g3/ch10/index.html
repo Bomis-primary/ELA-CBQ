@@ -1,1 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 3 Verbs - Competency Based Interactive</title>
+    <style>
+        :root {
+            --primary: #4A6FA5;
+            --primary-light: #E8EEF5;
+            --secondary: #16A085;
+            --accent: #E67E22;
+            --bg: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+            --success: #2ECC71;
+            --error: #E74C3C;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #splash-screen img {
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary-light);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .score-box, .timer-box {
+            font-size: 1rem;
+            font-weight: 600;
+            background: var(--primary-light);
+            padding: 6px 14px;
+            border-radius: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .audio-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            color: var(--primary);
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: var(--primary-light);
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Scenarios & Content */
+        .scenario-box {
+            background: #FFF9F2;
+            border-left: 4px solid var(--accent);
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-style: italic;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #555;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background: var(--card-bg);
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .option-btn.correct {
+            background: #E8F8F5;
+            border-color: var(--success);
+            color: #117A65;
+        }
+
+        .option-btn.wrong {
+            background: #FCE4D6;
+            border-color: var(--error);
+            color: #C0392B;
+        }
+
+        /* Feedback Area */
+        .feedback-box {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .feedback-box.hint {
+            background: #FFF3CD;
+            color: #856404;
+            border: 1px solid #FFEBAA;
+        }
+
+        .feedback-box.explanation {
+            background: #D4EDDA;
+            color: #155724;
+            border: 1px solid #C3E6CB;
+        }
+
+        /* Action Footer */
+        .footer-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: #FFF;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #3A5B8A;
+        }
+
+        /* Screen States */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Intro & Result Design */
+        .center-screen {
+            text-align: center;
+            padding: 20px 10px;
+        }
+
+        .center-screen h1 {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .center-screen p {
+            color: var(--text-light);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .badge-display {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        /* Confetti Elements */
+        .confetti {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: firefly 1.5s ease-out forwards;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @keyframes firefly {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0.2); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile specific adjustments */
+        @media(max-width: 480px) {
+            .container { padding: 15px; }
+            .question-text { font-size: 1rem; }
+            .option-btn { padding: 12px; font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Required 5-Second Splash Screen with Innovine Logo -->
+    <div id="splash-screen">
+        <img src="assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'; document.getElementById('splash-alt').style.display='block';">
+        <h2 id="splash-alt" style="display:none; color: var(--primary); margin-bottom: 20px;">Innovine</h2>
+        <div class="loader"></div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="snd-correct" src="assets/correct.mp3" preload="auto"></audio>
+    <audio id="snd-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+    <!-- Top Utility Bar -->
+    <div class="top-bar">
+        <div class="score-box">🏆 Score: <span id="score-val">0</span></div>
+        <div class="timer-box">⏱️ <span id="timer-val">60</span>s</div>
+        <button class="audio-btn" id="audio-toggle" onclick="toggleMute()" aria-label="Toggle sound">🔊</button>
+    </div>
+
+    <!-- Horizontal Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-indicator"></div>
+    </div>
+
+    <!-- Screen 1: Introduction Screen -->
+    <div id="intro-screen" class="screen active">
+        <div class="center-screen">
+            <div class="badge-display">📝</div>
+            <h1>Grade 3: Verbs Masterclass</h1>
+            <p>Test your understanding of Action Words, Primary Verbs, Regular/Irregular Tenses, and Subject-Verb Agreement with real-life context stories!</p>
+            <button class="action-btn" onclick="startQuiz()">Start Interactive</button>
+        </div>
+    </div>
+
+    <!-- Screen 2: Interactive Question Flow -->
+    <div id="quiz-screen" class="screen">
+        <div id="stage-banner" style="display:none; background: var(--primary); color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; width: fit-content; margin-bottom: 10px;">FINAL CHALLENGE</div>
+        <div class="scenario-box" id="scenario-text">Scenario text goes here...</div>
+        <div class="question-text" id="question-text">Question prompt goes here?</div>
+        
+        <div class="options-grid" id="options-container">
+            <!-- Dynamically populated options -->
+        </div>
+
+        <div class="feedback-box" id="feedback-message"></div>
+
+        <div class="footer-actions">
+            <button class="action-btn" id="next-btn" onclick="handleNextStep()" disabled>Submit</button>
+        </div>
+    </div>
+
+    <!-- Screen 3: Results Display -->
+    <div id="result-screen" class="screen">
+        <div class="center-screen">
+            <div class="badge-display" id="result-emoji">🎯</div>
+            <h1 id="result-heading">Completed!</h1>
+            <p id="result-text">Your performance evaluation goes here.</p>
+            <button class="action-btn" onclick="restartQuiz()">Try Again</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Comprehensive Quiz Repository
+    const quizDatabase = [
+        {
+            scenario: "Scenario 1: Community Clean-Up Drive\nLast Saturday, Class 3 students joined a community clean-up drive near a neighbourhood park. The children collected plastic bottles, picked up wrappers and sorted waste into different bins. Rohan carried a large bag while his friend Neel helped younger children. At the end of the activity, everyone received a thank-you badge from the organisers.",
+            question: "Which action from the passage happened in the past?",
+            options: ["carry", "carried", "carrying", "carries"],
+            answer: 1,
+            hint: "Look for the verb that ends in '-ed' to show an action that already happened last Saturday.",
+            explanation: "'Carried' is the past tense form of the regular verb 'carry', matching a completed event."
+        },
+        {
+            scenario: "Scenario 1: Community Clean-Up Drive\nLast Saturday, Class 3 students joined a community clean-up drive near a neighbourhood park. The children collected plastic bottles, picked up wrappers and sorted waste into different bins.",
+            question: "Which sentence best matches the subject–verb pattern used in the passage?",
+            options: ["The children collects wrappers.", "The children collect wrappers.", "The children collecting wrappers.", "The children collecteds wrappers."],
+            answer: 1,
+            hint: "'Children' is a plural subject. Plural subjects in the present tense take actions without adding 's'.",
+            explanation: "Plural subjects perfectly align with base form verbs like 'collect'."
+        },
+        {
+            scenario: "Scenario 1: Community Clean-Up Drive\nThe children collected plastic bottles, picked up wrappers and sorted waste into different bins.",
+            question: "Statement: 'picked' is a regular past-tense verb.\nReason: '-ed' has been added to the base verb 'pick.'",
+            options: ["Both are correct and the reason explains the statement.", "Both are correct but not related.", "Statement is correct, reason is wrong.", "Statement is wrong, reason is correct."],
+            answer: 0,
+            hint: Think about how regular past-tense verbs are structurally formed. Does adding '-ed' fulfill the definition?",
+            explanation: Regular verbs form their past tense precisely by adding '-ed' to the base form. Both parts are correct."
+        },
+        {
+            scenario: "Scenario 1: Community Clean-Up Drive\nRohan carried a large bag while his friend Neel helped younger children.",
+            question: "A student writes: 'Rohan carry a large bag during the clean-up drive.' What should be corrected?",
+            options: ["Rohan → Rohans", "carry → carried", "bag → bags", "drive → drives"],
+            answer: 1,
+            hint: The drive happened last Saturday, meaning the entire context calls for a past tense verb.",
+            explanation: To match the past timeline of the story event, the present form 'carry' must be changed to 'carried'."
+        },
+        {
+            scenario: "Scenario 2: School Football Tournament\nThe school football team played an exciting match against a neighbouring school. Arjun scored the first goal, and the crowd cheered loudly. During the second half, the goalkeeper made several important saves. Although the team lost by one goal, the players felt proud of their effort and promised to practise harder.",
+            question: "Why is 'scored' used in the passage?",
+            options: ["The action is happening now.", "The action happened in the past.", "The action will happen tomorrow.", "The action happens every day."],
+            answer: 1,
+            hint: The tournament context highlights an event that already took place.",
+            explanation: "The ending '-ed' tells us that Arjun completed the action of scoring in the past match."
+        },
+        {
+            scenario: "Scenario 2: School Football Tournament\nThe football team promised to practise harder for their upcoming games.",
+            question: "Which sentence correctly talks about something that happened yesterday?",
+            options: ["I go to football practice yesterday.", "I gone to football practice yesterday.", "I went to football practice yesterday.", "I going to football practice yesterday."],
+            answer: 2,
+            hint: 'Go' is an irregular verb. Its past tense form changes completely instead of adding '-ed'.",
+            explanation: "The correct past tense form of the irregular verb 'go' is 'went'."
+        },
+        {
+            scenario: "Scenario 2: School Football Tournament\nPlayed, cheered, promised, went.",
+            question: "Which verb follows a different past-tense rule from the others?",
+            options: ["played", "cheered", "promised", "went"],
+            answer: 3,
+            hint: Look for the unique irregular verb that doesn't use an '-ed' ending to mark past tense.",
+            explanation: "'Went' is an irregular verb, whereas 'played', 'cheered', and 'promised' are standard regular verbs."
+        },
+        {
+            scenario: "Scenario 2: School Football Tournament\nThe players felt proud of their effort and promised to practise harder.",
+            question: "Which sentence would the coach most likely say before practice?",
+            options: ["The players practises every afternoon.", "The players practice every afternoon.", "The players practicing every afternoon.", "The players practiced every afternoon always."],
+            answer: 1,
+            hint: "'Players' is a plural subject describing a normal recurring routine habit.",
+            explanation: "Plural subjects match with the regular base verb 'practice' for ongoing daily habits."
+        },
+        {
+            scenario: "Scenario 3: Visit to a Science Museum\nDuring a visit to the science museum, the students explored different galleries and learned about space, robots and inventions. A guide showed them how some machines worked. The children asked many questions and took notes in their notebooks. Before leaving, they saw a short film about future technology.",
+            question: "A student writes: 'The guide show us how the machine worked.' Which correction is needed?",
+            options: ["guide → guides", "show → showed", "machine → machines", "worked → work"],
+            answer: 1,
+            hint: The visit has already finished. Look closely at the matching past tense verb 'worked' inside the same context.",
+            explanation: "To stay consistent with the completed museum trip timeline, 'show' must become 'showed'."
+        },
+        {
+            scenario: "Scenario 3: Visit to a Science Museum\nThe students explored different galleries and learned about space.",
+            question: "Which sentence correctly uses a primary verb?",
+            options: ["The students are excited about the visit.", "The students excited about the visit.", "The students exciting about the visit.", "The students excitement about the visit."],
+            answer: 0,
+            hint: Look for the primary connecting or helping verb (a form of 'be') that joins the plural subject to its state.",
+            explanation: "'Are' acts perfectly as a primary linking verb connecting the plural subject 'students' to their state."
+        },
+        {
+            scenario: "Scenario 3: Visit to a Science Museum\nBefore leaving, they saw a short film about future technology.",
+            question: "Why is 'saw' used in the sentence 'They saw a short film'?",
+            options: ["Because 'see' changes differently in the past tense.", "Because all verbs add -ed.", "Because 'saw' describes the future.", "Because 'saw' is a describing word."],
+            answer: 0,
+            hint: Is 'see' configured as a regular or irregular tracking word?",
+            explanation: "'See' represents an irregular verb configuration. It completely transforms into 'saw' to indicate the past tense."
+        },
+        {
+            scenario: "Scenario 3: Visit to a Science Museum\nDuring a visit to the science museum, the students explored different galleries and learned about space.",
+            question: "Statement: 'learned' is a regular verb in the passage.\nReason: The past form is made by adding '-ed' to the base verb.",
+            options: ["Both are correct and the reason explains the statement.", "Both are correct but not related.", "Statement is correct, reason is wrong.", "Statement is wrong, reason is correct."],
+            answer: 0,
+            hint: Does adding '-ed' to 'learn' perfectly represent the foundational rule of regular verb classification?",
+            explanation: "Yes, 'learned' is classified as regular precisely because it is built using standard '-ed' suffixation."
+        },
+        {
+            scenario: "Scenario 4: Family Trip to a Village\nDuring the holidays, Mehak visited her grandparents' village. Every morning, she feeds the chickens and helps her grandmother water the vegetable plants. One evening, she found a baby goat near the pond and brought it back safely. Her grandparents thanked her for being responsible and caring.",
+            question: "Which action happens regularly in the passage?",
+            options: ["found", "brought", "thanked", "feeds"],
+            answer: 3,
+            hint: Search for the specific verb written in present tense that tags an action recurring 'every morning'.",
+            explanation: "'Feeds' marks a recurring habitual present event, distinguishing it from single past actions."
+        },
+        {
+            scenario: "Scenario 4: Family Trip to a Village\nEvery morning, she helps her grandmother water the vegetable plants.",
+            question: "Which sentence follows the same subject–verb pattern as the passage?",
+            options: ["Mehak help her grandmother every morning.", "Mehak helps her grandmother every morning.", "Mehak helping her grandmother every morning.", "Mehak helped her grandmother every morning today."],
+            answer: 1,
+            hint: "'Mehak' is singular. Singular subjects require present verbs ending with an 's'.",
+            explanation: "Singular present tense agreements demand 'helps' to match with the single subject 'Mehak'."
+        },
+        {
+            scenario: "Scenario 4: Family Trip to a Village\nOne evening, she found a baby goat near the pond.",
+            question: "Which sentence correctly describes something that happened last week?",
+            options: ["My cousin finds a lost puppy.", "My cousin find a lost puppy.", "My cousin found a lost puppy.", "My cousin finding a lost puppy."],
+            answer: 2,
+            hint: 'Last week' details past timing. What is the correct irregular past version of 'find'?",
+            explanation: "'Found' accurately presents the irregular past reflection of the parent verb 'find'."
+        },
+        {
+            scenario: "Scenario 4: Family Trip to a Village\nShe feeds the chickens every morning, but one evening she found a baby goat.",
+            question: "Which statement best explains why different verb forms are used in this passage?",
+            options: ["All actions happened at the same time.", "Some actions are regular habits, while others happened in the past.", "Every verb must end with '-ed.'", "Verbs never change their form."],
+            answer: 1,
+            hint: Notice how daily morning behaviors contrast structurally with specific one-off evening events.",
+            explanation: "The text shifts gracefully, tracking active habits with present tense ('feeds') and individual historical events with past tense ('found')."
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let attempts = 0;
+    let selectedOptionIndex = null;
+    let timerInterval = null;
+    let countdown = 60;
+    let isMuted = false;
+
+    // Fixed 5-second initial setup for splash screen auto-exit
+    window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 500);
+        }, 5000);
+    });
+
+    function startQuiz() {
+        document.getElementById('intro-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        currentQuestionIndex = 0;
+        score = 0;
+        updateScoreUI();
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        attempts = 0;
+        selectedOptionIndex = null;
+        
+        const qData = quizDatabase[currentQuestionIndex];
+        
+        // Final Challenge Stage indicator activation (Last 3 questions)
+        const stageBanner = document.getElementById('stage-banner');
+        if (currentQuestionIndex >= quizDatabase.length - 3) {
+            stageBanner.style.display = 'block';
+        } else {
+            stageBanner.style.display = 'none';
+        }
+
+        // DOM Populate
+        document.getElementById('scenario-text').innerText = qData.scenario;
+        document.getElementById('question-text').innerText = qData.question;
+        
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        qData.options.forEach((optText, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = optText;
+            btn.onclick = () => selectOption(index);
+            container.appendChild(btn);
+        });
+
+        // Feedback resets
+        const feedback = document.getElementById('feedback-message');
+        feedback.style.display = 'none';
+        feedback.className = 'feedback-box';
+
+        // Action button configs
+        const nextBtn = document.getElementById('next-btn');
+        nextBtn.innerText = "Submit";
+        nextBtn.disabled = true;
+
+        // Progress Calculations
+        const prg = ((currentQuestionIndex) / quizDatabase.length) * 100;
+        document.getElementById('progress-indicator').style.width = `${prg}%`;
+
+        resetAndStartTimer();
+    }
+
+    function selectOption(idx) {
+        if (attempts >= 2) return; // Locked on complete failure
+        
+        selectedOptionIndex = idx;
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach((b, i) => {
+            b.style.borderColor = (i === idx) ? 'var(--primary)' : '#E2E8F0';
+            b.style.background = (i === idx) ? 'var(--primary-light)' : 'var(--card-bg)';
+        });
+        
+        document.getElementById('next-btn').disabled = false;
+    }
+
+    function handleNextStep() {
+        const nextBtn = document.getElementById('next-btn');
+        if (nextBtn.innerText === "Next Question" || nextBtn.innerText === "View Results") {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizDatabase.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+            return;
+        }
+
+        // Evaluation Mode
+        clearInterval(timerInterval);
+        const qData = quizDatabase[currentQuestionIndex];
+        const btns = document.querySelectorAll('.option-btn');
+        const feedback = document.getElementById('feedback-message');
+
+        if (selectedOptionIndex === qData.answer) {
+            // Correct Track
+            playAudio('snd-correct');
+            btns[selectedOptionIndex].classList.add('correct');
+            triggerConfettiEffect();
+            
+            if (attempts === 0) score += 10;
+            else score += 5; // Partial compensation for retry success
+            
+            updateScoreUI();
+            
+            feedback.innerText = `✨ Correct! ${qData.explanation}`;
+            feedback.className = "feedback-box explanation";
+            feedback.style.display = "block";
+            
+            lockAllOptions();
+            prepNextState();
+        } else {
+            // Wrong Track
+            playAudio('snd-wrong');
+            attempts++;
+            btns[selectedOptionIndex].classList.add('wrong');
+
+            if (attempts === 1) {
+                // First Mistake -> Prompt Hint
+                feedback.innerText = `💡 Hint: ${qData.hint}`;
+                feedback.className = "feedback-box hint";
+                feedback.style.display = "block";
+                nextBtn.innerText = "Retry Attempt";
+            } else {
+                // Second Mistake -> Force Closure
+                btns[qData.answer].classList.add('correct');
+                feedback.innerText = `❌ Incorrect. ${qData.explanation}`;
+                feedback.className = "feedback-box explanation";
+                feedback.style.display = "block";
+                
+                lockAllOptions();
+                prepNextState();
+            }
+        }
+    }
+
+    function prepNextState() {
+        const nextBtn = document.getElementById('next-btn');
+        if (currentQuestionIndex === quizDatabase.length - 1) {
+            nextBtn.innerText = "View Results";
+        } else {
+            nextBtn.innerText = "Next Question";
+        }
+        nextBtn.disabled = false;
+    }
+
+    function lockAllOptions() {
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(b => b.disabled = true);
+    }
+
+    function resetAndStartTimer() {
+        clearInterval(timerInterval);
+        countdown = 60;
+        document.getElementById('timer-val').innerText = countdown;
+        
+        timerInterval = setInterval(() => {
+            countdown--;
+            document.getElementById('timer-val').innerText = countdown;
+            if (countdown <= 0) {
+                clearInterval(timerInterval);
+                handleTimeOut();
+            }
+        }, 1000);
+    }
+
+    function handleTimeOut() {
+        attempts = 2; // Auto lock attempts
+        lockAllOptions();
+        const qData = quizDatabase[currentQuestionIndex];
+        const btns = document.querySelectorAll('.option-btn');
+        btns[qData.answer].classList.add('correct');
+        
+        const feedback = document.getElementById('feedback-message');
+        feedback.innerText = `⏰ Time's up! ${qData.explanation}`;
+        feedback.className = "feedback-box explanation";
+        feedback.style.display = "block";
+        
+        playAudio('snd-wrong');
+        prepNextState();
+    }
+
+    function updateScoreUI() {
+        document.getElementById('score-val').innerText = score;
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        document.getElementById('audio-toggle').innerText = isMuted ? "🔇" : "🔊";
+    }
+
+    function playAudio(elementId) {
+        if (isMuted) return;
+        const sound = document.getElementById(elementId);
+        if (sound) {
+            sound.currentTime = 0;
+            sound.play().catch(() => {});
+        }
+    }
+
+    function triggerConfettiEffect() {
+        const container = document.querySelector('.container');
+        for (let i = 0; i < 20; i++) {
+            const conf = document.createElement('div');
+            conf.className = 'confetti';
+            conf.style.left = '50%';
+            conf.style.top = '40%';
+            conf.style.setProperty('--x', `${(Math.random() - 0.5) * 300}px`);
+            conf.style.setProperty('--y', `${(Math.random() - 0.5) * 300}px`);
+            conf.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+            container.appendChild(conf);
+            setTimeout(() => conf.remove(), 1500);
+        }
+    }
+
+    function showResults() {
+        clearInterval(timerInterval);
+        document.getElementById('quiz-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+        document.getElementById('progress-indicator').style.width = `100%`;
+
+        const maxPossibleScore = quizDatabase.length * 10;
+        const targetPercent = (score / maxPossibleScore) * 100;
+        
+        const heading = document.getElementById('result-heading');
+        const text = document.getElementById('result-text');
+        const emoji = document.getElementById('result-emoji');
+
+        if (targetPercent >= 75) {
+            emoji.innerText = "🌟";
+            heading.innerText = "Good job!";
+            text.innerText = `Magnificent performance! You scored ${score} out of ${maxPossibleScore} points, demonstrating an excellent mastery over verbs.`;
+        } else if (targetPercent >= 40) {
+            emoji.innerText = "📘";
+            heading.innerText = "Review this chapter and try again";
+            text.innerText = `You earned ${score} out of ${maxPossibleScore} points. Re-reading past-tense differences and subject agreement rules will make you perfect.`;
+        } else {
+            emoji.innerText = "🔤";
+            heading.innerText = "Let’s practise more";
+            text.innerText = `You accumulated ${score} points. Let's practice active vs past forms regularly to master this concept with ease!`;
+        }
+    }
+
+    function restartQuiz() {
+        document.getElementById('result-screen').classList.remove('active');
+        document.getElementById('intro-screen').classList.add('active');
+        document.getElementById('progress-indicator').style.width = `0%`;
+    }
+</script>
+
+</body>
+</html>
