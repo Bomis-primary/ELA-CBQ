@@ -1,1 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject & Predicate - Competency Interactive</title>
+    <style>
+        :root {
+            --primary: #4A6FA5;
+            --primary-dark: #3B5984;
+            --secondary: #47B39D;
+            --accent: #FF7B54;
+            --bg-light: #F6F8FA;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --white: #FFFFFF;
+            --correct-bg: #E6F4EA;
+            --correct-text: #137333;
+            --wrong-bg: #FCE8E6;
+            --wrong-text: #C5221F;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .logo-placeholder {
+            width: 220px;
+            height: auto;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        .loader-bar {
+            width: 150px;
+            height: 6px;
+            background-color: #E2E8F0;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loader-progress {
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            position: absolute;
+            left: -100%;
+            animation: load 5s linear forwards;
+        }
+
+        @keyframes load {
+            to { left: 0; }
+        }
+
+        /* App Container */
+        .app-container {
+            width: 100%;
+            max-width: 720px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            margin: 16px;
+            display: none;
+            position: relative;
+        }
+
+        /* Top Header Area */
+        .interactive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #EDF2F7;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .chapter-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .tracker-badge {
+            background-color: #EBF8FF;
+            color: #2B6CB0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Status Bar (Timer & Progress) */
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .progress-track {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #E2E8F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .timer-box {
+            font-variant-numeric: tabular-nums;
+            font-weight: bold;
+            background-color: #FFF5F5;
+            color: #C53030;
+            padding: 4px 10px;
+            border-radius: 6px;
+            min-width: 45px;
+            text-align: center;
+            font-size: 0.9rem;
+            border: 1px solid #FED7D7;
+        }
+
+        /* Card Challenge Layout */
+        .card-context {
+            background-color: #F7FAFC;
+            border-left: 4px solid var(--primary);
+            padding: 14px;
+            border-radius: 4px 8px 8px 4px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        /* Options Stack */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .option-btn {
+            background-color: var(--white);
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+            font-weight: 500;
+            outline: none;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: #F8FAFC;
+            transform: translateY(-1px);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        /* Option Feedback States */
+        .option-btn.selected-correct {
+            background-color: var(--correct-bg) !important;
+            border-color: var(--secondary) !important;
+            color: var(--correct-text) !important;
+            font-weight: 600;
+        }
+
+        .option-btn.selected-wrong {
+            background-color: var(--wrong-bg) !important;
+            border-color: var(--accent) !important;
+            color: var(--wrong-text) !important;
+        }
+
+        /* Feedback Display Banner */
+        .feedback-banner {
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Action Footer */
+        .action-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .action-btn:disabled {
+            background-color: #CBD5E0;
+            cursor: not-allowed;
+        }
+
+        /* Results Screen */
+        .results-container {
+            text-align: center;
+            display: none;
+            padding: 20px 10px;
+        }
+
+        .results-score {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+
+        .results-msg {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <img class="logo-placeholder" src="g3/ch6/assets/logo.png" alt="Innovine Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'><rect width=\'100%\' height=\'100%\' fill=\'%234A6FA5\' rx=\'8\'/><text x=\'50%\' y=\'55%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'white\' font-family=\'sans-serif\' font-size=\'20\' font-weight=\'bold\'>INNOVINE</text></svg>'">
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+    </div>
+
+    <div class="app-container" id="challenge-board">
+        <div class="interactive-header">
+            <span class="chapter-title">Chapter 6: Subject and Predicate</span>
+            <span class="tracker-badge" id="score-display">Score: 0</span>
+        </div>
+
+        <div id="question-view">
+            <div class="status-container">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-indicator"></div>
+                </div>
+                <div class="timer-box" id="timer-display">45</div>
+            </div>
+
+            <div class="card-context" id="context-box"></div>
+            <div class="question-text" id="question-box"></div>
+
+            <div class="options-grid" id="options-container"></div>
+            
+            <div class="feedback-banner" id="feedback-box"></div>
+
+            <div class="action-footer">
+                <button class="action-btn" id="next-submit-btn" disabled>Submit Answer</button>
+            </div>
+        </div>
+
+        <div class="results-container" id="results-view">
+            <h2>Challenge Evaluation Complete!</h2>
+            <div class="results-score" id="final-score-text">0/12</div>
+            <div class="results-msg" id="final-message-text"></div>
+            <button class="action-btn" onclick="location.reload();">Retry Challenge</button>
+        </div>
+    </div>
+
+    <audio id="audio-correct" src="g3/ch6/assets/claps.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="g3/ch6/assets/wrong.mp3" preload="auto"></audio>
+
+    <script>
+        const questionsDataset = [
+            {
+                type: "Scenario-Based MCQ",
+                context: "Riya writes a diary entry about her morning at the playground: 'The happy dog chased the ball across the grass.' She needs to identify the complete subject.",
+                question: "Which part of Riya's sentence acts as the complete subject?",
+                options: ["The happy dog", "chased the ball", "dog", "across the grass"],
+                answerIndex: 0,
+                hint: "The complete subject includes the main naming word and all the words that describe it before the action starts."
+            },
+            {
+                type: "Case-Based MCQ",
+                context: "Read this passage: 'The sun was shining brightly. Riya and her brother were flying a kite in the park.'",
+                question: "In the second sentence of the passage, who or what is performing the main action?",
+                options: ["The sun", "Riya and her brother", "A kite", "The park benches"],
+                answerIndex: 1,
+                hint: "Ask yourself: Who exactly 'were flying a kite' in the park?"
+            },
+            {
+                type: "Case-Based MCQ",
+                context: "Review the passage line: 'Their dog ran behind them happily.'",
+                question: "What is the complete predicate that describes the dog's action?",
+                options: ["their dog", "ran behind them happily", "dog", "them"],
+                answerIndex: 1,
+                hint: "The complete predicate includes the action verb and all the details explaining what the subject did."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                context: "Rohan wants to complete an action thought safely: 'The little puppy [......].'",
+                question: "Which predicate completes his statement logically within a clear, real-life context?",
+                options: ["slept soundly on the cozy mat.", "is a very big brown wooden floor mat.", "under the kitchen table near the door.", "running ultra-fast inside the living room."],
+                answerIndex: 0,
+                hint: "Choose the choice that supplies a clear action verb to complete the thought meaningfully."
+            },
+            {
+                type: "Error Detection MCQ",
+                context: "Aarav parsed the sentence: 'A kind old man watched the children from a bench.' He claims that the complete subject is simply 'A kind'.",
+                question: "Why is Aarav's statement incorrect?",
+                options: [
+                    "He completely missed the main naming noun and its descriptors ('old man').",
+                    "He should have included the action verb 'watched'.",
+                    "The true complete subject is the bench.",
+                    "There is no mistake in his statement."
+                ],
+                answerIndex: 0,
+                hint: "A subject cannot just be adjectives like 'A kind'; it must contain the noun doing the action."
+            },
+            {
+                type: "Error Detection MCQ",
+                context: "A student writes this note on a piece of paper: 'Are sweet the juicy mangoes.'",
+                question: "Why is this sentence considered structurally incorrect in real-life conversation?",
+                options: [
+                    "It does not contain a proper predicate action or state.",
+                    "The subject and predicate word order are mixed up unnaturally.",
+                    "It has no subject entity whatsoever.",
+                    "It uses too many describing words."
+                ],
+                answerIndex: 1,
+                hint: "In general statements, the naming subject belongs before the action predicate."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                context: "Rohan observes something outdoors and writes down: '_______ flew high in the sky.'",
+                question: "Which real-life group of words forms a correct and logical complete subject to finish his thought?",
+                options: ["Swam quickly", "A large blue kite", "Singing sweetly", "In the afternoon"],
+                answerIndex: 1,
+                hint: "Look for a real-world object that can naturally fly up in the sky."
+            },
+            {
+                type: "What Does Not Belong MCQ",
+                context: "You are given the incomplete subject: 'My school teacher...'",
+                question: "Which of the following choices contains a complete, grammatically correct predicate that fits naturally?",
+                options: [
+                    "smiles kindly at us every morning.",
+                    "a very bright classroom setup.",
+                    "the heavy blue bag sitting outside.",
+                    "walks quickly because it is raining."
+                ],
+                answerIndex: 0,
+                hint: "A complete predicate needs an action verb that fits a singular person."
+            },
+            {
+                type: "Case-Based MCQ",
+                context: "Imagine a picture showing a girl named Anya sitting on a small wooden chair while reading an exciting storybook.",
+                question: "If we write 'Anya is reading an adventure book', what functional component is 'is reading an adventure book'?",
+                options: ["The complete subject", "The complete predicate", "A simple isolated noun", "A describing adjective"],
+                answerIndex: 1,
+                hint: "This portion describes the activity Anya is currently doing, starting with the verb."
+            },
+            {
+                type: "Scenario-Based MCQ",
+                context: "You want to explain clearly to your mother what your friend Rohan did during the art class today.",
+                question: "Which sentence arrangement correctly sets up a distinct subject followed by a functional predicate?",
+                options: [
+                    "Rohan made a beautiful birthday card for me.",
+                    "Rohan my best friend from next door.",
+                    "Made a beautiful birthday card in school.",
+                    "Beautiful birthday card Rohan created today."
+                ],
+                answerIndex: 0,
+                hint: "Look for a structure that places the subject first, followed immediately by its action verb."
+            },
+            {
+                type: "Assertion-Reason MCQ",
+                context: "Consider the unusual sentence structures we sometimes see in stories: 'Down the hill rolled the giant snowball.'",
+                question: "Assertion: The subject of the sentence is 'the giant snowball'. \nReason: The subject is always the phrase found at the very beginning of a sentence.",
+                options: [
+                    "Both assertion and reason are true, and the reason explains the assertion.",
+                    "Both assertion and reason are true, but the reason does not explain the assertion.",
+                    "The assertion is correct, but the reason is completely false.",
+                    "Both assertion and reason are false."
+                ],
+                answerIndex: 2,
+                hint: "The subject is what the sentence is talking about, no matter where it sits in the line."
+            },
+            {
+                type: "Assertion-Reason MCQ",
+                context: "Look at the complete phrase: 'The children are reading books.'",
+                question: "Assertion: This phrase represents a fully complete sentence. \nReason: It possesses a subject telling 'who' and a predicate describing 'what they do'.",
+                options: [
+                    "Both assertion and reason are true, and the reason correctly explains the assertion.",
+                    "Both assertion and reason are true, but the reason does not explain the assertion.",
+                    "The assertion is true, but the reason is false.",
+                    "Both assertion and reason are completely false."
+                ],
+                answerIndex: 0,
+                hint: "A complete sentence requires both a subject naming entity and an active predicate statement."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let runningScore = 0;
+        let secondsLeft = 45; 
+        let timerInterval = null;
+        let currentAttemptNumber = 1; 
+        let chosenOptionIndex = null;
+        let correctOptionText = ""; 
+
+        const splashScreen = document.getElementById('splash-screen');
+        const challengeBoard = document.getElementById('challenge-board');
+        const questionView = document.getElementById('question-view');
+        const resultsView = document.getElementById('results-view');
+        const timerDisplay = document.getElementById('timer-display');
+        const progressIndicator = document.getElementById('progress-indicator');
+        const contextBox = document.getElementById('context-box');
+        const questionBox = document.getElementById('question-box');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackBox = document.getElementById('feedback-box');
+        const nextSubmitBtn = document.getElementById('next-submit-btn');
+        const scoreDisplay = document.getElementById('score-display');
+        const finalScoreText = document.getElementById('final-score-text');
+        const finalMessageText = document.getElementById('final-message-text');
+
+        const audioCorrect = document.getElementById('audio-correct');
+        const audioWrong = document.getElementById('audio-wrong');
+
+        function playSound(isCorrect) {
+            try {
+                if (isCorrect) {
+                    audioCorrect.currentTime = 0;
+                    audioCorrect.play().catch(()=>{});
+                } else {
+                    audioWrong.currentTime = 0;
+                    audioWrong.play().catch(()=>{});
+                }
+            } catch(e) {}
+        }
+
+        // Fisher-Yates shuffle implementation
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Randomize the order of questions globally
+            shuffleArray(questionsDataset);
+            
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    challengeBoard.style.display = 'block';
+                    loadQuestion();
+                }, 500);
+            }, 5000);
+        });
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            secondsLeft = 45;
+            currentAttemptNumber = 1;
+            chosenOptionIndex = null;
+            
+            feedbackBox.style.display = 'none';
+            nextSubmitBtn.disabled = true;
+            nextSubmitBtn.textContent = "Submit Answer";
+
+            const q = questionsDataset[currentQuestionIndex];
+            
+            // Cache text of correct option before options shuffle
+            correctOptionText = q.options[q.answerIndex];
+            
+            // Shuffle choices inside individual questions
+            shuffleArray(q.options);
+            
+            const progressPercent = ((currentQuestionIndex) / questionsDataset.length) * 100;
+            progressIndicator.style.width = `${progressPercent}%`;
+            
+            contextBox.innerHTML = `<strong>Context:</strong> ${q.context}`;
+            questionBox.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
+            
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(btn);
+            });
+
+            timerDisplay.textContent = secondsLeft;
+            timerInterval = setInterval(handleCountdown, 1000);
+        }
+
+        function handleCountdown() {
+            secondsLeft--;
+            timerDisplay.textContent = secondsLeft;
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                evaluateAnswer(true);
+            }
+        }
+
+        function selectOption(index) {
+            if (nextSubmitBtn.textContent === "Next Question" || nextSubmitBtn.textContent === "View Results") return;
+            
+            chosenOptionIndex = index;
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+            buttons.forEach((btn, idx) => {
+                btn.style.borderColor = (idx === index) ? 'var(--primary)' : '#E2E8F0';
+                btn.style.backgroundColor = (idx === index) ? '#F0F4F8' : 'var(--white)';
+            });
+            nextSubmitBtn.disabled = false;
+        }
+
+        nextSubmitBtn.onclick = () => {
+            if (nextSubmitBtn.textContent === "Submit Answer") {
+                evaluateAnswer(false);
+            } else {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questionsDataset.length) {
+                    loadQuestion();
+                } else {
+                    displayFinalResults();
+                }
+            }
+        };
+
+        function evaluateAnswer(isTimeout) {
+            clearInterval(timerInterval);
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+
+            if (isTimeout) {
+                playSound(false);
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    if (btn.textContent === correctOptionText) {
+                        btn.classList.add('selected-correct');
+                    }
+                });
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
+                feedbackBox.style.color = 'var(--wrong-text)';
+                feedbackBox.innerHTML = `<strong>Time's Up!</strong> The correct answer was: <em>${correctOptionText}</em>.`;
+                prepareNextActionState();
+                return;
+            }
+
+            const isCorrect = (buttons[chosenOptionIndex].textContent === correctOptionText);
+
+            if (isCorrect) {
+                playSound(true);
+                buttons[chosenOptionIndex].classList.add('selected-correct');
+                buttons.forEach(btn => btn.disabled = true);
+                
+                runningScore++;
+                scoreDisplay.textContent = `Score: ${runningScore}`;
+
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.backgroundColor = 'var(--correct-bg)';
+                feedbackBox.style.color = 'var(--correct-text)';
+                feedbackBox.innerHTML = `<strong>Excellent!</strong> Correct understanding.`;
+                prepareNextActionState();
+            } else {
+                playSound(false);
+                buttons[chosenOptionIndex].classList.add('selected-wrong');
+
+                if (currentAttemptNumber === 1) {
+                    currentAttemptNumber = 2;
+                    feedbackBox.style.display = 'block';
+                    feedbackBox.style.backgroundColor = '#FFFDF5';
+                    feedbackBox.style.color = '#B7791F';
+                    feedbackBox.innerHTML = `<strong>Not quite right!</strong> Hint: ${questionsDataset[currentQuestionIndex].hint} <br><em>Try one more time!</em>`;
+                    
+                    buttons[chosenOptionIndex].style.opacity = '0.6';
+                    nextSubmitBtn.disabled = true;
+                    
+                    secondsLeft = 30;
+                    timerDisplay.textContent = secondsLeft;
+                    timerInterval = setInterval(handleCountdown, 1000);
+                } else {
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        if (btn.textContent === correctOptionText) {
+                            btn.classList.add('selected-correct');
+                        }
+                    });
+                    
+                    feedbackBox.style.display = 'block';
+                    feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
+                    feedbackBox.style.color = 'var(--wrong-text)';
+                    feedbackBox.innerHTML = `<strong>Incorrect.</strong> The correct choice was: <strong>${correctOptionText}</strong>.`;
+                    prepareNextActionState();
+                }
+            }
+        }
+
+        function prepareNextActionState() {
+            if (currentQuestionIndex < questionsDataset.length - 1) {
+                nextSubmitBtn.textContent = "Next Question";
+            } else {
+                nextSubmitBtn.textContent = "View Results";
+            }
+            nextSubmitBtn.disabled = false;
+        }
+
+        function displayFinalResults() {
+            questionView.style.display = 'none';
+            resultsView.style.display = 'block';
+            
+            const totalQuestions = questionsDataset.length;
+            finalScoreText.textContent = `${runningScore} / ${totalQuestions}`;
+            
+            const successPercentage = (runningScore / totalQuestions) * 100;
+            
+            if (successPercentage >= 75) {
+                finalMessageText.textContent = "Good job! You have mastered subject and predicate application rules beautifully! ⭐";
+                finalMessageText.style.color = 'var(--correct-text)';
+            } else if (successPercentage >= 40) {
+                finalMessageText.textContent = "Review this chapter and try again.";
+                finalMessageText.style.color = '#B7791F';
+            } else {
+                finalMessageText.textContent = "Let's practise more.";
+                finalMessageText.style.color = 'var(--wrong-text)';
+            }
+            
+            progressIndicator.style.width = `100%`;
+        }
+    </script>
+</body>
+</html>
