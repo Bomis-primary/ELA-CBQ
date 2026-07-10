@@ -1,1 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 3 English - Adjectives Interactive</title>
+    <style>
+        :root {
+            --primary: #4A6FA5;
+            --primary-dark: #3B5984;
+            --secondary: #47B39D;
+            --accent: #FF7B54;
+            --bg-light: #F6F8FA;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --white: #FFFFFF;
+            --correct-bg: #E6F4EA;
+            --correct-text: #137333;
+            --wrong-bg: #FCE8E6;
+            --wrong-text: #C5221F;
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Splash Screen Layout */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .logo-placeholder {
+            width: 220px;
+            height: auto;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        .loader-bar {
+            width: 150px;
+            height: 6px;
+            background-color: #E2E8F0;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loader-progress {
+            width: 100%;
+            height: 100%;
+            background-color: var(--primary);
+            position: absolute;
+            left: -100%;
+            animation: load 5s linear forwards;
+        }
+
+        @keyframes load {
+            to { left: 0; }
+        }
+
+        /* App Container Layout */
+        .app-container {
+            width: 100%;
+            max-width: 720px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            margin: 16px;
+            display: none;
+            position: relative;
+        }
+
+        /* Header UI Component */
+        .interactive-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #EDF2F7;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .chapter-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .tracker-badge {
+            background-color: #EBF8FF;
+            color: #2B6CB0;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        /* Progress System Component */
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .progress-track {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #E2E8F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .timer-box {
+            font-variant-numeric: tabular-nums;
+            font-weight: bold;
+            background-color: #FFF5F5;
+            color: #C53030;
+            padding: 4px 10px;
+            border-radius: 6px;
+            min-width: 45px;
+            text-align: center;
+            font-size: 0.9rem;
+            border: 1px solid #FED7D7;
+        }
+
+        /* Passage Context Block Component */
+        .card-context {
+            background-color: #F7FAFC;
+            border-left: 4px solid var(--primary);
+            padding: 14px;
+            border-radius: 4px 8px 8px 4px;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Interactive Image Panel */
+        .question-image-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #FAFAFA;
+            border: 1px dashed #E2E8F0;
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .question-image {
+            max-width: 100%;
+            max-height: 220px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        /* Options Stack Component */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .option-btn {
+            background-color: var(--white);
+            border: 2px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+            font-weight: 500;
+            outline: none;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: #F8FAFC;
+            transform: translateY(-1px);
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.selected-correct {
+            background-color: var(--correct-bg) !important;
+            border-color: var(--secondary) !important;
+            color: var(--correct-text) !important;
+            font-weight: 600;
+        }
+
+        .option-btn.selected-wrong {
+            background-color: var(--wrong-bg) !important;
+            border-color: var(--accent) !important;
+            color: var(--wrong-text) !important;
+        }
+
+        /* Feedback Banner Component */
+        .feedback-banner {
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .action-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .action-btn:disabled {
+            background-color: #CBD5E0;
+            cursor: not-allowed;
+        }
+
+        /* Evaluation View Component */
+        .results-container {
+            text-align: center;
+            display: none;
+            padding: 20px 10px;
+        }
+
+        .results-score {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+
+        .results-msg {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen Panel -->
+    <div id="splash-screen">
+        <img class="logo-placeholder" src="g3/ch8/assets/logo.png" alt="Innovine Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'><rect width=\'100%\' height=\'100%\' fill=\'%234A6FA5\' rx=\'8\'/><text x=\'50%\' y=\'55%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'white\' font-family=\'sans-serif\' font-size=\'20\' font-weight=\'bold\'>INNOVINE</text></svg>'">
+        <div class="loader-bar">
+            <div class="loader-progress"></div>
+        </div>
+    </div>
+
+    <!-- Main Challenge Dashboard Container -->
+    <div class="app-container" id="challenge-board">
+        <div class="interactive-header">
+            <span class="chapter-title">Chapter 8: Adjectives Exploration</span>
+            <span class="tracker-badge" id="score-display">Score: 0</span>
+        </div>
+
+        <!-- Question View Box -->
+        <div id="question-view">
+            <div class="status-container">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-indicator"></div>
+                </div>
+                <div class="timer-box" id="timer-display">60</div>
+            </div>
+
+            <div class="card-context" id="context-box"></div>
+            
+            <!-- Dynamic Image Frame Slot -->
+            <div class="question-image-container" id="image-frame">
+                <img src="" alt="Question Reference Image" class="question-image" id="target-img">
+            </div>
+
+            <div class="question-text" id="question-box"></div>
+
+            <div class="options-grid" id="options-container"></div>
+            
+            <div class="feedback-banner" id="feedback-box"></div>
+
+            <div class="action-footer">
+                <button class="action-btn" id="next-submit-btn" disabled>Submit Answer</button>
+            </div>
+        </div>
+
+        <!-- Results Evaluation View Box -->
+        <div class="results-container" id="results-view">
+            <h2>Challenge Evaluation Complete!</h2>
+            <div class="results-score" id="final-score-text">0/14</div>
+            <div class="results-msg" id="final-message-text"></div>
+            <button class="action-btn" onclick="location.reload();">Retry Challenge</button>
+        </div>
+    </div>
+
+    <!-- Audio Feedback Mapping Hooks -->
+    <audio id="audio-correct" src="g3/ch8/assets/claps.mp3" preload="auto"></audio>
+    <audio id="audio-wrong" src="g3/ch8/assets/wrong.mp3" preload="auto"></audio>
+
+    <script>
+        // Exactly 14 high-quality structural & competency items (with 3 active images)
+        const questionsDataset = [
+            {
+                type: "Passage-Based MCQ",
+                context: "Passage Context: 'On a bright morning, Riya packed three shiny apples...'",
+                question: "Based on the reading passage, which word describes the type or condition of the morning?",
+                options: ["bright", "three", "some", "those"],
+                answerIndex: 0,
+                hint: "Look closely at the descriptive word directly before 'morning'."
+            },
+            {
+                type: "Passage-Based MCQ",
+                context: "Passage Context: 'Riya packed three shiny apples, some biscuits...'",
+                question: "Which word tells the exact number value of the apples Riya brought along?",
+                options: ["three", "shiny", "bright", "small"],
+                answerIndex: 0,
+                hint: "Look for a countable numeral description."
+            },
+            {
+                type: "Passage-Based MCQ",
+                context: "Passage Context: 'Riya packed three shiny apples, some biscuits...'",
+                question: "Which word identifies the descriptive quantity classification of biscuits without giving an exact count?",
+                options: ["some", "red", "friendly", "pretty"],
+                answerIndex: 0,
+                hint: "Look for an indefinite word showing an estimated quantity."
+            },
+            {
+                type: "Passage-Based MCQ",
+                context: "Passage Context: 'She wore a pretty dress and walked to the park... There, she saw those children playing near a big tree.'",
+                question: "Which word functions as a demonstrative modifier pointing out a group of children far away?",
+                options: ["those", "this", "these", "that"],
+                answerIndex: 0,
+                hint: "We use 'these' for items close to us, and another 'th-' plural word for items further away."
+            },
+            {
+                type: "Contextual Fill-In MCQ",
+                context: "The solar system's core star is blazing directly over the playground during midday outdoor activities.",
+                question: "Choose the adjective of quality that completes the sequence logically: 'The sun is very ______.'",
+                options: ["bright", "sweet", "many", "those"],
+                answerIndex: 0,
+                hint: "Think about the light and illumination level of the sun."
+            },
+            {
+                type: "Contextual Fill-In MCQ",
+                context: "Aanya is getting ready for a festive school celebration. Her friends all admire the design of her attire.",
+                question: "Which descriptor fits best: 'She wore a ______ dress to the party.'?",
+                options: ["pretty", "two", "these", "some"],
+                answerIndex: 0,
+                hint: "Pick a describing word that focuses on looks and appearance."
+            },
+            {
+                type: "Contextual Fill-In MCQ",
+                context: "Imagine helping your friend pack uncounted liquids inside an empty glass container.",
+                question: "Which word choice correctly describes the quantity: 'Please give me ______ water.'?",
+                options: ["some", "one", "tall", "this"],
+                answerIndex: 0,
+                hint: "Water cannot be individually counted, so we utilize an adjective of quantity."
+            },
+            {
+                type: "Contextual Fill-In MCQ",
+                context: "You observe a single young dog playing outside on the grass.",
+                question: "Choose the correct demonstrative adjective to point to the singular nearby animal: '_______ puppy is playing in the garden.'",
+                options: ["This", "These", "Those", "Many"],
+                answerIndex: 0,
+                hint: "Use a singular demonstrative word meant for things that are close by."
+            },
+            {
+                type: "Error Detection MCQ",
+                context: "Reviewing conversational descriptive grammar mistakes regarding close/far items.",
+                question: "Which sentence accurately employs the correct singular or plural adjective structural pairings?",
+                options: ["Those cats are sleeping.", "These cat is sleeping.", "This cats are sleeping.", "That cats are sleeping."],
+                answerIndex: 0,
+                hint: "A plural noun like 'cats' needs a plural demonstrative word like 'those'."
+            },
+            {
+                type: "Error Detection MCQ",
+                context: "Evaluating accurate quantity description modifiers for countable human groups.",
+                question: "Identify the grammatically precise sentence matching regular description rule layouts:",
+                options: ["I have many friends.", "I have much friends.", "I have friend many.", "I have two friend."],
+                answerIndex: 0,
+                hint: "Use 'many' when describing things you can count, and 'much' for items you cannot."
+            },
+            {
+                type: "Error Detection MCQ",
+                context: "Evaluating correct phrasing and placement of descriptive modifiers inside an object phrase.",
+                question: "Which sentence places the quality description in the proper grammatical position?",
+                options: ["She bought a beautiful bag.", "She bought beautiful a bag.", "She bought a bag beautiful.", "She bought a beautifully bag."],
+                answerIndex: 0,
+                hint: "Describing adjectives should sit directly before the noun they modify."
+            },
+            
+            /* Allowed Active Image Asset Items */
+            {
+                type: "Creative Image-Based MCQ",
+                imagePath: "g3/ch8/assets/basket-apples.png",
+                context: "Observe the provided image of the fruit collection inside the basket layout container.",
+                question: "Which adjective of number fits best to accurately describe what you see?",
+                options: ["five", "many", "some", "this"],
+                answerIndex: 0,
+                hint: "Count the separate individual fruits depicted inside the image asset."
+            },
+            {
+                type: "Creative Image-Based MCQ",
+                imagePath: "g3/ch8/assets/car.png",
+                context: "Examine the vehicle shown resting in the driveway layout template.",
+                question: "Which adjective of quality (color) correctly specifies what you see?",
+                options: ["red", "redly", "many", "those"],
+                answerIndex: 0,
+                hint: "Identify the primary descriptive color feature visible in the image."
+            },
+            {
+                type: "Creative Image-Based MCQ",
+                imagePath: "g3/ch8/assets/water_bottle.png",
+                context: "Look at the remaining level of fluid inside the container.",
+                question: "Which word best describes the specific volume or quantity remaining?",
+                options: ["little", "bright", "seven", "tall"],
+                answerIndex: 0,
+                hint: "Look for an adjective of quantity that means a small amount of liquid."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let runningScore = 0;
+        let secondsLeft = 60; 
+        let timerInterval = null;
+        let currentAttemptNumber = 1; 
+        let chosenOptionIndex = null;
+        let correctOptionText = ""; 
+
+        const splashScreen = document.getElementById('splash-screen');
+        const challengeBoard = document.getElementById('challenge-board');
+        const questionView = document.getElementById('question-view');
+        const resultsView = document.getElementById('results-view');
+        const timerDisplay = document.getElementById('timer-display');
+        const progressIndicator = document.getElementById('progress-indicator');
+        const contextBox = document.getElementById('context-box');
+        const imageFrame = document.getElementById('image-frame');
+        const targetImg = document.getElementById('target-img');
+        const questionBox = document.getElementById('question-box');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackBox = document.getElementById('feedback-box');
+        const nextSubmitBtn = document.getElementById('next-submit-btn');
+        const scoreDisplay = document.getElementById('score-display');
+        const finalScoreText = document.getElementById('final-score-text');
+        const finalMessageText = document.getElementById('final-message-text');
+
+        const audioCorrect = document.getElementById('audio-correct');
+        const audioWrong = document.getElementById('audio-wrong');
+
+        function playSound(isCorrect) {
+            try {
+                if (isCorrect) {
+                    audioCorrect.currentTime = 0;
+                    audioCorrect.play().catch(()=>{});
+                } else {
+                    audioWrong.currentTime = 0;
+                    audioWrong.play().catch(()=>{});
+                }
+            } catch(e) {}
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            shuffleArray(questionsDataset);
+            
+            setTimeout(() => {
+                splashScreen.style.opacity = '0';
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    challengeBoard.style.display = 'block';
+                    loadQuestion();
+                }, 500);
+            }, 5000);
+        });
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            secondsLeft = 60;
+            currentAttemptNumber = 1;
+            chosenOptionIndex = null;
+            
+            feedbackBox.style.display = 'none';
+            nextSubmitBtn.disabled = true;
+            nextSubmitBtn.textContent = "Submit Answer";
+
+            const q = questionsDataset[currentQuestionIndex];
+            correctOptionText = q.options[q.answerIndex];
+            
+            shuffleArray(q.options);
+            
+            const progressPercent = ((currentQuestionIndex) / questionsDataset.length) * 100;
+            progressIndicator.style.width = `${progressPercent}%`;
+            
+            contextBox.innerHTML = `<strong>Context:</strong> ${q.context}`;
+            questionBox.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
+            
+            if (q.imagePath) {
+                targetImg.src = q.imagePath;
+                imageFrame.style.display = 'flex';
+            } else {
+                imageFrame.style.display = 'none';
+                targetImg.src = '';
+            }
+
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(btn);
+            });
+
+            timerDisplay.textContent = secondsLeft;
+            timerInterval = setInterval(handleCountdown, 1000);
+        }
+
+        function handleCountdown() {
+            secondsLeft--;
+            timerDisplay.textContent = secondsLeft;
+            if (secondsLeft <= 0) {
+                clearInterval(timerInterval);
+                evaluateAnswer(true);
+            }
+        }
+
+        function selectOption(index) {
+            if (nextSubmitBtn.textContent === "Next Question" || nextSubmitBtn.textContent === "View Results") return;
+            
+            chosenOptionIndex = index;
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+            buttons.forEach((btn, idx) => {
+                btn.style.borderColor = (idx === index) ? 'var(--primary)' : '#E2E8F0';
+                btn.style.backgroundColor = (idx === index) ? '#F0F4F8' : 'var(--white)';
+            });
+            nextSubmitBtn.disabled = false;
+        }
+
+        nextSubmitBtn.onclick = () => {
+            if (nextSubmitBtn.textContent === "Submit Answer") {
+                evaluateAnswer(false);
+            } else {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questionsDataset.length) {
+                    loadQuestion();
+                } else {
+                    displayFinalResults();
+                }
+            }
+        };
+
+        function evaluateAnswer(isTimeout) {
+            clearInterval(timerInterval);
+            const buttons = optionsContainer.querySelectorAll('.option-btn');
+
+            if (isTimeout) {
+                playSound(false);
+                buttons.forEach(btn => {
+                    btn.disabled = true;
+                    if (btn.textContent === correctOptionText) {
+                        btn.classList.add('selected-correct');
+                    }
+                });
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
+                feedbackBox.style.color = 'var(--wrong-text)';
+                feedbackBox.innerHTML = `<strong>Time's Up!</strong> The correct answer was: <em>${correctOptionText}</em>.`;
+                prepareNextActionState();
+                return;
+            }
+
+            const isCorrect = (buttons[chosenOptionIndex].textContent === correctOptionText);
+
+            if (isCorrect) {
+                playSound(true);
+                buttons[chosenOptionIndex].classList.add('selected-correct');
+                buttons.forEach(btn => btn.disabled = true);
+                
+                runningScore++;
+                scoreDisplay.textContent = `Score: ${runningScore}`;
+
+                feedbackBox.style.display = 'block';
+                feedbackBox.style.backgroundColor = 'var(--correct-bg)';
+                feedbackBox.style.color = 'var(--correct-text)';
+                feedbackBox.innerHTML = `<strong>Correct!</strong> Great job analyzing the parameters.`;
+                prepareNextActionState();
+            } else {
+                playSound(false);
+                buttons[chosenOptionIndex].classList.add('selected-wrong');
+
+                if (currentAttemptNumber === 1) {
+                    currentAttemptNumber = 2;
+                    feedbackBox.style.display = 'block';
+                    feedbackBox.style.backgroundColor = '#FFFDF5';
+                    feedbackBox.style.color = '#B7791F';
+                    feedbackBox.innerHTML = `<strong>Not quite right!</strong> Hint: ${questionsDataset[currentQuestionIndex].hint} <br><em>Try one more time!</em>`;
+                    
+                    buttons[chosenOptionIndex].style.opacity = '0.6';
+                    nextSubmitBtn.disabled = true;
+                    
+                    secondsLeft = 30; 
+                    timerDisplay.textContent = secondsLeft;
+                    timerInterval = setInterval(handleCountdown, 1000);
+                } else {
+                    buttons.forEach(btn => {
+                        btn.disabled = true;
+                        if (btn.textContent === correctOptionText) {
+                            btn.classList.add('selected-correct');
+                        }
+                    });
+                    
+                    feedbackBox.style.display = 'block';
+                    feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
+                    feedbackBox.style.color = 'var(--wrong-text)';
+                    feedbackBox.innerHTML = `<strong>Incorrect.</strong> The correct answer was: <strong>${correctOptionText}</strong>.`;
+                    prepareNextActionState();
+                }
+            }
+        }
+
+        function prepareNextActionState() {
+            if (currentQuestionIndex < questionsDataset.length - 1) {
+                nextSubmitBtn.textContent = "Next Question";
+            } else {
+                nextSubmitBtn.textContent = "View Results";
+            }
+            nextSubmitBtn.disabled = false;
+        }
+
+        function displayFinalResults() {
+            questionView.style.display = 'none';
+            resultsView.style.display = 'block';
+            
+            const totalQuestions = questionsDataset.length;
+            finalScoreText.textContent = `${runningScore} / ${totalQuestions}`;
+            
+            const successPercentage = (runningScore / totalQuestions) * 100;
+            
+            if (successPercentage >= 75) {
+                finalMessageText.textContent = "Outstanding! You have mastered descriptors and structural adjectives! ⭐";
+                finalMessageText.style.color = 'var(--correct-text)';
+            } else if (successPercentage >= 40) {
+                finalMessageText.textContent = "Review this chapter and try again.";
+                finalMessageText.style.color = '#B7791F';
+            } else {
+                finalMessageText.textContent = "Let's practise more.";
+                finalMessageText.style.color = 'var(--wrong-text)';
+            }
+            
+            progressIndicator.style.width = `100%`;
+        }
+    </script>
+</body>
+</html>
