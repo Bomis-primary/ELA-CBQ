@@ -1,1 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Grade 4 Similes Challenge</title>
+<style>
+  :root{
+    --bg1:#fff7fb;
+    --bg2:#fff0dc;
+    --card:#ffffffef;
+    --text:#4a2b3d;
+    --muted:#7c6070;
+    --primary:#ff6fae;
+    --primary2:#ff9a6b;
+    --good:#16a34a;
+    --bad:#dc2626;
+    --line:#f4d9e6;
+    --shadow:0 18px 40px rgba(160,90,120,.14);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 18% 20%, rgba(255,255,255,.9) 0 8%, transparent 8%),
+      radial-gradient(circle at 80% 18%, rgba(255,214,236,.9) 0 7%, transparent 7%),
+      radial-gradient(circle at 70% 82%, rgba(255,237,201,.9) 0 9%, transparent 9%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));
+  }
+  .bg-candy, .bg-sprinkles{
+    position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;
+  }
+  .candy, .sprinkle{
+    position:absolute; opacity:.28; animation:float 14s linear infinite;
+  }
+  .candy{
+    width:18px; height:18px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #fff 0 18%, #ffb3d2 19% 42%, #ff7eb3 43% 100%);
+    box-shadow:0 0 10px rgba(255,126,179,.22);
+  }
+  .sprinkle{
+    width:4px; height:72px; border-radius:999px;
+    background:linear-gradient(to bottom, rgba(255,111,174,0), rgba(255,111,174,.55), rgba(255,154,107,0));
+  }
+  @keyframes float{
+    from{transform:translateY(110vh) rotate(0deg)}
+    to{transform:translateY(-20vh) rotate(360deg)}
+  }
+  .wrap{position:relative; z-index:1; max-width:920px; margin:0 auto; padding:18px}
+  .screen{
+    display:none;
+    background:var(--card);
+    backdrop-filter: blur(10px);
+    border:1px solid rgba(244,217,230,.95);
+    box-shadow:var(--shadow);
+    border-radius:var(--radius);
+    padding:22px;
+  }
+  .screen.active{display:block}
+  .brand{
+    display:flex; align-items:center; gap:14px; margin-bottom:18px;
+  }
+  .logoBox{
+    width:68px; height:68px; border-radius:18px; overflow:hidden;
+    background:#fff7fb; border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+  }
+  .logoBox img{width:100%; height:100%; object-fit:cover}
+  h1,h2{margin:0 0 10px}
+  .sub{color:var(--muted); line-height:1.5}
+  .pillrow{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0}
+  .pill{
+    background:#fff0f7; color:#9c3767; border:1px solid #f2c8dc;
+    padding:8px 12px; border-radius:999px; font-size:14px; font-weight:700;
+  }
+  .btnrow{display:flex; flex-wrap:wrap; gap:12px; margin-top:18px}
+  button{
+    border:none; border-radius:16px; padding:14px 18px; font-size:16px; font-weight:700;
+    cursor:pointer; transition:.2s transform,.2s opacity,.2s background;
+  }
+  button:active{transform:scale(.98)}
+  .primary{background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff}
+  .ghost{background:#fff2e8; color:#9c4f2c}
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:#fffafc;
+    margin-bottom:18px; flex-wrap:wrap;
+  }
+  .stat{font-weight:800}
+  .stat span{color:#d94676}
+  .timer{
+    min-width:120px; text-align:center; padding:10px 12px; border-radius:14px;
+    background:#ffeef6; color:#9d2f61; font-weight:900;
+  }
+  .progress{
+    width:100%; height:10px; background:#f2e3eb; border-radius:999px; overflow:hidden; margin:10px 0 18px;
+  }
+  .progress > div{height:100%; width:0%; background:linear-gradient(90deg,#ff9ac0,#ff6fae)}
+  .question{
+    font-size:1.2rem; font-weight:800; line-height:1.45; margin-bottom:16px;
+  }
+  .options{display:grid; gap:12px}
+  .option{
+    text-align:left; background:#fff; border:1px solid #edd8e3; color:var(--text);
+    padding:14px 16px; border-radius:16px; box-shadow:0 2px 0 rgba(160,90,120,.03);
+  }
+  .option:hover{border-color:#f0b8d2; background:#fff9fc}
+  .option.correct{background:#e8f8ee; border-color:#9dd6b1}
+  .option.wrong{background:#fdecec; border-color:#f2b4b4}
+  .feedback{
+    margin-top:16px; padding:14px 16px; border-radius:16px; display:none; line-height:1.5;
+  }
+  .feedback.show{display:block}
+  .good{background:#ecfdf3; border:1px solid #bde7cc; color:#14532d}
+  .bad{background:#fff1f1; border:1px solid #f2c1c1; color:#7f1d1d}
+  .controls{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:16px}
+  .tiny{font-size:14px; color:var(--muted)}
+  .splash{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#fff7fb,#fff0dc); z-index:10;
+  }
+  .splashCard{
+    width:min(360px,86vw); text-align:center; padding:26px 18px; border-radius:26px;
+    background:#ffffffcc; border:1px solid #f4d9e6; box-shadow:var(--shadow);
+  }
+  .splashCard img{width:160px; height:160px; object-fit:contain; border-radius:22px}
+  .hidden{display:none !important}
+  .confetti, .cross{
+    position:fixed; inset:0; pointer-events:none; z-index:9;
+  }
+  .confetti span{
+    position:absolute; font-size:18px; animation:pop 900ms ease-out forwards;
+  }
+  .cross span{
+    position:absolute; font-size:34px; color:#e11d48; opacity:.9; animation:crossPop 700ms ease-out forwards;
+  }
+  @keyframes pop{
+    0%{transform:translate(0,0) scale(.2) rotate(0deg); opacity:0}
+    20%{opacity:1}
+    100%{transform:translate(var(--x),var(--y)) scale(1.2) rotate(180deg); opacity:0}
+  }
+  @keyframes crossPop{
+    0%{transform:scale(.4); opacity:0}
+    20%{opacity:1}
+    100%{transform:translateY(-24px) scale(1); opacity:0}
+  }
+  @media (max-width:640px){
+    .wrap{padding:12px}
+    .screen{padding:16px}
+    .question{font-size:1.08rem}
+    button{width:100%}
+    .btnrow,.controls{flex-direction:column}
+    .timer{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="bg-candy" id="bgCandy"></div>
+<div class="bg-sprinkles" id="bgSprinkles"></div>
 
+<div class="splash" id="splash">
+  <div class="splashCard">
+    <img src="assets/logo.png" alt="Innovine Logo">
+  </div>
+</div>
+
+<div class="confetti" id="confetti"></div>
+<div class="cross" id="cross"></div>
+
+<div class="wrap">
+  <section class="screen active" id="introScreen">
+    <div class="brand">
+      <div class="logoBox"><img src="assets/logo.png" alt="Innovine Logo"></div>
+      <div>
+        <h1>Grade 4 Similes Challenge</h1>
+        <div class="sub">Chapter-based MCQ interactive with gradual difficulty, one retry, and a final challenge.</div>
+      </div>
+    </div>
+    <div class="pillrow">
+      <div class="pill">10 Questions</div>
+      <div class="pill">Timer: 45s each</div>
+      <div class="pill">One Retry</div>
+      <div class="pill">Final Challenge</div>
+    </div>
+    <div class="sub">Choose the best simile in each question and apply the comparison rule carefully.</div>
+    <div class="btnrow">
+      <button class="primary" id="startBtn">Start Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="quizScreen">
+    <div class="topbar">
+      <div class="stat">Question <span id="qNum">1</span> / <span id="qTotal">10</span></div>
+      <div class="stat">Score: <span id="score">0</span></div>
+      <div class="timer" id="timer">45s</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="question" id="questionText"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <div class="tiny" id="attemptInfo">First try available</div>
+      <button class="ghost" id="nextBtn" disabled>Next</button>
+    </div>
+  </section>
+
+  <section class="screen" id="finalScreen">
+    <h2>Final Challenge</h2>
+    <div class="sub">This last round checks how well you can apply similes across the whole topic.</div>
+    <div class="pillrow">
+      <div class="pill">Mixed Review</div>
+      <div class="pill">Careful Reading</div>
+      <div class="pill">One Best Answer</div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="finalBtn">Start Final Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="resultScreen">
+    <h2>Your Result</h2>
+    <div class="sub" id="resultText"></div>
+    <div class="pillrow">
+      <div class="pill" id="resultScore"></div>
+      <div class="pill" id="resultAccuracy"></div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="restartBtn">Play Again</button>
+    </div>
+  </section>
+</div>
+
+<audio id="correctSound" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+<script>
+const questions = [
+  {q:"During the annual sports day, the teacher asked learners to write a few lines about their friends. Riya wrote about her teammate who always helps others and never gives up during difficult tasks. Which sentence uses a suitable simile?", o:["My friend is a brave lion.","My friend runs like a lion.","My friend is as brave as a lion.","My friend is lion and brave."], a:2, e:"A simile compares two things using 'as' or 'like'."},
+  {q:"The school magazine team was collecting creative sentences from Grade 4 learners. Aarav wrote about the beautiful colours he saw during a rainbow after rainfall. Which sentence would be the best choice?", o:["The rainbow was as colourful as a painting.","The rainbow was colourful a painting.","The rainbow was like colours.","The rainbow was a painting with colours."], a:0, e:"'As colourful as a painting' correctly compares the rainbow’s colours with a painting."},
+  {q:"Meera was describing her younger brother in her story writing activity. Which sentence completes her description correctly?", o:["My brother sleeps like a sleepy.","My brother sleeps as peacefully as a baby.","My brother sleeps baby and peaceful.","My brother sleeps like peacefully."], a:1, e:"'As peacefully as a baby' is a correct simile comparing peaceful sleep."},
+  {q:"The class was preparing a poster about animals. Which sentence is correct?", o:["The cheetah is fast like.","The cheetah is as fast a cheetah.","The cheetah fast like lightning.","The cheetah is as fast as lightning."], a:3, e:"'As fast as lightning' compares the speed of the cheetah with lightning."},
+  {q:"During a storytelling session, the teacher asked learners to describe a character who was very kind and gentle. Which sentence uses the correct simile?", o:["The fairy was kindness like a flower.","The fairy was flower and kind.","The fairy was as gentle as a flower.","The fairy was gentle a flower."], a:2, e:"The simile compares the fairy’s gentleness with a flower using 'as'."},
+  {q:"The science club visited a garden where they saw a butterfly moving from flower to flower. Which sentence is the best example?", o:["The butterfly moved like beautiful.","The butterfly moved as a feather.","The butterfly moved feather and soft.","The butterfly moved as lightly as a feather."], a:3, e:"'As lightly as a feather' compares the butterfly’s movement with the softness of a feather."},
+  {q:"The English teacher asked the class to improve simple sentences by adding similes. Which option improves the sentence using a simile?", o:["The old man was as wise as an owl.","The old man was owl and wise.","The old man was like wisdom.","The old man was very owl."], a:0, e:"'As wise as an owl' is a common simile used to describe wisdom."},
+  {q:"The school drama team was practising a scene where a character had to show great courage. Which sentence is correct?", o:["The soldier was courage like a lion.","The soldier was like courage.","The soldier was lion and brave.","The soldier was as brave as a lion."], a:3, e:"'As brave as a lion' compares the soldier’s bravery with a lion’s courage."},
+  {q:"During a creative writing lesson, the learners wrote about different weather conditions. Which sentence is correct?", o:["The morning was cold like ice.","The morning was as cold as ice.","The morning was ice and cold.","The morning was cold as."], a:1, e:"'As cold as ice' is a complete simile comparing the coldness of the morning with ice."},
+  {q:"The art teacher displayed paintings made by learners. One painting showed a bright yellow sun shining over a field. Which sentence is the most suitable?", o:["The sun was yellow like.","The sun was a golden ball.","The sun was as bright as gold.","The sun was bright gold like."], a:2, e:"'As bright as gold' compares the brightness of the sun with gold."}
+];
+
+const total = questions.length;
+let current = 0, score = 0, attempts = 0, timer = 45, timerId = null, locked = false, finalMode = false;
+const passQ = document.getElementById('qNum'), qTotal = document.getElementById('qTotal'), scoreEl = document.getElementById('score');
+const timerEl = document.getElementById('timer'), questionText = document.getElementById('questionText');
+const optionsEl = document.getElementById('options'), feedbackEl = document.getElementById('feedback');
+const nextBtn = document.getElementById('nextBtn'), attemptInfo = document.getElementById('attemptInfo');
+const progressBar = document.getElementById('progressBar');
+const screens = {intro:introScreen, quiz:quizScreen, final:finalScreen, result:resultScreen};
+
+function showScreen(name){
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[name].classList.add('active');
+}
+function startTimer(){
+  clearInterval(timerId);
+  timer = 45;
+  timerEl.textContent = timer + 's';
+  timerId = setInterval(()=>{
+    timer--;
+    timerEl.textContent = timer + 's';
+    if(timer<=0){ clearInterval(timerId); handleTimeUp(); }
+  },1000);
+}
+function loadQuestion(){
+  locked = false; attempts = 0; nextBtn.disabled = true; feedbackEl.className='feedback'; feedbackEl.textContent='';
+  const q = questions[current];
+  passQ.textContent = current+1;
+  qTotal.textContent = total;
+  scoreEl.textContent = score;
+  progressBar.style.width = ((current)/total*100) + '%';
+  questionText.textContent = q.q;
+  optionsEl.innerHTML = '';
+  q.o.forEach((opt,idx)=>{
+    const b = document.createElement('button');
+    b.className='option';
+    b.textContent = String.fromCharCode(65+idx)+'. '+opt;
+    b.onclick = ()=>chooseAnswer(idx,b);
+    optionsEl.appendChild(b);
+  });
+  attemptInfo.textContent = 'First try available';
+  startTimer();
+}
+function chooseAnswer(idx, btn){
+  if(locked) return;
+  const q = questions[current];
+  attempts++;
+  if(idx===q.a){
+    locked = true;
+    clearInterval(timerId);
+    score += attempts===1 ? 1 : 0.5;
+    scoreEl.textContent = score;
+    btn.classList.add('correct');
+    feedbackEl.className='feedback show good';
+    feedbackEl.textContent = 'Correct! ' + q.e;
+    nextBtn.disabled = false;
+    attemptInfo.textContent = 'Correct answer selected';
+    fireConfetti();
+    playSound('correct');
+  } else {
+    playSound('wrong');
+    fireCross();
+    btn.classList.add('wrong');
+    if(attempts===1){
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Try once more. Think about the comparison words in this question.';
+      attemptInfo.textContent = 'Second attempt available';
+    } else {
+      locked = true;
+      clearInterval(timerId);
+      [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+      nextBtn.disabled = false;
+      attemptInfo.textContent = 'Answer revealed';
+    }
+  }
+}
+function handleTimeUp(){
+  if(locked) return;
+  locked = true;
+  const q = questions[current];
+  [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+  feedbackEl.className='feedback show bad';
+  feedbackEl.textContent = 'Time is up. Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+  nextBtn.disabled = false;
+  attemptInfo.textContent = 'Moved on after timeout';
+}
+function nextQuestion(){
+  current++;
+  if(current < total){
+    loadQuestion();
+  } else if(!finalMode){
+    showScreen('final');
+  } else {
+    endGame();
+  }
+}
+function endGame(){
+  clearInterval(timerId);
+  showScreen('result');
+  const maxScore = total;
+  const acc = Math.round((score/maxScore)*100);
+  document.getElementById('resultText').textContent = `You completed the challenge with strong simile skills.`;
+  document.getElementById('resultScore').textContent = `Score: ${score} / ${maxScore}`;
+  document.getElementById('resultAccuracy').textContent = `Accuracy: ${acc}%`;
+  document.getElementById('clapSound').play().catch(()=>{});
+}
+function fireConfetti(){
+  const box = document.getElementById('confetti');
+  box.innerHTML = '';
+  const stars = ['✦','★','✦','★','✦','★'];
+  stars.forEach((s,i)=>{
+    const el = document.createElement('span');
+    el.textContent = s;
+    el.style.left = (45 + i*4) + '%';
+    el.style.top = '55%';
+    el.style.setProperty('--x', (Math.random()*180-90)+'px');
+    el.style.setProperty('--y', (Math.random()*-220-60)+'px');
+    el.style.color = ['#f59e0b','#ff6fae','#22c55e','#f43f5e'][i%4];
+    box.appendChild(el);
+    setTimeout(()=>el.remove(), 950);
+  });
+}
+function fireCross(){
+  const box = document.getElementById('cross');
+  box.innerHTML = '';
+  const el = document.createElement('span');
+  el.textContent = '✖';
+  el.style.left = '50%';
+  el.style.top = '42%';
+  box.appendChild(el);
+  setTimeout(()=>el.remove(), 700);
+}
+function playSound(type){
+  const a = document.getElementById(type==='correct' ? 'correctSound' : 'wrongSound');
+  a.currentTime = 0;
+  a.play().catch(()=>{});
+}
+startBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=false; loadQuestion(); };
+nextBtn.onclick = ()=>nextQuestion();
+finalBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=true; loadQuestion(); };
+restartBtn.onclick = ()=>{ showScreen('intro'); current=0; score=0; finalMode=false; };
+setInterval(()=>{
+  const x = document.createElement('div');
+  x.className = Math.random()>.5 ? 'candy' : 'sprinkle';
+  x.style.left = Math.random()*100 + 'vw';
+  x.style.animationDuration = (10 + Math.random()*10) + 's';
+  x.style.animationDelay = (-Math.random()*10) + 's';
+  x.style.transform = `translateY(${Math.random()*100}vh) rotate(${Math.random()*360}deg)`;
+  document.getElementById('bgCandy').appendChild(x);
+  setTimeout(()=>x.remove(), 20000);
+}, 900);
+
+window.addEventListener('load', ()=>{
+  qTotal.textContent = total;
+  setTimeout(()=>{
+    document.getElementById('splash').classList.add('hidden');
+  }, 5000);
+});
+</script>
+</body>
+</html>
