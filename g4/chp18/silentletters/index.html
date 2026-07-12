@@ -1,1 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Grade 4 Silent Letters Challenge</title>
+<style>
+  :root{
+    --bg1:#eaf7ff;
+    --bg2:#d8f1ff;
+    --card:#ffffffef;
+    --text:#11324a;
+    --muted:#5b7486;
+    --primary:#38bdf8;
+    --primary2:#0284c7;
+    --good:#16a34a;
+    --bad:#dc2626;
+    --line:#cce7f6;
+    --shadow:0 18px 40px rgba(20,80,120,.14);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 18% 20%, rgba(255,255,255,.95) 0 8%, transparent 8%),
+      radial-gradient(circle at 80% 18%, rgba(255,255,255,.7) 0 7%, transparent 7%),
+      radial-gradient(circle at 65% 82%, rgba(255,255,255,.6) 0 9%, transparent 9%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));
+  }
+  .bg-water, .bg-bubbles{
+    position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;
+  }
+  .bubble, .wave{
+    position:absolute; opacity:.24; animation:float 16s linear infinite;
+  }
+  .bubble{
+    border-radius:50%;
+    background:rgba(255,255,255,.85);
+    box-shadow:0 0 12px rgba(56,189,248,.18);
+  }
+  .wave{
+    width:120px; height:28px;
+    border-radius:999px;
+    background:linear-gradient(to right, rgba(56,189,248,0), rgba(56,189,248,.45), rgba(56,189,248,0));
+  }
+  @keyframes float{
+    from{transform:translateY(110vh) translateX(0) rotate(0deg)}
+    to{transform:translateY(-20vh) translateX(30px) rotate(360deg)}
+  }
+  .wrap{position:relative; z-index:1; max-width:920px; margin:0 auto; padding:18px}
+  .screen{
+    display:none;
+    background:var(--card);
+    backdrop-filter: blur(10px);
+    border:1px solid rgba(204,231,246,.95);
+    box-shadow:var(--shadow);
+    border-radius:var(--radius);
+    padding:22px;
+  }
+  .screen.active{display:block}
+  .brand{
+    display:flex; align-items:center; gap:14px; margin-bottom:18px;
+  }
+  .logoBox{
+    width:68px; height:68px; border-radius:18px; overflow:hidden;
+    background:#f5fbff; border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+  }
+  .logoBox img{width:100%; height:100%; object-fit:cover}
+  h1,h2{margin:0 0 10px}
+  .sub{color:var(--muted); line-height:1.5}
+  .pillrow{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0}
+  .pill{
+    background:#edf8ff; color:#1f6b93; border:1px solid #d4ebf7;
+    padding:8px 12px; border-radius:999px; font-size:14px; font-weight:700;
+  }
+  .btnrow{display:flex; flex-wrap:wrap; gap:12px; margin-top:18px}
+  button{
+    border:none; border-radius:16px; padding:14px 18px; font-size:16px; font-weight:700;
+    cursor:pointer; transition:.2s transform,.2s opacity,.2s background;
+  }
+  button:active{transform:scale(.98)}
+  .primary{background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff}
+  .ghost{background:#edf7fc; color:#1f5d7d}
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:#f8fcff;
+    margin-bottom:18px; flex-wrap:wrap;
+  }
+  .stat{font-weight:800}
+  .stat span{color:var(--primary2)}
+  .timer{
+    min-width:120px; text-align:center; padding:10px 12px; border-radius:14px;
+    background:#e7f6ff; color:#0f6b93; font-weight:900;
+  }
+  .progress{
+    width:100%; height:10px; background:#e5f2fa; border-radius:999px; overflow:hidden; margin:10px 0 18px;
+  }
+  .progress > div{height:100%; width:0%; background:linear-gradient(90deg,#7dd3fc,#0284c7)}
+  .question{
+    font-size:1.2rem; font-weight:800; line-height:1.45; margin-bottom:16px;
+  }
+  .options{display:grid; gap:12px}
+  .option{
+    text-align:left; background:#fff; border:1px solid #d6e7f2; color:var(--text);
+    padding:14px 16px; border-radius:16px; box-shadow:0 2px 0 rgba(20,80,120,.03);
+  }
+  .option:hover{border-color:#a8d8ef; background:#f8fcff}
+  .option.correct{background:#e8f8ee; border-color:#9dd6b1}
+  .option.wrong{background:#fdecec; border-color:#f2b4b4}
+  .feedback{
+    margin-top:16px; padding:14px 16px; border-radius:16px; display:none; line-height:1.5;
+  }
+  .feedback.show{display:block}
+  .good{background:#ecfdf3; border:1px solid #bde7cc; color:#14532d}
+  .bad{background:#fff1f1; border:1px solid #f2c1c1; color:#7f1d1d}
+  .controls{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:16px}
+  .tiny{font-size:14px; color:var(--muted)}
+  .splash{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#eaf7ff,#d8f1ff); z-index:10;
+  }
+  .splashCard{
+    width:min(360px,86vw); height:min(360px,86vw); display:flex; align-items:center; justify-content:center;
+    border-radius:28px; background:#ffffffcc; border:1px solid #cce7f6; box-shadow:var(--shadow);
+  }
+  .splashCard img{width:78%; height:78%; object-fit:contain}
+  .hidden{display:none !important}
+  .confetti, .cross{
+    position:fixed; inset:0; pointer-events:none; z-index:9;
+  }
+  .confetti span{
+    position:absolute; font-size:18px; animation:pop 900ms ease-out forwards;
+  }
+  .cross span{
+    position:absolute; font-size:34px; color:#e11d48; opacity:.9; animation:crossPop 700ms ease-out forwards;
+  }
+  @keyframes pop{
+    0%{transform:translate(0,0) scale(.2) rotate(0deg); opacity:0}
+    20%{opacity:1}
+    100%{transform:translate(var(--x),var(--y)) scale(1.2) rotate(180deg); opacity:0}
+  }
+  @keyframes crossPop{
+    0%{transform:scale(.4); opacity:0}
+    20%{opacity:1}
+    100%{transform:translateY(-24px) scale(1); opacity:0}
+  }
+  @media (max-width:640px){
+    .wrap{padding:12px}
+    .screen{padding:16px}
+    .question{font-size:1.08rem}
+    button{width:100%}
+    .btnrow,.controls{flex-direction:column}
+    .timer{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="bg-water" id="bgWater"></div>
+<div class="bg-bubbles" id="bgBubbles"></div>
 
+<div class="splash" id="splash">
+  <div class="splashCard">
+    <img src="assets/logo.png" alt="Innovine Logo">
+  </div>
+</div>
+
+<div class="confetti" id="confetti"></div>
+<div class="cross" id="cross"></div>
+
+<div class="wrap">
+  <section class="screen active" id="introScreen">
+    <div class="brand">
+      <div class="logoBox"><img src="assets/logo.png" alt="Innovine Logo"></div>
+      <div>
+        <h1>Grade 4 Silent Letters Challenge</h1>
+        <div class="sub">Chapter-based MCQ interactive with gradual difficulty, one retry, and a final challenge.</div>
+      </div>
+    </div>
+    <div class="pillrow">
+      <div class="pill">13 Questions</div>
+      <div class="pill">Timer: 45s each</div>
+      <div class="pill">One Retry</div>
+      <div class="pill">Final Challenge</div>
+    </div>
+    <div class="sub">Read carefully, identify silent letters, and choose the correct spelling or explanation in each context.</div>
+    <div class="btnrow">
+      <button class="primary" id="startBtn">Start Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="quizScreen">
+    <div class="topbar">
+      <div class="stat">Question <span id="qNum">1</span> / <span id="qTotal">13</span></div>
+      <div class="stat">Score: <span id="score">0</span></div>
+      <div class="timer" id="timer">45s</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="question" id="questionText"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <div class="tiny" id="attemptInfo">First try available</div>
+      <button class="ghost" id="nextBtn" disabled>Next</button>
+    </div>
+  </section>
+
+  <section class="screen" id="finalScreen">
+    <h2>Final Challenge</h2>
+    <div class="sub">This last round checks how well you can apply silent-letter rules across the whole topic.</div>
+    <div class="pillrow">
+      <div class="pill">Mixed Review</div>
+      <div class="pill">Careful Reading</div>
+      <div class="pill">One Best Answer</div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="finalBtn">Start Final Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="resultScreen">
+    <h2>Your Result</h2>
+    <div class="sub" id="resultText"></div>
+    <div class="pillrow">
+      <div class="pill" id="resultScore"></div>
+      <div class="pill" id="resultAccuracy"></div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="restartBtn">Play Again</button>
+    </div>
+  </section>
+</div>
+
+<audio id="correctSound" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+<script>
+const questions = [
+  {q:"During the school spelling competition, Aarav wrote a paragraph about his weekend. His teacher noticed that he had written: 'I used my wrisst to wear a watch and saw a knight in a storybook.' Which pair of words contains silent letters?", o:["watch and story","wrist and knight","weekend and storybook","wear and watch"], a:1, e:"Wrist and knight both contain silent letters."},
+  {q:"Meera was reading a story aloud in class. Which statement correctly explains the word thumb?", o:["The letter 't' is silent in the word.","The letter 'm' is silent in the word.","The letter 'b' is silent in the word.","The letter 'h' is silent in the word."], a:2, e:"In thumb, the letter b is written but not pronounced."},
+  {q:"Riya was making a calendar for the classroom. Which spelling should she write for the month after September?", o:["Autum","Autumn","Autunn","Autumnn"], a:1, e:"Autumn is the correct spelling."},
+  {q:"A teacher asked students to write three words that contain silent letters. Which word should Kabir remove?", o:["Knife","Guitar","Cat","Guess"], a:2, e:"Cat does not contain a silent letter."},
+  {q:"During a word puzzle activity, students had to identify words where the letter k is written but not pronounced. Which group contains only words with a silent k?", o:["Knee, knife, knight","Kite, key, kind","Know, king, kite","Knee, kitten, keep"], a:0, e:"Knee, knife, and knight all begin with a silent k."},
+  {q:"Anaya wrote a sentence in her story: 'The nite wore a shiny armour and rode a horse.' Which correction should she make?", o:["Change 'nite' to 'night'","Change 'nite' to 'knight'","Change 'nite' to 'nightt'","Change 'nite' to 'nitee'"], a:1, e:"Knight is the correct spelling for a brave warrior."},
+  {q:"A student wrote: 'On Wednesday, I hurt my thumb while playing with my guitar.' Which option gives the correct set of words that contain silent letters?", o:["Wednesday, thumb, guitar","playing, with, my","On, I, while","hurt, playing, guitar"], a:0, e:"Wednesday, thumb, and guitar each contain silent letters."},
+  {q:"During a reading activity, students compared the words guess and gas. Why is the letter u in guess called a silent letter?", o:["It changes the meaning of the word completely.","It is written but does not produce its own sound.","It comes only at the end of the word.","It makes the word shorter while speaking."], a:1, e:"A silent letter is written but not pronounced."},
+  {q:"During a vocabulary quiz, students had to select the correctly spelled word from each pair. Which option is correctly spelled?", o:["Wensday","Wednsday","Wednesday","Wednesdei"], a:2, e:"Wednesday is the correct spelling."},
+  {q:"The school magazine team was writing an article about musical instruments. Which is the correct spelling?", o:["Gitar","Guitar","Guitarr","Guittar"], a:1, e:"Guitar is the correct spelling."},
+  {q:"A teacher displayed four words on the board: knee, knife, know, kite. Which word is the odd one out?", o:["Knee","Knife","Know","Kite"], a:3, e:"Kite does not follow the silent k pattern."},
+  {q:"During a creative writing activity, students completed this sentence: 'The brave ______ rode a horse and carried a sword.' Which word completes the sentence correctly?", o:["Knight","Night","Knit","Knot"], a:0, e:"Knight means a brave warrior and has a silent k."},
+  {q:"A teacher gave students four words and asked them to identify the word where the silent letter appears at the end. Which option is correct?", o:["Knight","Wrist","Thumb","Autumn"], a:2, e:"In thumb, the b appears at the end and is silent."}
+];
+
+const total = questions.length;
+let current = 0, score = 0, attempts = 0, timer = 45, timerId = null, locked = false, finalMode = false;
+const passQ = document.getElementById('qNum'), qTotal = document.getElementById('qTotal'), scoreEl = document.getElementById('score');
+const timerEl = document.getElementById('timer'), questionText = document.getElementById('questionText');
+const optionsEl = document.getElementById('options'), feedbackEl = document.getElementById('feedback');
+const nextBtn = document.getElementById('nextBtn'), attemptInfo = document.getElementById('attemptInfo');
+const progressBar = document.getElementById('progressBar');
+const screens = {intro:introScreen, quiz:quizScreen, final:finalScreen, result:resultScreen};
+
+function showScreen(name){
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[name].classList.add('active');
+}
+function startTimer(){
+  clearInterval(timerId);
+  timer = 45;
+  timerEl.textContent = timer + 's';
+  timerId = setInterval(()=>{
+    timer--;
+    timerEl.textContent = timer + 's';
+    if(timer<=0){ clearInterval(timerId); handleTimeUp(); }
+  },1000);
+}
+function loadQuestion(){
+  locked = false; attempts = 0; nextBtn.disabled = true; feedbackEl.className='feedback'; feedbackEl.textContent='';
+  const q = questions[current];
+  passQ.textContent = current+1;
+  qTotal.textContent = total;
+  scoreEl.textContent = score;
+  progressBar.style.width = ((current)/total*100) + '%';
+  questionText.textContent = q.q;
+  optionsEl.innerHTML = '';
+  q.o.forEach((opt,idx)=>{
+    const b = document.createElement('button');
+    b.className='option';
+    b.textContent = String.fromCharCode(65+idx)+'. '+opt;
+    b.onclick = ()=>chooseAnswer(idx,b);
+    optionsEl.appendChild(b);
+  });
+  attemptInfo.textContent = 'First try available';
+  startTimer();
+}
+function chooseAnswer(idx, btn){
+  if(locked) return;
+  const q = questions[current];
+  attempts++;
+  if(idx===q.a){
+    locked = true;
+    clearInterval(timerId);
+    score += attempts===1 ? 1 : 0.5;
+    scoreEl.textContent = score;
+    btn.classList.add('correct');
+    feedbackEl.className='feedback show good';
+    feedbackEl.textContent = 'Correct! ' + q.e;
+    nextBtn.disabled = false;
+    attemptInfo.textContent = 'Correct answer selected';
+    fireConfetti();
+    playSound('correct');
+  } else {
+    playSound('wrong');
+    fireCross();
+    btn.classList.add('wrong');
+    if(attempts===1){
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Try once more. Think carefully about the silent letter pattern.';
+      attemptInfo.textContent = 'Second attempt available';
+    } else {
+      locked = true;
+      clearInterval(timerId);
+      [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+      nextBtn.disabled = false;
+      attemptInfo.textContent = 'Answer revealed';
+    }
+  }
+}
+function handleTimeUp(){
+  if(locked) return;
+  locked = true;
+  const q = questions[current];
+  [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+  feedbackEl.className='feedback show bad';
+  feedbackEl.textContent = 'Time is up. Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+  nextBtn.disabled = false;
+  attemptInfo.textContent = 'Moved on after timeout';
+}
+function nextQuestion(){
+  current++;
+  if(current < total){
+    loadQuestion();
+  } else if(!finalMode){
+    showScreen('final');
+  } else {
+    endGame();
+  }
+}
+function endGame(){
+  clearInterval(timerId);
+  showScreen('result');
+  const maxScore = total;
+  const acc = Math.round((score/maxScore)*100);
+  document.getElementById('resultText').textContent = `You completed the challenge with strong silent-letter skills.`;
+  document.getElementById('resultScore').textContent = `Score: ${score} / ${maxScore}`;
+  document.getElementById('resultAccuracy').textContent = `Accuracy: ${acc}%`;
+  document.getElementById('clapSound').play().catch(()=>{});
+}
+function fireConfetti(){
+  const box = document.getElementById('confetti');
+  box.innerHTML = '';
+  const stars = ['✦','★','✦','★','✦','★'];
+  stars.forEach((s,i)=>{
+    const el = document.createElement('span');
+    el.textContent = s;
+    el.style.left = (45 + i*4) + '%';
+    el.style.top = '55%';
+    el.style.setProperty('--x', (Math.random()*180-90)+'px');
+    el.style.setProperty('--y', (Math.random()*-220-60)+'px');
+    el.style.color = ['#0ea5e9','#38bdf8','#22c55e','#f59e0b'][i%4];
+    box.appendChild(el);
+    setTimeout(()=>el.remove(), 950);
+  });
+}
+function fireCross(){
+  const box = document.getElementById('cross');
+  box.innerHTML = '';
+  const el = document.createElement('span');
+  el.textContent = '✖';
+  el.style.left = '50%';
+  el.style.top = '42%';
+  box.appendChild(el);
+  setTimeout(()=>el.remove(), 700);
+}
+function playSound(type){
+  const a = document.getElementById(type==='correct' ? 'correctSound' : 'wrongSound');
+  a.currentTime = 0;
+  a.play().catch(()=>{});
+}
+startBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=false; loadQuestion(); };
+nextBtn.onclick = ()=>nextQuestion();
+finalBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=true; loadQuestion(); };
+restartBtn.onclick = ()=>{ showScreen('intro'); current=0; score=0; finalMode=false; };
+setInterval(()=>{
+  const x = document.createElement('div');
+  x.className = Math.random()>.5 ? 'bubble' : 'wave';
+  x.style.left = Math.random()*100 + 'vw';
+  x.style.width = x.className === 'bubble' ? (10 + Math.random()*22) + 'px' : (80 + Math.random()*80) + 'px';
+  x.style.height = x.className === 'bubble' ? x.style.width : '28px';
+  x.style.animationDuration = (12 + Math.random()*10) + 's';
+  x.style.animationDelay = (-Math.random()*10) + 's';
+  x.style.transform = `translateY(${Math.random()*100}vh) rotate(${Math.random()*360}deg)`;
+  document.getElementById('bgWater').appendChild(x);
+  setTimeout(()=>x.remove(), 20000);
+}, 900);
+
+window.addEventListener('load', ()=>{
+  qTotal.textContent = total;
+  setTimeout(()=>{
+    document.getElementById('splash').classList.add('hidden');
+  }, 5000);
+});
+</script>
+</body>
+</html>
