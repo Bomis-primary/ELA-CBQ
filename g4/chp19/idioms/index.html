@@ -1,1 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Grade 4 Idioms Challenge</title>
+<style>
+  :root{
+    --bg1:#fff7e8;
+    --bg2:#fff0d6;
+    --card:#ffffffef;
+    --text:#4a2d12;
+    --muted:#7b5d42;
+    --primary:#fb923c;
+    --primary2:#f97316;
+    --good:#16a34a;
+    --bad:#dc2626;
+    --line:#f4d7b7;
+    --shadow:0 18px 40px rgba(140,90,30,.14);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 16% 18%, rgba(255,255,255,.9) 0 8%, transparent 8%),
+      radial-gradient(circle at 82% 16%, rgba(255,255,255,.75) 0 7%, transparent 7%),
+      radial-gradient(circle at 68% 82%, rgba(255,255,255,.55) 0 9%, transparent 9%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));
+  }
+  .bg-ice, .bg-sprinkles{
+    position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;
+  }
+  .cone, .sprinkle{
+    position:absolute; opacity:.24; animation:float 16s linear infinite;
+  }
+  .cone{
+    width:22px; height:30px; background:linear-gradient(180deg,#f59e0b,#d97706);
+    clip-path:polygon(50% 100%, 0 0, 100% 0);
+    box-shadow:0 0 12px rgba(249,115,22,.15);
+  }
+  .sprinkle{
+    width:5px; height:20px; border-radius:999px;
+    background:linear-gradient(to bottom, rgba(251,146,60,0), rgba(251,146,60,.65), rgba(251,146,60,0));
+  }
+  @keyframes float{
+    from{transform:translateY(110vh) rotate(0deg)}
+    to{transform:translateY(-20vh) rotate(360deg)}
+  }
+  .wrap{position:relative; z-index:1; max-width:920px; margin:0 auto; padding:18px}
+  .screen{
+    display:none;
+    background:var(--card);
+    backdrop-filter: blur(10px);
+    border:1px solid rgba(244,215,183,.95);
+    box-shadow:var(--shadow);
+    border-radius:var(--radius);
+    padding:22px;
+  }
+  .screen.active{display:block}
+  .brand{
+    display:flex; align-items:center; gap:14px; margin-bottom:18px;
+  }
+  .logoBox{
+    width:68px; height:68px; border-radius:18px; overflow:hidden;
+    background:#fff9f0; border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+  }
+  .logoBox img{width:100%; height:100%; object-fit:cover}
+  h1,h2{margin:0 0 10px}
+  .sub{color:var(--muted); line-height:1.5}
+  .pillrow{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0}
+  .pill{
+    background:#fff3e3; color:#9a4f11; border:1px solid #f2cfaa;
+    padding:8px 12px; border-radius:999px; font-size:14px; font-weight:700;
+  }
+  .btnrow{display:flex; flex-wrap:wrap; gap:12px; margin-top:18px}
+  button{
+    border:none; border-radius:16px; padding:14px 18px; font-size:16px; font-weight:700;
+    cursor:pointer; transition:.2s transform,.2s opacity,.2s background;
+  }
+  button:active{transform:scale(.98)}
+  .primary{background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff}
+  .ghost{background:#fff1de; color:#9a5214}
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:#fffaf2;
+    margin-bottom:18px; flex-wrap:wrap;
+  }
+  .stat{font-weight:800}
+  .stat span{color:#c2410c}
+  .timer{
+    min-width:120px; text-align:center; padding:10px 12px; border-radius:14px;
+    background:#fff1de; color:#a04511; font-weight:900;
+  }
+  .progress{
+    width:100%; height:10px; background:#f6e6d3; border-radius:999px; overflow:hidden; margin:10px 0 18px;
+  }
+  .progress > div{height:100%; width:0%; background:linear-gradient(90deg,#fdba74,#f97316)}
+  .question{
+    font-size:1.2rem; font-weight:800; line-height:1.45; margin-bottom:16px;
+  }
+  .options{display:grid; gap:12px}
+  .option{
+    text-align:left; background:#fff; border:1px solid #eedbc0; color:var(--text);
+    padding:14px 16px; border-radius:16px; box-shadow:0 2px 0 rgba(140,90,30,.03);
+  }
+  .option:hover{border-color:#efb47e; background:#fffaf5}
+  .option.correct{background:#e8f8ee; border-color:#9dd6b1}
+  .option.wrong{background:#fdecec; border-color:#f2b4b4}
+  .feedback{
+    margin-top:16px; padding:14px 16px; border-radius:16px; display:none; line-height:1.5;
+  }
+  .feedback.show{display:block}
+  .good{background:#ecfdf3; border:1px solid #bde7cc; color:#14532d}
+  .bad{background:#fff1f1; border:1px solid #f2c1c1; color:#7f1d1d}
+  .controls{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:16px}
+  .tiny{font-size:14px; color:var(--muted)}
+  .splash{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#fff7e8,#fff0d6); z-index:10;
+  }
+  .splashCard{
+    width:min(360px,86vw); height:min(360px,86vw); display:flex; align-items:center; justify-content:center;
+    border-radius:28px; background:#ffffffcc; border:1px solid #f4d7b7; box-shadow:var(--shadow);
+  }
+  .splashCard img{width:78%; height:78%; object-fit:contain}
+  .hidden{display:none !important}
+  .confetti, .cross{
+    position:fixed; inset:0; pointer-events:none; z-index:9;
+  }
+  .confetti span{
+    position:absolute; font-size:18px; animation:pop 900ms ease-out forwards;
+  }
+  .cross span{
+    position:absolute; font-size:34px; color:#e11d48; opacity:.9; animation:crossPop 700ms ease-out forwards;
+  }
+  @keyframes pop{
+    0%{transform:translate(0,0) scale(.2) rotate(0deg); opacity:0}
+    20%{opacity:1}
+    100%{transform:translate(var(--x),var(--y)) scale(1.2) rotate(180deg); opacity:0}
+  }
+  @keyframes crossPop{
+    0%{transform:scale(.4); opacity:0}
+    20%{opacity:1}
+    100%{transform:translateY(-24px) scale(1); opacity:0}
+  }
+  @media (max-width:640px){
+    .wrap{padding:12px}
+    .screen{padding:16px}
+    .question{font-size:1.08rem}
+    button{width:100%}
+    .btnrow,.controls{flex-direction:column}
+    .timer{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="bg-ice" id="bgIce"></div>
+<div class="bg-sprinkles" id="bgSprinkles"></div>
 
+<div class="splash" id="splash">
+  <div class="splashCard">
+    <img src="assets/logo.png" alt="Innovine Logo">
+  </div>
+</div>
+
+<div class="confetti" id="confetti"></div>
+<div class="cross" id="cross"></div>
+
+<div class="wrap">
+  <section class="screen active" id="introScreen">
+    <div class="brand">
+      <div class="logoBox"><img src="assets/logo.png" alt="Innovine Logo"></div>
+      <div>
+        <h1>Grade 4 Idioms Challenge</h1>
+        <div class="sub">Chapter-based MCQ interactive with gradual difficulty, one retry, and a final challenge.</div>
+      </div>
+    </div>
+    <div class="pillrow">
+      <div class="pill">10 Questions</div>
+      <div class="pill">Timer: 45s each</div>
+      <div class="pill">One Retry</div>
+      <div class="pill">Final Challenge</div>
+    </div>
+    <div class="sub">Read each situation carefully and choose the idiom that fits the meaning best.</div>
+    <div class="btnrow">
+      <button class="primary" id="startBtn">Start Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="quizScreen">
+    <div class="topbar">
+      <div class="stat">Question <span id="qNum">1</span> / <span id="qTotal">10</span></div>
+      <div class="stat">Score: <span id="score">0</span></div>
+      <div class="timer" id="timer">45s</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="question" id="questionText"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <div class="tiny" id="attemptInfo">First try available</div>
+      <button class="ghost" id="nextBtn" disabled>Next</button>
+    </div>
+  </section>
+
+  <section class="screen" id="finalScreen">
+    <h2>Final Challenge</h2>
+    <div class="sub">This last round checks how well you can apply idioms across the whole topic.</div>
+    <div class="pillrow">
+      <div class="pill">Mixed Review</div>
+      <div class="pill">Careful Reading</div>
+      <div class="pill">One Best Answer</div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="finalBtn">Start Final Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="resultScreen">
+    <h2>Your Result</h2>
+    <div class="sub" id="resultText"></div>
+    <div class="pillrow">
+      <div class="pill" id="resultScore"></div>
+      <div class="pill" id="resultAccuracy"></div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="restartBtn">Play Again</button>
+    </div>
+  </section>
+</div>
+
+<audio id="correctSound" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+<script>
+const questions = [
+  {q:"During a school project, Riya was asked to create a poster. She finished it quickly because she already had experience designing posters. Her teacher said, “This project was a piece of cake for you.” What did the teacher mean by saying this?", o:["The project was about baking a cake","The project was very easy for Riya to complete","Riya decorated the project with cake pictures","The teacher wanted Riya to bring a cake"], a:1, e:"A piece of cake means something is very easy."},
+  {q:"Aarav had been preparing for the science competition for many weeks. Before he went on stage, his friend said, “Break a leg!” Why did Aarav’s friend say this?", o:["To wish him good luck for his performance","To tell him to be careful while walking","To remind him about an injury","To ask him to leave the stage quickly"], a:0, e:"Break a leg is used to wish someone good luck."},
+  {q:"Meera did not attend school because she had a cold and fever. She said, “I was under the weather yesterday.” What does the idiom mean in this sentence?", o:["She was playing outside in the rain","She was feeling sick or unwell","She was studying about weather","She was enjoying a rainy day"], a:1, e:"Under the weather means feeling sick."},
+  {q:"Kabir completed his homework, packed his school bag, and felt tired after a long day. He told his mother, “I am going to hit the sack early tonight.” What was Kabir planning to do?", o:["Hit his school bag","Sleep early","Clean his room","Start a new activity"], a:1, e:"Hit the sack means to go to bed."},
+  {q:"The school magazine published a story about a student who won a national award. The editor wrote, “Such achievements happen once in a blue moon.” What does this idiom tell us about the achievement?", o:["It happens very often","It happens only at night","It happens very rarely","It happens every month"], a:2, e:"Once in a blue moon means very rarely."},
+  {q:"Sana was planning a surprise birthday party for her brother. She accidentally told him about the decorations and guests. Her mother said, “You have let the cat out of the bag.” What does this idiom mean?", o:["She opened a bag for a cat","She revealed a secret","She lost something valuable","She brought a pet home"], a:1, e:"Let the cat out of the bag means reveal a secret."},
+  {q:"While writing a story, Dev wrote: “It was raining cats and dogs, so the streets were completely flooded.” What does the idiom raining cats and dogs mean?", o:["Animals were falling from the sky","It was raining very heavily","Many animals were outside","The weather was becoming sunny"], a:1, e:"Raining cats and dogs means raining very heavily."},
+  {q:"Choose the sentence where the idiom is used correctly.", o:["The teacher said the difficult maths question was a piece of cake because it was easy to solve.","Rahul hit the sack because he wanted to break his school bag.","The children saw cats and dogs falling during the rainstorm.","Neha was under the weather because she enjoyed playing outside."], a:0, e:"A piece of cake is correct when something is easy."},
+  {q:"During a debate competition, Arjun became nervous before speaking. His teammate said, “Don’t worry, you have practised well. Just go and do your best!” Which idiom would best match the teammate’s words?", o:["Hit the sack","Break a leg","Under the weather","Once in a blue moon"], a:1, e:"Break a leg is a wish for good luck."},
+  {q:"A writer wants to describe a rare event in a story. Which sentence uses the correct idiom?", o:["My brother visits the library once in a blue moon because he goes every day.","The magician’s amazing trick happened once in a blue moon because it was very common.","Seeing a shooting star is a once in a blue moon experience because it does not happen often.","The teacher gives homework once in a blue moon because it happens every evening."], a:2, e:"Once in a blue moon means something happens very rarely."}
+];
+
+const total = questions.length;
+let current = 0, score = 0, attempts = 0, timer = 45, timerId = null, locked = false, finalMode = false;
+const passQ = document.getElementById('qNum'), qTotal = document.getElementById('qTotal'), scoreEl = document.getElementById('score');
+const timerEl = document.getElementById('timer'), questionText = document.getElementById('questionText');
+const optionsEl = document.getElementById('options'), feedbackEl = document.getElementById('feedback');
+const nextBtn = document.getElementById('nextBtn'), attemptInfo = document.getElementById('attemptInfo');
+const progressBar = document.getElementById('progressBar');
+const screens = {intro:introScreen, quiz:quizScreen, final:finalScreen, result:resultScreen};
+
+function showScreen(name){
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[name].classList.add('active');
+}
+function startTimer(){
+  clearInterval(timerId);
+  timer = 45;
+  timerEl.textContent = timer + 's';
+  timerId = setInterval(()=>{
+    timer--;
+    timerEl.textContent = timer + 's';
+    if(timer<=0){ clearInterval(timerId); handleTimeUp(); }
+  },1000);
+}
+function loadQuestion(){
+  locked = false; attempts = 0; nextBtn.disabled = true; feedbackEl.className='feedback'; feedbackEl.textContent='';
+  const q = questions[current];
+  passQ.textContent = current+1;
+  qTotal.textContent = total;
+  scoreEl.textContent = score;
+  progressBar.style.width = ((current)/total*100) + '%';
+  questionText.textContent = q.q;
+  optionsEl.innerHTML = '';
+  q.o.forEach((opt,idx)=>{
+    const b = document.createElement('button');
+    b.className='option';
+    b.textContent = String.fromCharCode(65+idx)+'. '+opt;
+    b.onclick = ()=>chooseAnswer(idx,b);
+    optionsEl.appendChild(b);
+  });
+  attemptInfo.textContent = 'First try available';
+  startTimer();
+}
+function chooseAnswer(idx, btn){
+  if(locked) return;
+  const q = questions[current];
+  attempts++;
+  if(idx===q.a){
+    locked = true;
+    clearInterval(timerId);
+    score += attempts===1 ? 1 : 0.5;
+    scoreEl.textContent = score;
+    btn.classList.add('correct');
+    feedbackEl.className='feedback show good';
+    feedbackEl.textContent = 'Correct! ' + q.e;
+    nextBtn.disabled = false;
+    attemptInfo.textContent = 'Correct answer selected';
+    fireConfetti();
+    playSound('correct');
+  } else {
+    playSound('wrong');
+    fireCross();
+    btn.classList.add('wrong');
+    if(attempts===1){
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Try once more. Think about the idiom’s meaning in this situation.';
+      attemptInfo.textContent = 'Second attempt available';
+    } else {
+      locked = true;
+      clearInterval(timerId);
+      [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+      nextBtn.disabled = false;
+      attemptInfo.textContent = 'Answer revealed';
+    }
+  }
+}
+function handleTimeUp(){
+  if(locked) return;
+  locked = true;
+  const q = questions[current];
+  [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+  feedbackEl.className='feedback show bad';
+  feedbackEl.textContent = 'Time is up. Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+  nextBtn.disabled = false;
+  attemptInfo.textContent = 'Moved on after timeout';
+}
+function nextQuestion(){
+  current++;
+  if(current < total){
+    loadQuestion();
+  } else if(!finalMode){
+    showScreen('final');
+  } else {
+    endGame();
+  }
+}
+function endGame(){
+  clearInterval(timerId);
+  showScreen('result');
+  const maxScore = total;
+  const acc = Math.round((score/maxScore)*100);
+  document.getElementById('resultText').textContent = `You completed the challenge with strong idiom skills.`;
+  document.getElementById('resultScore').textContent = `Score: ${score} / ${maxScore}`;
+  document.getElementById('resultAccuracy').textContent = `Accuracy: ${acc}%`;
+  document.getElementById('clapSound').play().catch(()=>{});
+}
+function fireConfetti(){
+  const box = document.getElementById('confetti');
+  box.innerHTML = '';
+  const stars = ['✦','★','✦','★','✦','★'];
+  stars.forEach((s,i)=>{
+    const el = document.createElement('span');
+    el.textContent = s;
+    el.style.left = (45 + i*4) + '%';
+    el.style.top = '55%';
+    el.style.setProperty('--x', (Math.random()*180-90)+'px');
+    el.style.setProperty('--y', (Math.random()*-220-60)+'px');
+    el.style.color = ['#f59e0b','#fb7185','#22c55e','#38bdf8'][i%4];
+    box.appendChild(el);
+    setTimeout(()=>el.remove(), 950);
+  });
+}
+function fireCross(){
+  const box = document.getElementById('cross');
+  box.innerHTML = '';
+  const el = document.createElement('span');
+  el.textContent = '✖';
+  el.style.left = '50%';
+  el.style.top = '42%';
+  box.appendChild(el);
+  setTimeout(()=>el.remove(), 700);
+}
+function playSound(type){
+  const a = document.getElementById(type==='correct' ? 'correctSound' : 'wrongSound');
+  a.currentTime = 0;
+  a.play().catch(()=>{});
+}
+startBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=false; loadQuestion(); };
+nextBtn.onclick = ()=>nextQuestion();
+finalBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=true; loadQuestion(); };
+restartBtn.onclick = ()=>{ showScreen('intro'); current=0; score=0; finalMode=false; };
+setInterval(()=>{
+  const x = document.createElement('div');
+  x.className = Math.random()>.5 ? 'cone' : 'sprinkle';
+  x.style.left = Math.random()*100 + 'vw';
+  x.style.animationDuration = (10 + Math.random()*10) + 's';
+  x.style.animationDelay = (-Math.random()*10) + 's';
+  x.style.transform = `translateY(${Math.random()*100}vh) rotate(${Math.random()*360}deg)`;
+  document.getElementById('bgIce').appendChild(x);
+  setTimeout(()=>x.remove(), 20000);
+}, 900);
+
+window.addEventListener('load', ()=>{
+  qTotal.textContent = total;
+  setTimeout(()=>{
+    document.getElementById('splash').classList.add('hidden');
+  }, 5000);
+});
+</script>
+</body>
+</html>
