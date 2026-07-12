@@ -1,1 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Grade 4 Proverbs Challenge</title>
+<style>
+  :root{
+    --bg1:#081225;
+    --bg2:#11274d;
+    --card:#ffffffef;
+    --text:#e8f1ff;
+    --muted:#b7c7e6;
+    --primary:#60a5fa;
+    --primary2:#2563eb;
+    --good:#16a34a;
+    --bad:#dc2626;
+    --line:#27466f;
+    --shadow:0 18px 40px rgba(0,0,0,.28);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,.08) 0 8%, transparent 8%),
+      radial-gradient(circle at 80% 18%, rgba(255,255,255,.06) 0 7%, transparent 7%),
+      radial-gradient(circle at 65% 82%, rgba(255,255,255,.05) 0 9%, transparent 9%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));
+  }
+  .bg-space, .bg-stars{
+    position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;
+  }
+  .planet, .star{
+    position:absolute; opacity:.25; animation:float 18s linear infinite;
+  }
+  .planet{
+    width:30px; height:30px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #fff 0 8%, #93c5fd 9% 100%);
+    box-shadow:0 0 14px rgba(96,165,250,.25);
+  }
+  .star{
+    width:10px; height:10px; background:#c7ddff;
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+  }
+  @keyframes float{
+    from{transform:translateY(110vh) rotate(0deg)}
+    to{transform:translateY(-20vh) rotate(360deg)}
+  }
+  .wrap{position:relative; z-index:1; max-width:920px; margin:0 auto; padding:18px}
+  .screen{
+    display:none;
+    background:var(--card);
+    backdrop-filter: blur(10px);
+    border:1px solid rgba(39,70,111,.55);
+    box-shadow:var(--shadow);
+    border-radius:var(--radius);
+    padding:22px;
+    color:#153055;
+  }
+  .screen.active{display:block}
+  .brand{
+    display:flex; align-items:center; gap:14px; margin-bottom:18px;
+  }
+  .logoBox{
+    width:68px; height:68px; border-radius:18px; overflow:hidden;
+    background:#f6f9ff; border:1px solid #d7e3fa; display:flex; align-items:center; justify-content:center;
+  }
+  .logoBox img{width:100%; height:100%; object-fit:cover}
+  h1,h2{margin:0 0 10px}
+  .sub{color:#48607f; line-height:1.5}
+  .pillrow{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0}
+  .pill{
+    background:#edf4ff; color:#274b7a; border:1px solid #d7e3fa;
+    padding:8px 12px; border-radius:999px; font-size:14px; font-weight:700;
+  }
+  .btnrow{display:flex; flex-wrap:wrap; gap:12px; margin-top:18px}
+  button{
+    border:none; border-radius:16px; padding:14px 18px; font-size:16px; font-weight:700;
+    cursor:pointer; transition:.2s transform,.2s opacity,.2s background;
+  }
+  button:active{transform:scale(.98)}
+  .primary{background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff}
+  .ghost{background:#edf3ff; color:#27498a}
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:10px 12px; border:1px solid #d7e3fa; border-radius:16px; background:#f8fbff;
+    margin-bottom:18px; flex-wrap:wrap; color:#17365b;
+  }
+  .stat{font-weight:800}
+  .stat span{color:var(--primary2)}
+  .timer{
+    min-width:120px; text-align:center; padding:10px 12px; border-radius:14px;
+    background:#eaf2ff; color:#18427c; font-weight:900;
+  }
+  .progress{
+    width:100%; height:10px; background:#e8eef6; border-radius:999px; overflow:hidden; margin:10px 0 18px;
+  }
+  .progress > div{height:100%; width:0%; background:linear-gradient(90deg,#60a5fa,#2563eb)}
+  .question{
+    font-size:1.2rem; font-weight:800; line-height:1.45; margin-bottom:16px;
+  }
+  .options{display:grid; gap:12px}
+  .option{
+    text-align:left; background:#fff; border:1px solid #dce7f2; color:#153055;
+    padding:14px 16px; border-radius:16px; box-shadow:0 2px 0 rgba(20,40,80,.03);
+  }
+  .option:hover{border-color:#a8c8ef; background:#f8fbff}
+  .option.correct{background:#e8f8ee; border-color:#9dd6b1}
+  .option.wrong{background:#fdecec; border-color:#f2b4b4}
+  .feedback{
+    margin-top:16px; padding:14px 16px; border-radius:16px; display:none; line-height:1.5;
+  }
+  .feedback.show{display:block}
+  .good{background:#ecfdf3; border:1px solid #bde7cc; color:#14532d}
+  .bad{background:#fff1f1; border:1px solid #f2c1c1; color:#7f1d1d}
+  .controls{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:16px}
+  .tiny{font-size:14px; color:#5b7194}
+  .splash{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#081225,#11274d); z-index:10;
+  }
+  .splashCard{
+    width:min(360px,86vw); height:min(360px,86vw); display:flex; align-items:center; justify-content:center;
+    border-radius:28px; background:#ffffff10; border:1px solid #3f5f91; box-shadow:var(--shadow);
+  }
+  .splashCard img{width:78%; height:78%; object-fit:contain}
+  .hidden{display:none !important}
+  .confetti, .cross{
+    position:fixed; inset:0; pointer-events:none; z-index:9;
+  }
+  .confetti span{
+    position:absolute; font-size:18px; animation:pop 900ms ease-out forwards;
+  }
+  .cross span{
+    position:absolute; font-size:34px; color:#ef4444; opacity:.9; animation:crossPop 700ms ease-out forwards;
+  }
+  @keyframes pop{
+    0%{transform:translate(0,0) scale(.2) rotate(0deg); opacity:0}
+    20%{opacity:1}
+    100%{transform:translate(var(--x),var(--y)) scale(1.2) rotate(180deg); opacity:0}
+  }
+  @keyframes crossPop{
+    0%{transform:scale(.4); opacity:0}
+    20%{opacity:1}
+    100%{transform:translateY(-24px) scale(1); opacity:0}
+  }
+  @media (max-width:640px){
+    .wrap{padding:12px}
+    .screen{padding:16px}
+    .question{font-size:1.08rem}
+    button{width:100%}
+    .btnrow,.controls{flex-direction:column}
+    .timer{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="bg-space" id="bgSpace"></div>
+<div class="bg-stars" id="bgStars"></div>
 
+<div class="splash" id="splash">
+  <div class="splashCard">
+    <img src="assets/logo.png" alt="Innovine Logo">
+  </div>
+</div>
+
+<div class="confetti" id="confetti"></div>
+<div class="cross" id="cross"></div>
+
+<div class="wrap">
+  <section class="screen active" id="introScreen">
+    <div class="brand">
+      <div>
+        <h1>Grade 4 Proverbs Challenge</h1>
+        <div class="sub">Chapter-based MCQ interactive with gradual difficulty, one retry, and a final challenge.</div>
+      </div>
+    </div>
+    <div class="pillrow">
+      <div class="pill">10 Questions</div>
+      <div class="pill">Timer: 45s each</div>
+      <div class="pill">One Retry</div>
+      <div class="pill">Final Challenge</div>
+    </div>
+    <div class="sub">Read each situation carefully and choose the proverb that matches the meaning best.</div>
+    <div class="btnrow">
+      <button class="primary" id="startBtn">Start Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="quizScreen">
+    <div class="topbar">
+      <div class="stat">Question <span id="qNum">1</span> / <span id="qTotal">10</span></div>
+      <div class="stat">Score: <span id="score">0</span></div>
+      <div class="timer" id="timer">45s</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="question" id="questionText"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <div class="tiny" id="attemptInfo">First try available</div>
+      <button class="ghost" id="nextBtn" disabled>Next</button>
+    </div>
+  </section>
+
+  <section class="screen" id="finalScreen">
+    <h2>Final Challenge</h2>
+    <div class="sub">This last round checks how well you can apply proverbs across the whole topic.</div>
+    <div class="pillrow">
+      <div class="pill">Mixed Review</div>
+      <div class="pill">Careful Reading</div>
+      <div class="pill">One Best Answer</div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="finalBtn">Start Final Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="resultScreen">
+    <h2>Your Result</h2>
+    <div class="sub" id="resultText"></div>
+    <div class="pillrow">
+      <div class="pill" id="resultScore"></div>
+      <div class="pill" id="resultAccuracy"></div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="restartBtn">Play Again</button>
+    </div>
+  </section>
+</div>
+
+<audio id="correctSound" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+<script>
+const questions = [
+  {q:"Rohan wanted to improve his grades. Instead of waiting until the last week, he started studying a little every day. His teacher praised him and said, “The early bird catches the worm.” What lesson does this proverb teach?", o:["People who wake up early always get rewards","Starting work early can give you an advantage","Students should study only in the morning","Hard work is not needed when you are talented"], a:1, e:"It means starting early can help you succeed."},
+  {q:"During a group project, Meera promised to help her friend complete the model. She stayed after school and worked with her friend until it was finished. Her friend said, “Actions speak louder than words.” What does this proverb mean?", o:["Speaking is more important than working","Promises should always be written down","What we do shows our true intentions more than what we say","People should avoid talking while working"], a:2, e:"It means actions show character more clearly than words."},
+  {q:"Aarav bought a ticket for a competition and immediately told everyone that he would definitely win. However, the results had not been announced yet. His teacher reminded him, “Don’t count your chickens before they hatch.” What advice was the teacher giving?", o:["Do not assume success before it actually happens","Always celebrate your success loudly","Never participate in competitions","Winning is more important than trying"], a:0, e:"Do not expect a result before it is confirmed."},
+  {q:"During a difficult science experiment, Siya made several mistakes but continued trying different methods until she succeeded. Her teacher said, “Where there’s a will, there’s a way.” What does this proverb show?", o:["Problems can only be solved with help from others","Determination and effort can help overcome difficulties","Experiments should always be avoided","Success comes without any effort"], a:1, e:"It shows that strong determination can help you find a solution."},
+  {q:"Kabir noticed that his friend was upset but did not share the reason. Instead of forcing him to speak, Kabir waited patiently and gave him some space. His teacher said, “Silence is golden.” What does this proverb suggest?", o:["Silence is always better than communication","Speaking loudly helps solve problems","Sometimes staying quiet is the wiser choice","Friends should never share feelings"], a:2, e:"Sometimes being quiet is the better choice."},
+  {q:"Ananya found a lost wallet on the playground. Although nobody was watching, she returned it to the owner. Her teacher appreciated her and said, “Honesty is the best policy.” What quality does this proverb encourage?", o:["Being truthful and honest in every situation","Keeping things that we find","Avoiding responsibility","Helping only when someone is watching"], a:0, e:"It encourages truthfulness and honesty."},
+  {q:"During a football match, Rahul’s teammate helped him when he was injured. Later, Rahul helped his teammate prepare for exams. Their coach said, “A friend in need is a friend indeed.” What does this proverb mean?", o:["Friends should compete with each other","A true friend helps during difficult times","Friends should only meet during games","Friendship depends on winning together"], a:1, e:"A true friend supports you when you need help."},
+  {q:"Before starting a new activity, Neha carefully read the instructions and thought about the possible problems. Her mother said, “Look before you leap.” Why did her mother say this?", o:["To encourage her to act without thinking","To remind her to carefully consider things before acting","To tell her to avoid learning new things","To ask her to jump higher"], a:1, e:"It means to think carefully before acting."},
+  {q:"A school captain wanted to complete a large cleanliness campaign. Some students thought it was impossible, but the captain kept planning and motivating everyone until the goal was achieved. Which proverb best describes this situation?", o:["Silence is golden","Honesty is the best policy","Where there’s a will, there’s a way","Don’t count your chickens before they hatch"], a:2, e:"Determination helped the group succeed."},
+  {q:"A student copied answers during a test but later claimed that he was the best performer in the class. His teacher reminded him that real success comes from genuine effort and truthfulness. Which proverb best matches the teacher’s message?", o:["Actions speak louder than words","The early bird catches the worm","A friend in need is a friend indeed","Honesty is the best policy"], a:3, e:"The message is about being truthful and honest."}
+];
+
+const total = questions.length;
+let current = 0, score = 0, attempts = 0, timer = 45, timerId = null, locked = false, finalMode = false;
+const passQ = document.getElementById('qNum'), qTotal = document.getElementById('qTotal'), scoreEl = document.getElementById('score');
+const timerEl = document.getElementById('timer'), questionText = document.getElementById('questionText');
+const optionsEl = document.getElementById('options'), feedbackEl = document.getElementById('feedback');
+const nextBtn = document.getElementById('nextBtn'), attemptInfo = document.getElementById('attemptInfo');
+const progressBar = document.getElementById('progressBar');
+const screens = {intro:introScreen, quiz:quizScreen, final:finalScreen, result:resultScreen};
+
+function showScreen(name){
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[name].classList.add('active');
+}
+function startTimer(){
+  clearInterval(timerId);
+  timer = 45;
+  timerEl.textContent = timer + 's';
+  timerId = setInterval(()=>{
+    timer--;
+    timerEl.textContent = timer + 's';
+    if(timer<=0){ clearInterval(timerId); handleTimeUp(); }
+  },1000);
+}
+function loadQuestion(){
+  locked = false; attempts = 0; nextBtn.disabled = true; feedbackEl.className='feedback'; feedbackEl.textContent='';
+  const q = questions[current];
+  passQ.textContent = current+1;
+  qTotal.textContent = total;
+  scoreEl.textContent = score;
+  progressBar.style.width = ((current)/total*100) + '%';
+  questionText.textContent = q.q;
+  optionsEl.innerHTML = '';
+  q.o.forEach((opt,idx)=>{
+    const b = document.createElement('button');
+    b.className='option';
+    b.textContent = String.fromCharCode(65+idx)+'. '+opt;
+    b.onclick = ()=>chooseAnswer(idx,b);
+    optionsEl.appendChild(b);
+  });
+  attemptInfo.textContent = 'First try available';
+  startTimer();
+}
+function chooseAnswer(idx, btn){
+  if(locked) return;
+  const q = questions[current];
+  attempts++;
+  if(idx===q.a){
+    locked = true;
+    clearInterval(timerId);
+    score += attempts===1 ? 1 : 0.5;
+    scoreEl.textContent = score;
+    btn.classList.add('correct');
+    feedbackEl.className='feedback show good';
+    feedbackEl.textContent = 'Correct! ' + q.e;
+    nextBtn.disabled = false;
+    attemptInfo.textContent = 'Correct answer selected';
+    fireConfetti();
+    playSound('correct');
+  } else {
+    playSound('wrong');
+    fireCross();
+    btn.classList.add('wrong');
+    if(attempts===1){
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Try once more. Think about the proverb’s meaning in this situation.';
+      attemptInfo.textContent = 'Second attempt available';
+    } else {
+      locked = true;
+      clearInterval(timerId);
+      [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+      nextBtn.disabled = false;
+      attemptInfo.textContent = 'Answer revealed';
+    }
+  }
+}
+function handleTimeUp(){
+  if(locked) return;
+  locked = true;
+  const q = questions[current];
+  [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+  feedbackEl.className='feedback show bad';
+  feedbackEl.textContent = 'Time is up. Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+  nextBtn.disabled = false;
+  attemptInfo.textContent = 'Moved on after timeout';
+}
+function nextQuestion(){
+  current++;
+  if(current < total){
+    loadQuestion();
+  } else if(!finalMode){
+    showScreen('final');
+  } else {
+    endGame();
+  }
+}
+function endGame(){
+  clearInterval(timerId);
+  showScreen('result');
+  const maxScore = total;
+  const acc = Math.round((score/maxScore)*100);
+  document.getElementById('resultText').textContent = `You completed the challenge with strong proverb skills.`;
+  document.getElementById('resultScore').textContent = `Score: ${score} / ${maxScore}`;
+  document.getElementById('resultAccuracy').textContent = `Accuracy: ${acc}%`;
+  document.getElementById('clapSound').play().catch(()=>{});
+}
+function fireConfetti(){
+  const box = document.getElementById('confetti');
+  box.innerHTML = '';
+  const stars = ['✦','★','✦','★','✦','★'];
+  stars.forEach((s,i)=>{
+    const el = document.createElement('span');
+    el.textContent = s;
+    el.style.left = (45 + i*4) + '%';
+    el.style.top = '55%';
+    el.style.setProperty('--x', (Math.random()*180-90)+'px');
+    el.style.setProperty('--y', (Math.random()*-220-60)+'px');
+    el.style.color = ['#60a5fa','#38bdf8','#93c5fd','#c7ddff'][i%4];
+    box.appendChild(el);
+    setTimeout(()=>el.remove(), 950);
+  });
+}
+function fireCross(){
+  const box = document.getElementById('cross');
+  box.innerHTML = '';
+  const el = document.createElement('span');
+  el.textContent = '✖';
+  el.style.left = '50%';
+  el.style.top = '42%';
+  box.appendChild(el);
+  setTimeout(()=>el.remove(), 700);
+}
+function playSound(type){
+  const a = document.getElementById(type==='correct' ? 'correctSound' : 'wrongSound');
+  a.currentTime = 0;
+  a.play().catch(()=>{});
+}
+startBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=false; loadQuestion(); };
+nextBtn.onclick = ()=>nextQuestion();
+finalBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=true; loadQuestion(); };
+restartBtn.onclick = ()=>{ showScreen('intro'); current=0; score=0; finalMode=false; };
+setInterval(()=>{
+  const x = document.createElement('div');
+  x.className = Math.random()>.5 ? 'planet' : 'star';
+  x.style.left = Math.random()*100 + 'vw';
+  x.style.animationDuration = (10 + Math.random()*10) + 's';
+  x.style.animationDelay = (-Math.random()*10) + 's';
+  x.style.transform = `translateY(${Math.random()*100}vh) rotate(${Math.random()*360}deg)`;
+  document.getElementById('bgSpace').appendChild(x);
+  setTimeout(()=>x.remove(), 20000);
+}, 900);
+
+window.addEventListener('load', ()=>{
+  qTotal.textContent = total;
+  setTimeout(()=>{ document.getElementById('splash').classList.add('hidden'); }, 5000);
+});
+</script>
+</body>
+</html>
