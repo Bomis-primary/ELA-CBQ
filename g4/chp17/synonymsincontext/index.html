@@ -1,1 +1,421 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Grade 4 Synonyms in Context Challenge</title>
+<style>
+  :root{
+    --bg1:#eef4ff;
+    --bg2:#dfe9ff;
+    --card:#ffffffef;
+    --text:#1c2b4a;
+    --muted:#5f6f8f;
+    --primary:#3b82f6;
+    --primary2:#1d4ed8;
+    --good:#16a34a;
+    --bad:#dc2626;
+    --line:#d8e3fb;
+    --shadow:0 18px 40px rgba(20,40,80,.14);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+    background:
+      radial-gradient(circle at 18% 18%, rgba(255,255,255,.9) 0 7%, transparent 7%),
+      radial-gradient(circle at 80% 16%, rgba(255,255,255,.75) 0 8%, transparent 8%),
+      radial-gradient(circle at 70% 82%, rgba(255,255,255,.55) 0 9%, transparent 9%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));
+  }
+  .bg-stars, .bg-clouds{
+    position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;
+  }
+  .star, .cloud{
+    position:absolute; opacity:.28; animation:float 16s linear infinite;
+  }
+  .star{
+    width:12px; height:12px; background:#8fb8ff;
+    clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    box-shadow:0 0 12px rgba(59,130,246,.2);
+  }
+  .cloud{
+    width:90px; height:36px; border-radius:999px;
+    background:rgba(255,255,255,.7);
+    box-shadow:30px 0 0 0 rgba(255,255,255,.7), 60px 0 0 0 rgba(255,255,255,.7);
+  }
+  @keyframes float{
+    from{transform:translateY(110vh) rotate(0deg)}
+    to{transform:translateY(-20vh) rotate(360deg)}
+  }
+  .wrap{position:relative; z-index:1; max-width:920px; margin:0 auto; padding:18px}
+  .screen{
+    display:none;
+    background:var(--card);
+    backdrop-filter: blur(10px);
+    border:1px solid rgba(216,227,251,.95);
+    box-shadow:var(--shadow);
+    border-radius:var(--radius);
+    padding:22px;
+  }
+  .screen.active{display:block}
+  .brand{
+    display:flex; align-items:center; gap:14px; margin-bottom:18px;
+  }
+  .logoBox{
+    width:68px; height:68px; border-radius:18px; overflow:hidden;
+    background:#f6f9ff; border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+  }
+  .logoBox img{width:100%; height:100%; object-fit:cover}
+  h1,h2{margin:0 0 10px}
+  .sub{color:var(--muted); line-height:1.5}
+  .pillrow{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0}
+  .pill{
+    background:#eef4ff; color:#2d4c8c; border:1px solid #d7e3fa;
+    padding:8px 12px; border-radius:999px; font-size:14px; font-weight:700;
+  }
+  .btnrow{display:flex; flex-wrap:wrap; gap:12px; margin-top:18px}
+  button{
+    border:none; border-radius:16px; padding:14px 18px; font-size:16px; font-weight:700;
+    cursor:pointer; transition:.2s transform,.2s opacity,.2s background;
+  }
+  button:active{transform:scale(.98)}
+  .primary{background:linear-gradient(135deg,var(--primary),var(--primary2)); color:#fff}
+  .ghost{background:#edf3ff; color:#27498a}
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    padding:10px 12px; border:1px solid var(--line); border-radius:16px; background:#f8fbff;
+    margin-bottom:18px; flex-wrap:wrap;
+  }
+  .stat{font-weight:800}
+  .stat span{color:var(--primary2)}
+  .timer{
+    min-width:120px; text-align:center; padding:10px 12px; border-radius:14px;
+    background:#eaf2ff; color:#18427c; font-weight:900;
+  }
+  .progress{
+    width:100%; height:10px; background:#e8eef6; border-radius:999px; overflow:hidden; margin:10px 0 18px;
+  }
+  .progress > div{height:100%; width:0%; background:linear-gradient(90deg,#60a5fa,#2563eb)}
+  .question{
+    font-size:1.2rem; font-weight:800; line-height:1.45; margin-bottom:16px;
+  }
+  .options{display:grid; gap:12px}
+  .option{
+    text-align:left; background:#fff; border:1px solid #dce7f2; color:var(--text);
+    padding:14px 16px; border-radius:16px; box-shadow:0 2px 0 rgba(20,40,80,.03);
+  }
+  .option:hover{border-color:#a8c8ef; background:#f8fbff}
+  .option.correct{background:#e8f8ee; border-color:#9dd6b1}
+  .option.wrong{background:#fdecec; border-color:#f2b4b4}
+  .feedback{
+    margin-top:16px; padding:14px 16px; border-radius:16px; display:none; line-height:1.5;
+  }
+  .feedback.show{display:block}
+  .good{background:#ecfdf3; border:1px solid #bde7cc; color:#14532d}
+  .bad{background:#fff1f1; border:1px solid #f2c1c1; color:#7f1d1d}
+  .controls{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-top:16px}
+  .tiny{font-size:14px; color:var(--muted)}
+  .splash{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#eef4ff,#dfe9ff); z-index:10;
+  }
+  .splashCard{
+    width:min(360px,86vw); height:min(360px,86vw); display:flex; align-items:center; justify-content:center;
+    border-radius:28px; background:#ffffffcc; border:1px solid #d8e3fb; box-shadow:var(--shadow);
+  }
+  .splashCard img{width:78%; height:78%; object-fit:contain}
+  .hidden{display:none !important}
+  .confetti, .cross{
+    position:fixed; inset:0; pointer-events:none; z-index:9;
+  }
+  .confetti span{
+    position:absolute; font-size:18px; animation:pop 900ms ease-out forwards;
+  }
+  .cross span{
+    position:absolute; font-size:34px; color:#e11d48; opacity:.9; animation:crossPop 700ms ease-out forwards;
+  }
+  @keyframes pop{
+    0%{transform:translate(0,0) scale(.2) rotate(0deg); opacity:0}
+    20%{opacity:1}
+    100%{transform:translate(var(--x),var(--y)) scale(1.2) rotate(180deg); opacity:0}
+  }
+  @keyframes crossPop{
+    0%{transform:scale(.4); opacity:0}
+    20%{opacity:1}
+    100%{transform:translateY(-24px) scale(1); opacity:0}
+  }
+  @media (max-width:640px){
+    .wrap{padding:12px}
+    .screen{padding:16px}
+    .question{font-size:1.08rem}
+    button{width:100%}
+    .btnrow,.controls{flex-direction:column}
+    .timer{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="bg-stars" id="bgStars"></div>
+<div class="bg-clouds" id="bgClouds"></div>
 
+<div class="splash" id="splash">
+  <div class="splashCard">
+    <img src="assets/logo.png" alt="Innovine Logo">
+  </div>
+</div>
+
+<div class="confetti" id="confetti"></div>
+<div class="cross" id="cross"></div>
+
+<div class="wrap">
+  <section class="screen active" id="introScreen">
+    <div class="brand">
+      <div class="logoBox"><img src="assets/logo.png" alt="Innovine Logo"></div>
+      <div>
+        <h1>Grade 4 Synonyms in Context Challenge</h1>
+        <div class="sub">Chapter-based MCQ interactive with gradual difficulty, one retry, and a final challenge.</div>
+      </div>
+    </div>
+    <div class="pillrow">
+      <div class="pill">12 Questions</div>
+      <div class="pill">Timer: 45s each</div>
+      <div class="pill">One Retry</div>
+      <div class="pill">Final Challenge</div>
+    </div>
+    <div class="sub">Choose the best word for each situation and learn how meaning changes with context, tone, and strength.</div>
+    <div class="btnrow">
+      <button class="primary" id="startBtn">Start Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="quizScreen">
+    <div class="topbar">
+      <div class="stat">Question <span id="qNum">1</span> / <span id="qTotal">12</span></div>
+      <div class="stat">Score: <span id="score">0</span></div>
+      <div class="timer" id="timer">45s</div>
+    </div>
+    <div class="progress"><div id="progressBar"></div></div>
+    <div class="question" id="questionText"></div>
+    <div class="options" id="options"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="controls">
+      <div class="tiny" id="attemptInfo">First try available</div>
+      <button class="ghost" id="nextBtn" disabled>Next</button>
+    </div>
+  </section>
+
+  <section class="screen" id="finalScreen">
+    <h2>Final Challenge</h2>
+    <div class="sub">This last round checks how well you can apply synonyms in context across the whole topic.</div>
+    <div class="pillrow">
+      <div class="pill">Mixed Review</div>
+      <div class="pill">Careful Reading</div>
+      <div class="pill">One Best Answer</div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="finalBtn">Start Final Challenge</button>
+    </div>
+  </section>
+
+  <section class="screen" id="resultScreen">
+    <h2>Your Result</h2>
+    <div class="sub" id="resultText"></div>
+    <div class="pillrow">
+      <div class="pill" id="resultScore"></div>
+      <div class="pill" id="resultAccuracy"></div>
+    </div>
+    <div class="btnrow">
+      <button class="primary" id="restartBtn">Play Again</button>
+    </div>
+  </section>
+</div>
+
+<audio id="correctSound" src="assets/correct.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="assets/wrong.mp3" preload="auto"></audio>
+<audio id="clapSound" src="assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
+
+<script>
+const questions = [
+  {q:"Riya was writing a story about a magical forest. She wanted to describe a huge tree that was much larger than all the other trees around it. Which word would be the best replacement for big in this sentence?", o:["Small","Enormous","Short","Thin"], a:1, e:"Enormous is a stronger synonym for big when describing very large size."},
+  {q:"During a school event, Aarav had to write two sentences. One word sounds more formal and suitable for an official event. Which pair correctly completes the sentences? 'I will ______ my friends to my birthday party.' 'The principal will ______ the best student for the award.'", o:["Select, choose","Choose, select","Pick, choose","Select, pick"], a:1, e:"Choose fits the friendly sentence, and select sounds more formal."},
+  {q:"Meera was describing her feelings after winning a drawing competition. Which word would best replace happy to show a much stronger feeling?", o:["Sad","Glad","Delighted","Fine"], a:2, e:"Delighted shows a stronger feeling than happy."},
+  {q:"Kabir was writing about a football match. Which sentence uses the word finish correctly?", o:["The movie will finish naturally when the story reaches its conclusion.","Please finish your homework before going out to play.","The summer season will finish after three months.","The road will finish near the mountains."], a:1, e:"Finish works correctly with homework because it means complete the task."},
+  {q:"Anaya was preparing a speech for the school assembly. She wanted to write about a very large amount of pollution affecting the city. Which replacement would improve her sentence?", o:["Tiny","Enormous","Little","Normal"], a:1, e:"Enormous is a stronger word than big, but the sentence still needs careful context use."},
+  {q:"During a language activity, students had to match words with their synonyms. Which option is the correct synonym for beautiful?", o:["Ugly","Lovely","Difficult","Angry"], a:1, e:"Lovely is a suitable synonym for beautiful."},
+  {q:"Rahul wrote about a puppy twice using the same word happy. Which option would make the paragraph better?", o:["The puppy was delighted because it had been lost for many days.","The puppy was angry because it had been lost for many days.","The puppy was tired because it had been lost for many days.","The puppy was small because it had been lost for many days."], a:0, e:"Delighted is a stronger synonym for happy in this context."},
+  {q:"The school newspaper reported a discovery that was very important for saving endangered animals. Which word would fit best as a stronger synonym for important?", o:["Ordinary","Significant","Simple","Weak"], a:1, e:"Significant means important and suits formal writing well."},
+  {q:"Which sentence uses the correct word combination?", o:["I finished the movie at 8 p.m.","The teacher ended the homework before lunch.","The meeting ended after an hour of discussion.","I ended my project before submitting it."], a:2, e:"We say the meeting ended, while homework is usually finished."},
+  {q:"Priya wants the second message to sound more respectful and formal. Which word should replace the blank? 'I am ______ to welcome the chief guest.'", o:["Delighted","Okay","Fine","Happy"], a:0, e:"Delighted is more formal and respectful than happy."},
+  {q:"A nature magazine described a waterfall as enormous. Which word can replace it without changing the meaning?", o:["Huge","Narrow","Weak","Short"], a:0, e:"Huge is a close synonym of enormous."},
+  {q:"Rahul wrote: 'The committee will select the winner of the competition after checking all entries carefully.' Why is select a suitable word in this sentence?", o:["It is used for informal conversations only.","It shows a careful and formal choice.","It means to reject something completely.","It describes something that is very large."], a:1, e:"Select is suitable because it suggests a careful and formal choice."}
+];
+
+const total = questions.length;
+let current = 0, score = 0, attempts = 0, timer = 45, timerId = null, locked = false, finalMode = false;
+const passQ = document.getElementById('qNum'), qTotal = document.getElementById('qTotal'), scoreEl = document.getElementById('score');
+const timerEl = document.getElementById('timer'), questionText = document.getElementById('questionText');
+const optionsEl = document.getElementById('options'), feedbackEl = document.getElementById('feedback');
+const nextBtn = document.getElementById('nextBtn'), attemptInfo = document.getElementById('attemptInfo');
+const progressBar = document.getElementById('progressBar');
+const screens = {intro:introScreen, quiz:quizScreen, final:finalScreen, result:resultScreen};
+
+function showScreen(name){
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[name].classList.add('active');
+}
+function startTimer(){
+  clearInterval(timerId);
+  timer = 45;
+  timerEl.textContent = timer + 's';
+  timerId = setInterval(()=>{
+    timer--;
+    timerEl.textContent = timer + 's';
+    if(timer<=0){ clearInterval(timerId); handleTimeUp(); }
+  },1000);
+}
+function loadQuestion(){
+  locked = false; attempts = 0; nextBtn.disabled = true; feedbackEl.className='feedback'; feedbackEl.textContent='';
+  const q = questions[current];
+  passQ.textContent = current+1;
+  qTotal.textContent = total;
+  scoreEl.textContent = score;
+  progressBar.style.width = ((current)/total*100) + '%';
+  questionText.textContent = q.q;
+  optionsEl.innerHTML = '';
+  q.o.forEach((opt,idx)=>{
+    const b = document.createElement('button');
+    b.className='option';
+    b.textContent = String.fromCharCode(65+idx)+'. '+opt;
+    b.onclick = ()=>chooseAnswer(idx,b);
+    optionsEl.appendChild(b);
+  });
+  attemptInfo.textContent = 'First try available';
+  startTimer();
+}
+function chooseAnswer(idx, btn){
+  if(locked) return;
+  const q = questions[current];
+  attempts++;
+  if(idx===q.a){
+    locked = true;
+    clearInterval(timerId);
+    score += attempts===1 ? 1 : 0.5;
+    scoreEl.textContent = score;
+    btn.classList.add('correct');
+    feedbackEl.className='feedback show good';
+    feedbackEl.textContent = 'Correct! ' + q.e;
+    nextBtn.disabled = false;
+    attemptInfo.textContent = 'Correct answer selected';
+    fireConfetti();
+    playSound('correct');
+  } else {
+    playSound('wrong');
+    fireCross();
+    btn.classList.add('wrong');
+    if(attempts===1){
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Try once more. Think about the meaning and tone of the word.';
+      attemptInfo.textContent = 'Second attempt available';
+    } else {
+      locked = true;
+      clearInterval(timerId);
+      [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+      feedbackEl.className='feedback show bad';
+      feedbackEl.textContent = 'Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+      nextBtn.disabled = false;
+      attemptInfo.textContent = 'Answer revealed';
+    }
+  }
+}
+function handleTimeUp(){
+  if(locked) return;
+  locked = true;
+  const q = questions[current];
+  [...optionsEl.children].forEach((el,i)=>{ if(i===q.a) el.classList.add('correct'); });
+  feedbackEl.className='feedback show bad';
+  feedbackEl.textContent = 'Time is up. Correct answer: ' + String.fromCharCode(65+q.a) + '. ' + q.o[q.a] + ' ' + q.e;
+  nextBtn.disabled = false;
+  attemptInfo.textContent = 'Moved on after timeout';
+}
+function nextQuestion(){
+  current++;
+  if(current < total){
+    loadQuestion();
+  } else if(!finalMode){
+    showScreen('final');
+  } else {
+    endGame();
+  }
+}
+function endGame(){
+  clearInterval(timerId);
+  showScreen('result');
+  const maxScore = total;
+  const acc = Math.round((score/maxScore)*100);
+  document.getElementById('resultText').textContent = `You completed the challenge with strong synonym skills.`;
+  document.getElementById('resultScore').textContent = `Score: ${score} / ${maxScore}`;
+  document.getElementById('resultAccuracy').textContent = `Accuracy: ${acc}%`;
+  document.getElementById('clapSound').play().catch(()=>{});
+}
+function fireConfetti(){
+  const box = document.getElementById('confetti');
+  box.innerHTML = '';
+  const stars = ['✦','★','✦','★','✦','★'];
+  stars.forEach((s,i)=>{
+    const el = document.createElement('span');
+    el.textContent = s;
+    el.style.left = (45 + i*4) + '%';
+    el.style.top = '55%';
+    el.style.setProperty('--x', (Math.random()*180-90)+'px');
+    el.style.setProperty('--y', (Math.random()*-220-60)+'px');
+    el.style.color = ['#f59e0b','#60a5fa','#22c55e','#f43f5e'][i%4];
+    box.appendChild(el);
+    setTimeout(()=>el.remove(), 950);
+  });
+}
+function fireCross(){
+  const box = document.getElementById('cross');
+  box.innerHTML = '';
+  const el = document.createElement('span');
+  el.textContent = '✖';
+  el.style.left = '50%';
+  el.style.top = '42%';
+  box.appendChild(el);
+  setTimeout(()=>el.remove(), 700);
+}
+function playSound(type){
+  const a = document.getElementById(type==='correct' ? 'correctSound' : 'wrongSound');
+  a.currentTime = 0;
+  a.play().catch(()=>{});
+}
+startBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=false; loadQuestion(); };
+nextBtn.onclick = ()=>nextQuestion();
+finalBtn.onclick = ()=>{ showScreen('quiz'); current=0; score=0; finalMode=true; loadQuestion(); };
+restartBtn.onclick = ()=>{ showScreen('intro'); current=0; score=0; finalMode=false; };
+setInterval(()=>{
+  const x = document.createElement('div');
+  x.className = Math.random()>.5 ? 'star' : 'cloud';
+  x.style.left = Math.random()*100 + 'vw';
+  x.style.animationDuration = (12 + Math.random()*10) + 's';
+  x.style.animationDelay = (-Math.random()*10) + 's';
+  x.style.transform = `translateY(${Math.random()*100}vh) rotate(${Math.random()*360}deg)`;
+  document.getElementById('bgStars').appendChild(x);
+  setTimeout(()=>x.remove(), 20000);
+}, 900);
+
+window.addEventListener('load', ()=>{
+  qTotal.textContent = total;
+  setTimeout(()=>{
+    document.getElementById('splash').classList.add('hidden');
+  }, 5000);
+});
+</script>
+</body>
+</html>
+```
