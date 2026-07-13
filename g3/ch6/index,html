@@ -18,6 +18,7 @@
             --correct-text: #137333;
             --wrong-bg: #FCE8E6;
             --wrong-text: #C5221F;
+            --review-bg: #EDF2F7;
         }
 
         * {
@@ -81,7 +82,7 @@
             background-color: var(--primary);
             position: absolute;
             left: -100%;
-            animation: load 5s linear forwards;
+            animation: load 2s linear forwards;
         }
 
         @keyframes load {
@@ -247,6 +248,7 @@
         .action-footer {
             display: flex;
             justify-content: flex-end;
+            gap: 12px;
         }
 
         .action-btn {
@@ -270,25 +272,91 @@
             cursor: not-allowed;
         }
 
-        /* Results Screen */
+        /* Results Screen & Review Blocks */
         .results-container {
-            text-align: center;
             display: none;
-            padding: 20px 10px;
+            padding: 10px 0;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
         .results-score {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 800;
             color: var(--primary);
-            margin: 15px 0;
+            margin: 10px 0;
         }
 
         .results-msg {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .review-heading {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 25px 0 15px 0;
+            padding-top: 15px;
+            border-top: 2px solid #E2E8F0;
+            color: var(--text-main);
+        }
+
+        .review-scroll-area {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 14px;
+            background-color: #FAFAFA;
             margin-bottom: 24px;
         }
+
+        .review-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border-left: 5px solid #CBD5E0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .review-card.correct-pass {
+            border-left-color: var(--secondary);
+        }
+
+        .review-card.wrong-pass {
+            border-left-color: var(--accent);
+        }
+
+        .review-q-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .review-data {
+            font-size: 0.9rem;
+            margin: 4px 0;
+            line-height: 1.4;
+        }
+
+        .review-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 4px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .badge-correct { background-color: var(--correct-bg); color: var(--correct-text); }
+        .badge-wrong { background-color: var(--wrong-bg); color: var(--wrong-text); }
+        .badge-timeout { background-color: #FFF5F5; color: #C53030; }
     </style>
 </head>
 <body>
@@ -327,10 +395,19 @@
         </div>
 
         <div class="results-container" id="results-view">
-            <h2>Challenge Evaluation Complete!</h2>
-            <div class="results-score" id="final-score-text">0/12</div>
-            <div class="results-msg" id="final-message-text"></div>
-            <button class="action-btn" onclick="location.reload();">Retry Challenge</button>
+            <div class="results-header">
+                <h2>Challenge Evaluation Complete!</h2>
+                <div class="results-score" id="final-score-text">0/12</div>
+                <div class="results-msg" id="final-message-text"></div>
+            </div>
+
+            <h3 class="review-heading">Interactive Performance Breakdown</h3>
+            <div class="review-scroll-area" id="review-cards-container">
+                </div>
+
+            <div class="action-footer" style="justify-content: center;">
+                <button class="action-btn" onclick="location.reload();">Retry Challenge</button>
+            </div>
         </div>
     </div>
 
@@ -475,6 +552,9 @@
         let chosenOptionIndex = null;
         let correctOptionText = ""; 
 
+        // Review data tracking list mapping answers
+        const userPerformanceLogs = [];
+
         const splashScreen = document.getElementById('splash-screen');
         const challengeBoard = document.getElementById('challenge-board');
         const questionView = document.getElementById('question-view');
@@ -489,6 +569,7 @@
         const scoreDisplay = document.getElementById('score-display');
         const finalScoreText = document.getElementById('final-score-text');
         const finalMessageText = document.getElementById('final-message-text');
+        const reviewCardsContainer = document.getElementById('review-cards-container');
 
         const audioCorrect = document.getElementById('audio-correct');
         const audioWrong = document.getElementById('audio-wrong');
@@ -505,7 +586,6 @@
             } catch(e) {}
         }
 
-        // Fisher-Yates shuffle implementation
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -514,7 +594,6 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Randomize the order of questions globally
             shuffleArray(questionsDataset);
             
             setTimeout(() => {
@@ -524,7 +603,7 @@
                     challengeBoard.style.display = 'block';
                     loadQuestion();
                 }, 500);
-            }, 5000);
+            }, 2000); // Optimized visual loading speed
         });
 
         function loadQuestion() {
@@ -538,11 +617,8 @@
             nextSubmitBtn.textContent = "Submit Answer";
 
             const q = questionsDataset[currentQuestionIndex];
-            
-            // Cache text of correct option before options shuffle
             correctOptionText = q.options[q.answerIndex];
             
-            // Shuffle choices inside individual questions
             shuffleArray(q.options);
             
             const progressPercent = ((currentQuestionIndex) / questionsDataset.length) * 100;
@@ -601,6 +677,7 @@
         function evaluateAnswer(isTimeout) {
             clearInterval(timerInterval);
             const buttons = optionsContainer.querySelectorAll('.option-btn');
+            const q = questionsDataset[currentQuestionIndex];
 
             if (isTimeout) {
                 playSound(false);
@@ -610,6 +687,15 @@
                         btn.classList.add('selected-correct');
                     }
                 });
+
+                userPerformanceLogs.push({
+                    question: q.question,
+                    status: 'timeout',
+                    userChoice: "No Answer Given (Timeout)",
+                    correctChoice: correctOptionText,
+                    explanation: q.hint
+                });
+
                 feedbackBox.style.display = 'block';
                 feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
                 feedbackBox.style.color = 'var(--wrong-text)';
@@ -618,7 +704,8 @@
                 return;
             }
 
-            const isCorrect = (buttons[chosenOptionIndex].textContent === correctOptionText);
+            const chosenText = buttons[chosenOptionIndex].textContent;
+            const isCorrect = (chosenText === correctOptionText);
 
             if (isCorrect) {
                 playSound(true);
@@ -628,21 +715,28 @@
                 runningScore++;
                 scoreDisplay.textContent = `Score: ${runningScore}`;
 
+                userPerformanceLogs.push({
+                    question: q.question,
+                    status: 'correct',
+                    userChoice: chosenText,
+                    correctChoice: correctOptionText,
+                    explanation: q.hint
+                });
+
                 feedbackBox.style.display = 'block';
                 feedbackBox.style.backgroundColor = 'var(--correct-bg)';
                 feedbackBox.style.color = 'var(--correct-text)';
                 feedbackBox.innerHTML = `<strong>Excellent!</strong> Correct understanding.`;
                 prepareNextActionState();
             } else {
-                playSound(false);
-                buttons[chosenOptionIndex].classList.add('selected-wrong');
-
                 if (currentAttemptNumber === 1) {
                     currentAttemptNumber = 2;
+                    playSound(false);
+                    buttons[chosenOptionIndex].classList.add('selected-wrong');
                     feedbackBox.style.display = 'block';
                     feedbackBox.style.backgroundColor = '#FFFDF5';
                     feedbackBox.style.color = '#B7791F';
-                    feedbackBox.innerHTML = `<strong>Not quite right!</strong> Hint: ${questionsDataset[currentQuestionIndex].hint} <br><em>Try one more time!</em>`;
+                    feedbackBox.innerHTML = `<strong>Not quite right!</strong> Hint: ${q.hint} <br><em>Try one more time!</em>`;
                     
                     buttons[chosenOptionIndex].style.opacity = '0.6';
                     nextSubmitBtn.disabled = true;
@@ -651,6 +745,8 @@
                     timerDisplay.textContent = secondsLeft;
                     timerInterval = setInterval(handleCountdown, 1000);
                 } else {
+                    playSound(false);
+                    buttons[chosenOptionIndex].classList.add('selected-wrong');
                     buttons.forEach(btn => {
                         btn.disabled = true;
                         if (btn.textContent === correctOptionText) {
@@ -658,6 +754,14 @@
                         }
                     });
                     
+                    userPerformanceLogs.push({
+                        question: q.question,
+                        status: 'wrong',
+                        userChoice: chosenText,
+                        correctChoice: correctOptionText,
+                        explanation: q.hint
+                    });
+
                     feedbackBox.style.display = 'block';
                     feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
                     feedbackBox.style.color = 'var(--wrong-text)';
@@ -697,6 +801,27 @@
             }
             
             progressIndicator.style.width = `100%`;
+
+            // Build dynamic Option 2 interactive review cards inside DOM container
+            reviewCardsContainer.innerHTML = '';
+            userPerformanceLogs.forEach((log, index) => {
+                const card = document.createElement('div');
+                card.className = `review-card ${log.status === 'correct' ? 'correct-pass' : 'wrong-pass'}`;
+                
+                let badgeHTML = '';
+                if(log.status === 'correct') badgeHTML = `<span class="review-badge badge-correct">Correct</span>`;
+                else if(log.status === 'wrong') badgeHTML = `<span class="review-badge badge-wrong">Incorrect</span>`;
+                else badgeHTML = `<span class="review-badge badge-timeout">Timeout</span>`;
+
+                card.innerHTML = `
+                    ${badgeHTML}
+                    <div class="review-q-title">Question ${index + 1}: ${log.question}</div>
+                    <div class="review-data">👉 <strong>Your Choice:</strong> <span style="color:${log.status === 'correct' ? 'var(--correct-text)' : 'var(--wrong-text)'}">${log.userChoice}</span></div>
+                    <div class="review-data">✅ <strong>Correct Choice:</strong> <span style="color:var(--correct-text); font-weight:600;">${log.correctChoice}</span></div>
+                    <div class="review-data" style="margin-top:8px; color:var(--text-muted); font-style:italic;">💡 <strong>Grammar Focus:</strong> ${log.explanation}</div>
+                `;
+                reviewCardsContainer.appendChild(card);
+            });
         }
     </script>
 </body>
