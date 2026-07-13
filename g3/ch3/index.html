@@ -1,1 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 3: Gender Nouns Quiz</title>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --success: #2ec4b6;
+            --error: #e71d36;
+            --background: #f4f7f6;
+            --text: #2b2d42;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            max-width: 150px;
+            height: auto;
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .passage-box {
+            background-color: #eef1f6;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            font-style: italic;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            border-bottom: 2px solid #eef1f6;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        .question-card {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fafafa;
+            border: 1px solid #eef0f2;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        @media (max-width: 500px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: var(--success);
+            color: #065f46;
+            font-weight: bold;
+        }
+
+        .option-btn.wrong {
+            background-color: #fee2e2;
+            border-color: var(--error);
+            color: #991b1b;
+        }
+
+        .score-box {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto 0;
+            padding: 12px;
+            background: white;
+            color: var(--primary);
+            border: 2px solid white;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255,255,255,0.9);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="logo-container">
+        <img src="logo.png" alt="Logo">
+    </div>
+
+    <h1>Chapter 3: Gender Nouns Quiz</h1>
+    
+    <div class="passage-box">
+        <strong>Reading Passage:</strong><br>
+        At the school function, the boy handed a flower to his mother. The girl smiled at her father. A doctor checked the child’s temperature, and the teacher spoke kindly to the class. Nearby, a lion and a lioness rested under a tree.
+    </div>
+
+    <div id="quiz-container"></div>
+
+    <div class="score-box">
+        Your Score: <span id="score">0</span> / 24
+        <button class="reset-btn" onclick="resetQuiz()">Restart Quiz</button>
+    </div>
+</div>
+
+<script>
+    // Audio elements configured using your specific asset file names
+    const soundCorrect = new Audio('claps.mp3');
+    const soundWrong = new Audio('wrong.mp3');
+
+    const quizData = [
+        // Part 1
+        { section: "Part 1: From the passage", q: "Which noun is masculine?", s: ["mother", "girl", "boy", "teacher"], a: 2 },
+        { section: "Part 1: From the passage", q: "Which noun is feminine?", s: ["father", "lion", "child", "mother"], a: 3 },
+        { section: "Part 1: From the passage", q: "Which noun is common gender?", s: ["teacher", "lioness", "mother", "boy"], a: 0 },
+        { section: "Part 1: From the passage", q: "Which noun is neuter gender?", s: ["tree", "father", "girl", "lion"], a: 0 },
+        
+        // Part 2
+        { section: "Part 2: Choose the correct gender pair", q: "What is the feminine gender of lion?", s: ["lioner", "lioness", "tigress", "lady"], a: 1 },
+        { section: "Part 2: Choose the correct gender pair", q: "What is the masculine gender of queen?", s: ["prince", "king", "man", "emperor"], a: 1 },
+        { section: "Part 2: Choose the correct gender pair", q: "What is the feminine gender of boy?", s: ["girl", "lady", "aunt", "sister"], a: 0 },
+        { section: "Part 2: Choose the correct gender pair", q: "What is the masculine gender of mother?", s: ["father", "uncle", "boy", "son"], a: 0 },
+        
+        // Part 3
+        { section: "Part 3: Fill in the blanks", q: "A man and a woman are examples of gender nouns.", s: ["common", "neuter", "masculine", "feminine"], a: 0 },
+        { section: "Part 3: Fill in the blanks", q: "A chair and a table are examples of gender nouns.", s: ["common", "masculine", "feminine", "neuter"], a: 3 },
+        { section: "Part 3: Fill in the blanks", q: "The feminine gender of prince is ________.", s: ["princess", "queen", "lady", "girl"], a: 0 },
+        { section: "Part 3: Fill in the blanks", q: "The masculine gender of hen is ________.", s: ["rooster", "cock", "both a and b", "lion"], a: 2 },
+        
+        // Part 4
+        { section: "Part 4: Sentence use", q: "Choose the correct sentence.", s: ["The girl helped the boy.", "The boy helped the girl.", "Both a and b", "Neither a nor b"], a: 2 },
+        { section: "Part 4: Sentence use", q: "Choose the noun that is common gender.", s: ["doctor", "king", "queen", "horse"], a: 0 },
+        { section: "Part 4: Sentence use", q: "Which sentence has a neuter noun?", s: ["The baby is sleeping.", "The school bell rang.", "The uncle came home.", "The lion roared loudly."], a: 1 },
+        { section: "Part 4: Sentence use", q: "Which of these is a feminine noun?", s: ["nephew", "actor", "niece", "horse"], a: 2 },
+        
+        // Part 5
+        { section: "Part 5: Real-life use", q: "A teacher can be a man or a woman. This makes teacher a:", s: ["masculine noun", "feminine noun", "common gender noun", "neuter noun"], a: 2 },
+        { section: "Part 5: Real-life use", q: "A doctor can be a man or a woman. This makes doctor a:", s: ["common gender noun", "neuter noun", "masculine noun only", "feminine noun only"], a: 0 },
+        { section: "Part 5: Real-life use", q: "Which is the feminine form of actor?", s: ["actress", "lady", "singer", "dancer"], a: 0 },
+        { section: "Part 5: Real-life use", q: "Which is the masculine form of niece?", s: ["nephew", "cousin", "son", "boy"], a: 0 },
+        
+        // Part 6
+        { section: "Part 6: Creative challenge", q: "Which pair is correct?", s: ["king – queen", "king – princess", "father – aunt", "lion – mare"], a: 0 },
+        { section: "Part 6: Creative challenge", q: "Which pair is correct?", s: ["uncle – niece", "uncle – aunt", "uncle – sister", "uncle – mother"], a: 1 },
+        { section: "Part 6: Creative challenge", q: "Which word is neither masculine nor feminine?", s: ["sister", "table", "uncle", "mother"], a: 1 },
+        { section: "Part 6: Creative challenge", q: "Which sentence uses gender nouns correctly?", s: ["The lioness drank water.", "The lioness drank waters.", "The lionsess drank water.", "The lioness drank wateres."], a: 0 }
+    ];
+
+    let score = 0;
+    const quizContainer = document.getElementById('quiz-container');
+    const scoreDisplay = document.getElementById('score');
+
+    function buildQuiz() {
+        quizContainer.innerHTML = "";
+        let currentSection = "";
+
+        quizData.forEach((item, qIndex) => {
+            if (currentSection !== item.section) {
+                currentSection = item.section;
+                const sectionHeader = document.createElement('h2');
+                sectionHeader.className = 'section-title';
+                sectionHeader.innerText = currentSection;
+                quizContainer.appendChild(sectionHeader);
+            }
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.innerText = `${qIndex + 1}. ${item.q}`;
+            card.appendChild(qText);
+
+            const grid = document.createElement('div');
+            grid.className = 'options-grid';
+
+            item.s.forEach((option, oIndex) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = option;
+                btn.onclick = () => handleAnswer(btn, qIndex, oIndex, card);
+                grid.appendChild(btn);
+            });
+
+            card.appendChild(grid);
+            quizContainer.appendChild(card);
+        });
+    }
+
+    function handleAnswer(selectedBtn, qIndex, oIndex, card) {
+        const correctIndex = quizData[qIndex].a;
+        const buttons = card.querySelectorAll('.option-btn');
+
+        buttons.forEach((btn, idx) => {
+            btn.disabled = true; 
+            if (idx === correctIndex) {
+                btn.classList.add('correct');
+            }
+        });
+
+        if (oIndex === correctIndex) {
+            score++;
+            scoreDisplay.innerText = score;
+            
+            // Play claps sound effect
+            soundCorrect.currentTime = 0;
+            soundCorrect.play().catch(e => console.log("Audio play blocked until user interaction."));
+        } else {
+            selectedBtn.classList.add('wrong');
+            
+            // Play wrong answer sound effect
+            soundWrong.currentTime = 0;
+            soundWrong.play().catch(e => console.log("Audio play blocked until user interaction."));
+        }
+    }
+
+    function resetQuiz() {
+        score = 0;
+        scoreDisplay.innerText = score;
+        buildQuiz();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    buildQuiz();
+</script>
+
+</body>
+</html>
