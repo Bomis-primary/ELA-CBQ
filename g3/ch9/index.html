@@ -173,32 +173,6 @@
             line-height: 1.5;
         }
 
-        /* Interactive Image Panel */
-        .question-image-container {
-            display: none;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-            background: #FAFAFA;
-            border: 1px dashed #E2E8F0;
-            border-radius: 12px;
-            padding: 10px;
-        }
-
-        .question-image {
-            max-width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-
-        .question-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--text-main);
-        }
-
         /* Options Stack Component */
         .options-grid {
             display: grid;
@@ -336,11 +310,6 @@
 
             <div class="card-context" id="context-box"></div>
 
-            <!-- Image Frame -->
-            <div class="question-image-container" id="image-frame">
-                <img src="" alt="Interactive Illustration" class="question-image" id="target-img">
-            </div>
-
             <div class="question-text" id="question-box"></div>
 
             <div class="options-grid" id="options-container"></div>
@@ -366,7 +335,7 @@
     <audio id="audio-wrong" src="g3/ch9/assets/wrong.mp3" preload="auto"></audio>
 
     <script>
-        // Exactly 14 high-quality structural & objective image-based competency items
+        // Exactly 14 high-quality structural & text competency items
         const questionsDataset = [
             {
                 type: "Passage-Based MCQ",
@@ -456,31 +425,26 @@
                 answerIndex: 0,
                 hint: "Use a comparative form ending in '-er' when exactly two items are balanced against each other."
             },
-            
-            /* Integrated Image-Based Competency Questions */
             {
-                type: "Image-Based Competency MCQ",
-                imagePath: "g3/ch9/assets/pencil_comparison.png",
-                context: "Look at the two school pencils placed flat against each other on the table surface.",
-                question: "If you want to describe the second pencil by comparing it to the first one, which word fits perfectly?",
-                options: ["longer", "long", "longest", "more long"],
+                type: "Competency Text MCQ",
+                context: "Scenario: Rohan has a yellow pencil that is 10cm long. Amit has a blue pencil that is 14cm long.",
+                question: "Which sentence accurately compares Amit's pencil to Rohan's pencil?",
+                options: ["Amit's pencil is longer than Rohan's.", "Amit's pencil is long than Rohan's.", "Amit's pencil is longest than Rohan's.", "Amit's pencil is more long than Rohan's."],
                 answerIndex: 0,
                 hint: "Since you are comparing exactly two distinct objects, choose the comparative form ending in '-er'."
             },
             {
-                type: "Image-Based Competency MCQ",
-                imagePath: "g3/ch9/assets/three_cakes.png",
-                context: "Observe the display shelf holding three different birthday cakes lined up together.",
-                question: "If you want to describe the third cake by comparing its size to all the other cakes on the shelf, which word is correct?",
+                type: "Competency Text MCQ",
+                context: "Scenario: There are three birthday cakes on a shelf. The first is large, the second is larger, and the third one is the biggest of all.",
+                question: "If you want to describe the third cake by comparing it to all the other cakes, which word is correct?",
                 options: ["largest", "large", "larger", "more large"],
                 answerIndex: 0,
                 hint: "Since you are comparing three cakes total to find the one with the biggest size, you need the superlative form ending in '-est'."
             },
             {
-                type: "Image-Based Competency MCQ",
-                imagePath: "g3/ch9/assets/elephant_mouse.png",
-                context: "Look at the massive elephant standing directly beside the little field mouse.",
-                question: "Which comparative assessment accurately states what you see in this scene?",
+                type: "Competency Text MCQ",
+                context: "Scenario: An elephant weighs 4,000 kilograms, while a field mouse weighs only 20 grams.",
+                question: "Which comparative statement accurately describes what we know about these two animals?",
                 options: ["The elephant is bigger than the mouse.", "The elephant is smaller than the mouse.", "The elephant is smallest than the mouse.", "The elephant is bigest than the mouse."],
                 answerIndex: 0,
                 hint: "The elephant is much larger. Double the final consonant 'g' in big before adding '-er'."
@@ -502,8 +466,6 @@
         const timerDisplay = document.getElementById('timer-display');
         const progressIndicator = document.getElementById('progress-indicator');
         const contextBox = document.getElementById('context-box');
-        const imageFrame = document.getElementById('image-frame');
-        const targetImg = document.getElementById('target-img');
         const questionBox = document.getElementById('question-box');
         const optionsContainer = document.getElementById('options-container');
         const feedbackBox = document.getElementById('feedback-box');
@@ -567,17 +529,6 @@
             
             contextBox.innerHTML = `<strong>Context:</strong> ${q.context}`;
             questionBox.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
-
-            if (q.imagePath) {
-                targetImg.src = q.imagePath;
-                imageFrame.style.display = 'flex';
-                targetImg.onerror = function() {
-                    this.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'><rect width='100%' height='100%' fill='%23EDF2F7'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%23718096' font-family='sans-serif' font-size='12'>[Chapter 9 Asset: " + q.imagePath.split('/').pop() + "]</text></svg>";
-                };
-            } else {
-                imageFrame.style.display = 'none';
-                targetImg.src = '';
-            }
 
             optionsContainer.innerHTML = '';
             q.options.forEach((opt, idx) => {
