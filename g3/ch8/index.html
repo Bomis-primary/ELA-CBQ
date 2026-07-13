@@ -228,6 +228,11 @@
             transform: translateY(-1px);
         }
 
+        .option-btn.selected {
+            border-color: var(--primary) !important;
+            background-color: #F0F4F8 !important;
+        }
+
         .option-btn:disabled {
             cursor: not-allowed;
         }
@@ -310,7 +315,6 @@
 </head>
 <body>
 
-    <!-- Splash Screen Panel -->
     <div id="splash-screen">
         <img class="logo-placeholder" src="g3/ch8/assets/logo.png" alt="Innovine Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'><rect width=\'100%\' height=\'100%\' fill=\'%234A6FA5\' rx=\'8\'/><text x=\'50%\' y=\'55%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'white\' font-family=\'sans-serif\' font-size=\'20\' font-weight=\'bold\'>INNOVINE</text></svg>'">
         <div class="loader-bar">
@@ -318,14 +322,12 @@
         </div>
     </div>
 
-    <!-- Main Challenge Dashboard Container -->
     <div class="app-container" id="challenge-board">
         <div class="interactive-header">
             <span class="chapter-title">Chapter 8: Adjectives Exploration</span>
             <span class="tracker-badge" id="score-display">Score: 0</span>
         </div>
 
-        <!-- Question View Box -->
         <div id="question-view">
             <div class="status-container">
                 <div class="progress-track">
@@ -336,7 +338,6 @@
 
             <div class="card-context" id="context-box"></div>
             
-            <!-- Dynamic Image Frame Slot -->
             <div class="question-image-container" id="image-frame">
                 <img src="" alt="Question Reference Image" class="question-image" id="target-img">
             </div>
@@ -352,7 +353,6 @@
             </div>
         </div>
 
-        <!-- Results Evaluation View Box -->
         <div class="results-container" id="results-view">
             <h2>Challenge Evaluation Complete!</h2>
             <div class="results-score" id="final-score-text">0/14</div>
@@ -361,12 +361,10 @@
         </div>
     </div>
 
-    <!-- Audio Feedback Mapping Hooks -->
     <audio id="audio-correct" src="g3/ch8/assets/claps.mp3" preload="auto"></audio>
     <audio id="audio-wrong" src="g3/ch8/assets/wrong.mp3" preload="auto"></audio>
 
     <script>
-        // Exactly 14 high-quality structural & competency items (with 3 active images)
         const questionsDataset = [
             {
                 type: "Passage-Based MCQ",
@@ -456,8 +454,6 @@
                 answerIndex: 0,
                 hint: "Describing adjectives should sit directly before the noun they modify."
             },
-            
-            /* Allowed Active Image Asset Items */
             {
                 type: "Creative Image-Based MCQ",
                 imagePath: "g3/ch8/assets/basket-apples.png",
@@ -478,7 +474,8 @@
             },
             {
                 type: "Creative Image-Based MCQ",
-                imagePath: "g3/ch8/assets/water_bottle.png",
+                /* FIXED: Path updated to match file name in repo assets */
+                imagePath: "g3/ch8/assets/bottlewithwater.png",
                 context: "Look at the remaining level of fluid inside the container.",
                 question: "Which word best describes the specific volume or quantity remaining?",
                 options: ["little", "bright", "seven", "tall"],
@@ -527,6 +524,7 @@
             } catch(e) {}
         }
 
+        // Fisher-Yates Shuffle algorithm
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -604,8 +602,15 @@
             chosenOptionIndex = index;
             const buttons = optionsContainer.querySelectorAll('.option-btn');
             buttons.forEach((btn, idx) => {
-                btn.style.borderColor = (idx === index) ? 'var(--primary)' : '#E2E8F0';
-                btn.style.backgroundColor = (idx === index) ? '#F0F4F8' : 'var(--white)';
+                if (!btn.classList.contains('selected-wrong')) {
+                    if (idx === index) {
+                        btn.classList.add('selected');
+                    } else {
+                        btn.classList.remove('selected');
+                    }
+                } else {
+                    btn.classList.remove('selected');
+                }
             });
             nextSubmitBtn.disabled = false;
         }
@@ -647,6 +652,7 @@
 
             if (isCorrect) {
                 playSound(true);
+                buttons[chosenOptionIndex].classList.remove('selected');
                 buttons[chosenOptionIndex].classList.add('selected-correct');
                 buttons.forEach(btn => btn.disabled = true);
                 
@@ -660,6 +666,7 @@
                 prepareNextActionState();
             } else {
                 playSound(false);
+                buttons[chosenOptionIndex].classList.remove('selected');
                 buttons[chosenOptionIndex].classList.add('selected-wrong');
 
                 if (currentAttemptNumber === 1) {
@@ -669,6 +676,7 @@
                     feedbackBox.style.color = '#B7791F';
                     feedbackBox.innerHTML = `<strong>Not quite right!</strong> Hint: ${questionsDataset[currentQuestionIndex].hint} <br><em>Try one more time!</em>`;
                     
+                    buttons[chosenOptionIndex].disabled = true;
                     buttons[chosenOptionIndex].style.opacity = '0.6';
                     nextSubmitBtn.disabled = true;
                     
