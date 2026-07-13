@@ -198,7 +198,7 @@
             height: 100%;
             width: 100%;
             background: var(--warning);
-            transition: width 1s linear;
+            transition: width 0.1s linear; /* Tweaked for ultra-smooth rendering updates */
         }
 
         .question-box {
@@ -386,7 +386,6 @@
     </div>
 
     <script>
-        // Exactly 12 structured application-driven items with high quality distractor reasoning
         const questionsData = [
             {
                 id: 1,
@@ -452,7 +451,7 @@
                 id: 7,
                 type: "Scenario-Based MCQ",
                 question: "Your father is a doctor. He works day and night at the city hospital. When talking about your father's job to a classmate, which pronoun should you use?",
-                options: ["She works in a hospital.", "He works in a hospital.", "It works in a hospital.", "They works in a hospital."],
+                options: ["She works in a hospital.", "He works in a hospital.", "It works in a hospital.", "They work in a hospital."], /* Fixed plural subject-verb alignment distractor */
                 answer: 1,
                 hint: "Father is a male person, so choose the singular male subject pronoun.",
                 explanation: "'He' is the correct masculine singular pronoun for a father.",
@@ -515,7 +514,8 @@
         let attempts = 0; 
         let isMuted = false;
         let timerInterval = null;
-        let timeLeft = 60;
+        const totalDuration = 60 * 10; // Measured in tenths of seconds for smoother bar transitions
+        let currentTimerValue = totalDuration;
         const totalQuestions = questionsData.length;
 
         const splashScreen = document.getElementById('logo-splash');
@@ -540,12 +540,11 @@
         const audioWrong = document.getElementById('audio-wrong');
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Strict Branding: Splash screen displayed for exactly 5 seconds
             setTimeout(() => {
                 splashScreen.style.opacity = '0';
                 setTimeout(() => {
                     splashScreen.classList.add('hidden');
-                    screenIntro.classList.remove('hidden'); // Instructions shown only after logo screen ends
+                    screenIntro.classList.remove('hidden');
                 }, 500);
             }, 5000);
         });
@@ -587,20 +586,20 @@
 
         function startTimer() {
             clearInterval(timerInterval);
-            timeLeft = 60;
-            timerCount.innerText = timeLeft;
+            currentTimerValue = totalDuration;
+            timerCount.innerText = Math.ceil(currentTimerValue / 10);
             timerIndicator.style.width = '100%';
             
             timerInterval = setInterval(() => {
-                timeLeft--;
-                timerCount.innerText = timeLeft;
-                timerIndicator.style.width = `${(timeLeft / 60) * 100}%`;
+                currentTimerValue--;
+                timerCount.innerText = Math.ceil(currentTimerValue / 10);
+                timerIndicator.style.width = `${(currentTimerValue / totalDuration) * 100}%`;
                 
-                if (timeLeft <= 0) {
+                if (currentTimerValue <= 0) {
                     clearInterval(timerInterval);
                     handleTimeOut();
                 }
-            }, 1000);
+            }, 100); // 100ms interval creates perfectly fluid structural animations
         }
 
         function handleTimeOut() {
@@ -650,9 +649,9 @@
 
             if (selectedIdx === q.answer) {
                 clearInterval(timerInterval);
-                playSound('correct'); // Triggers claps audio loop
+                playSound('correct');
                 cards[selectedIdx].classList.remove('selected');
-                cards[selectedIdx].classList.add('correct-flash'); // High feedback animation styling
+                cards[selectedIdx].classList.add('correct-flash');
                 
                 for(let card of cards) card.style.pointerEvents = 'none';
                 
@@ -667,7 +666,7 @@
                 btnNext.classList.remove('hidden');
             } else {
                 attempts++;
-                playSound('wrong'); // Triggers wrong sound effect
+                playSound('wrong');
                 
                 if (attempts === 1) {
                     cards[selectedIdx].classList.add('wrong-flash');
