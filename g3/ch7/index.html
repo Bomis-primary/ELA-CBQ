@@ -209,6 +209,11 @@
             transform: translateY(-1px);
         }
 
+        .option-btn.selected {
+            border-color: var(--primary) !important;
+            background-color: #F0F4F8 !important;
+        }
+
         .option-btn:disabled {
             cursor: not-allowed;
         }
@@ -483,7 +488,7 @@
 
         let currentQuestionIndex = 0;
         let runningScore = 0;
-        let secondsLeft = 60; // 60-Second Grade 3 Standard Limit
+        let secondsLeft = 60; 
         let timerInterval = null;
         let currentAttemptNumber = 1; 
         let chosenOptionIndex = null;
@@ -527,10 +532,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Global question randomization
             shuffleArray(questionsDataset);
             
-            // Limit to exactly 15 high-quality items if dataset expands
             if(questionsDataset.length > 15) {
                 questionsDataset.splice(15);
             }
@@ -556,11 +559,7 @@
             nextSubmitBtn.textContent = "Submit Answer";
 
             const q = questionsDataset[currentQuestionIndex];
-            
-            // Cache correct string before option shuffle
             correctOptionText = q.options[q.answerIndex];
-            
-            // Individual choice randomization
             shuffleArray(q.options);
             
             const progressPercent = ((currentQuestionIndex) / questionsDataset.length) * 100;
@@ -597,8 +596,16 @@
             chosenOptionIndex = index;
             const buttons = optionsContainer.querySelectorAll('.option-btn');
             buttons.forEach((btn, idx) => {
-                btn.style.borderColor = (idx === index) ? 'var(--primary)' : '#E2E8F0';
-                btn.style.backgroundColor = (idx === index) ? '#F0F4F8' : 'var(--white)';
+                // Ensure we don't clear styling flags for the wrong attempts during selection resets
+                if (!btn.classList.contains('selected-wrong')) {
+                    if (idx === index) {
+                        btn.classList.add('selected');
+                    } else {
+                        btn.classList.remove('selected');
+                    }
+                } else {
+                    btn.classList.remove('selected');
+                }
             });
             nextSubmitBtn.disabled = false;
         }
@@ -640,6 +647,7 @@
 
             if (isCorrect) {
                 playSound(true);
+                buttons[chosenOptionIndex].classList.remove('selected');
                 buttons[chosenOptionIndex].classList.add('selected-correct');
                 buttons.forEach(btn => btn.disabled = true);
                 
@@ -653,6 +661,7 @@
                 prepareNextActionState();
             } else {
                 playSound(false);
+                buttons[chosenOptionIndex].classList.remove('selected');
                 buttons[chosenOptionIndex].classList.add('selected-wrong');
 
                 if (currentAttemptNumber === 1) {
@@ -662,10 +671,11 @@
                     feedbackBox.style.color = '#B7791F';
                     feedbackBox.innerHTML = `<strong>Not quite right!</strong> Hint: ${questionsDataset[currentQuestionIndex].hint} <br><em>Try one more time!</em>`;
                     
+                    buttons[chosenOptionIndex].disabled = true; // Lock out the wrong option
                     buttons[chosenOptionIndex].style.opacity = '0.6';
                     nextSubmitBtn.disabled = true;
                     
-                    secondsLeft = 30; // 30 second grace period on attempt 2
+                    secondsLeft = 30; 
                     timerDisplay.textContent = secondsLeft;
                     timerInterval = setInterval(handleCountdown, 1000);
                 } else {
