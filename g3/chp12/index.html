@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 3: The Past Tense Quest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #e0e7ff 0%, #f3e8ff 50%, #f0fdf4 100%);
+            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .card-shadow {
+            box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.12), 0 8px 12px -6px rgba(79, 70, 229, 0.06);
+        }
+        .tactile-btn {
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 0 0 rgba(79, 70, 229, 0.2);
+        }
+        .tactile-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 0 rgba(79, 70, 229, 0.25);
+        }
+        .tactile-btn:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.2);
+        }
+        @keyframes timer-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); color: #ef4444; }
+            100% { transform: scale(1); }
+        }
+        .timer-warning {
+            animation: timer-pulse 0.8s infinite ease-in-out;
+            color: #dc2626 !important;
+            border-color: #fca5a5 !important;
+            background-color: #fef2f2 !important;
+        }
+        .shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-3px, 0, 0); }
+            20%, 80% { transform: translate3d(5px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased flex flex-col justify-between min-h-screen p-2 sm:p-4 md:p-6">
+
+    <!-- Splash Screen (Shown for 5 seconds at startup with Logo) -->
+    <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center p-6 transition-opacity duration-500">
+        <div class="max-w-xs w-full flex flex-col items-center gap-6 text-center">
+            <div class="h-28 sm:h-36 w-auto flex items-center justify-center p-3 bg-white/10 backdrop-blur-md rounded-3xl border border-white/20 shadow-2xl">
+                <img src="assets/innovine-logo.png" alt="Innovine Logo" class="max-h-full max-w-full object-contain" onerror="this.onerror=null; this.outerHTML='<div class=\'font-heading font-extrabold text-indigo-400 text-3xl sm:text-4xl tracking-tight\'>⌛ Innovine</div>';">
+            </div>
+            <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                <div id="splash-progress" class="bg-gradient-to-r from-violet-500 to-emerald-400 h-full w-0 rounded-full transition-all duration-[5000ms] ease-linear"></div>
+            </div>
+            <button onclick="showRulesScreen()" class="text-xs text-indigo-300 hover:text-white underline font-semibold transition-colors mt-2">
+                Skip Intro →
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Rules Screen -->
+    <div id="rules-screen" class="max-w-2xl mx-auto w-full flex-grow flex flex-col items-center justify-center gap-6 my-auto hidden">
+        <div class="bg-white/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 card-shadow border border-indigo-100 w-full text-center flex flex-col items-center gap-5">
+            <div class="bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-heading font-extrabold text-2xl sm:text-3xl px-8 py-3 rounded-2xl shadow-lg shadow-indigo-200">
+                ⌛ Time Explorer Rules!
+            </div>
+            
+            <p class="text-slate-600 text-sm sm:text-base max-w-md font-medium leading-relaxed">
+                Journey into the past! Master <span class="text-indigo-600 font-bold">Simple Past & Past Continuous</span> tenses across 4 exciting historical scenarios.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full text-left max-w-lg">
+                <div class="bg-indigo-50/60 p-3.5 rounded-2xl border border-indigo-100/80 flex items-start gap-3">
+                    <span class="text-2xl p-1 bg-white rounded-xl shadow-sm">📜</span>
+                    <div>
+                        <h4 class="font-heading font-bold text-indigo-950 text-sm">Read Scenarios</h4>
+                        <p class="text-xs text-slate-500">Read each story carefully to answer the questions.</p>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50/60 p-3.5 rounded-2xl border border-indigo-100/80 flex items-start gap-3">
+                    <span class="text-2xl p-1 bg-white rounded-xl shadow-sm">⏱️</span>
+                    <div>
+                        <h4 class="font-heading font-bold text-indigo-950 text-sm">45-Second Timer</h4>
+                        <p class="text-xs text-slate-500">You have 45 seconds to solve each question.</p>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50/60 p-3.5 rounded-2xl border border-indigo-100/80 flex items-start gap-3">
+                    <span class="text-2xl p-1 bg-white rounded-xl shadow-sm">🎯</span>
+                    <div>
+                        <h4 class="font-heading font-bold text-indigo-950 text-sm">2 Attempts</h4>
+                        <p class="text-xs text-slate-500">10 pts on 1st try, 5 pts on 2nd try before reveal.</p>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50/60 p-3.5 rounded-2xl border border-indigo-100/80 flex items-start gap-3">
+                    <span class="text-2xl p-1 bg-white rounded-xl shadow-sm">🏆</span>
+                    <div>
+                        <h4 class="font-heading font-bold text-indigo-950 text-sm">Earn Badges</h4>
+                        <p class="text-xs text-slate-500">Complete all 16 questions to earn your trophy!</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 active:scale-95 text-white font-heading font-bold px-8 py-3.5 rounded-2xl text-base sm:text-lg shadow-xl shadow-indigo-300/50 transition-all flex items-center gap-2 mt-2">
+                <span>Start Time Quest!</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Game Screen -->
+    <div id="game-screen" class="max-w-4xl mx-auto w-full flex-grow flex-col justify-between gap-4 hidden">
+        
+        <!-- Header Bar -->
+        <header class="bg-white/90 backdrop-blur-md rounded-2xl p-3 sm:p-4 card-shadow border border-white/80 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-2xl font-bold text-xl sm:text-2xl shrink-0 shadow-md shadow-indigo-200">
+                    🧭
+                </div>
+                <div>
+                    <h1 class="font-heading text-base sm:text-lg font-bold text-slate-900 leading-tight">Past Tense Explorer</h1>
+                    <p class="text-xs text-indigo-600 font-bold uppercase tracking-wide">Grade 3 English Quest</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-3 sm:gap-5">
+                <!-- Score -->
+                <div class="text-right">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Score</span>
+                    <span id="score-text" class="font-heading text-lg sm:text-2xl font-extrabold text-indigo-600">0</span>
+                </div>
+
+                <!-- Timer Box -->
+                <div id="timer-box" class="bg-slate-50 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-2xl flex items-center gap-2 border border-slate-200/80 shadow-inner">
+                    <span class="text-base sm:text-lg">⏱️</span>
+                    <span id="timer-text" class="font-heading font-extrabold text-base sm:text-lg text-slate-800 w-7 text-center">45</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Game Container -->
+        <main class="flex-grow flex flex-col gap-4">
+            
+            <!-- Custom Progress Bar -->
+            <div class="w-full bg-indigo-100/60 h-3 rounded-full overflow-hidden p-0.5 border border-indigo-100">
+                <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full w-0 rounded-full transition-all duration-300 ease-out"></div>
+            </div>
+
+            <!-- Scenario Reading Card -->
+            <section class="bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 card-shadow relative overflow-hidden border border-indigo-700/50">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-purple-500/20 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <span id="scenario-badge" class="bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-md">
+                        Scenario 1 of 4
+                    </span>
+                    <span id="scenario-icon" class="text-3xl filter drop-shadow">🎪</span>
+                </div>
+                <h2 id="scenario-title" class="font-heading text-lg sm:text-2xl font-bold text-indigo-200 mb-2 relative z-10">
+                    Loading Scenario...
+                </h2>
+                <p id="scenario-text" class="text-sm sm:text-base leading-relaxed text-indigo-100/90 font-medium relative z-10">
+                    Loading passage...
+                </p>
+            </section>
+
+            <!-- Question Card -->
+            <section id="question-card" class="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl p-5 sm:p-6 card-shadow border border-indigo-50 flex flex-col justify-between gap-4 flex-grow">
+                <div>
+                    <!-- Header Bar for Question Card -->
+                    <div class="flex justify-between items-center mb-3">
+                        <span id="q-counter" class="text-xs font-extrabold text-indigo-700 uppercase tracking-wider bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100">
+                            Question 1 of 16
+                        </span>
+                        <div id="attempts-container" class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
+                            <span>Attempts left:</span>
+                            <span id="attempts-count" class="text-sm font-extrabold text-emerald-800">2</span>
+                        </div>
+                    </div>
+
+                    <!-- Question Text -->
+                    <h3 id="question-text" class="font-heading text-base sm:text-lg font-bold text-slate-800 leading-snug pt-1">
+                        Loading question...
+                    </h3>
+                </div>
+
+                <!-- Choices Options Container -->
+                <div id="choices-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Dynamic choice buttons inserted here -->
+                </div>
+
+                <!-- Feedback Banner & Next Button -->
+                <div id="feedback-area" class="min-h-[52px] flex items-center justify-between gap-3 pt-3 border-t border-slate-100 hidden">
+                    <div id="feedback-message" class="text-xs sm:text-sm font-bold flex-grow">
+                        <!-- Message goes here -->
+                    </div>
+                    <button id="next-btn" onclick="nextQuestion()" class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-heading font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md flex items-center gap-2 shrink-0 active:scale-95">
+                        <span>Next Question</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center text-xs text-indigo-400 font-medium py-1">
+            Grade 3 English Language Arts • Simple Past & Past Continuous Tenses
+        </footer>
+    </div>
+
+    <script>
+        // Verbatim Content for Grade 3 Past Tense
+        const scenarios = [
+            {
+                id: 1,
+                title: "The School Carnival",
+                icon: "🎪",
+                passage: "Last Saturday, the school organised a carnival to raise money for a local animal shelter. Students played games, visited food stalls and watched performances. While the teachers were arranging prizes on the stage, a group of volunteers was decorating the entrance gate with colourful ribbons and balloons.",
+                questions: [
+                    {
+                        text: "Which action was happening over a period of time in the past?",
+                        choices: [
+                            "played games",
+                            "visited food stalls",
+                            "were arranging prizes",
+                            "watched performances"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        text: 'Why is "played" used in the passage?',
+                        choices: [
+                            "It shows an action happening now.",
+                            "It shows a completed action in the past.",
+                            "It shows a future plan.",
+                            "It shows an action happening continuously."
+                        ],
+                        answer: 1
+                    },
+                    {
+                        text: 'Statement: "decorating" is part of a past continuous verb phrase.\nReason: It is used with "was" to show an action that was in progress in the past.',
+                        choices: [
+                            "Both are correct and the reason explains the statement.",
+                            "Both are correct but not related.",
+                            "Statement is correct, reason is wrong.",
+                            "Statement is wrong, reason is correct."
+                        ],
+                        answer: 0
+                    },
+                    {
+                        text: 'A student writes:\n"The volunteers decorate the entrance gate while the teachers were arranging prizes."\nWhich correction would best match the passage?',
+                        choices: [
+                            "decorate → decorated",
+                            "decorate → were decorating",
+                            "gate → gates",
+                            "prizes → prize"
+                        ],
+                        answer: 1
+                    }
+                ]
+            },
+            {
+                id: 2,
+                title: "A Rainy Evening Adventure",
+                icon: "🌧️",
+                passage: "One evening, Aarohi and her brother were returning from their music class when heavy rain suddenly started. They ran towards a bus stop for shelter. While they were waiting there, they saw a puppy shivering near a bench. Aarohi gave it some biscuits, and later they took it to a nearby animal clinic.",
+                questions: [
+                    {
+                        text: "Which verb in the passage has an irregular past form?",
+                        choices: [
+                            "started",
+                            "waiting",
+                            "saw",
+                            "shivering"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        text: "Which action was already in progress when the children noticed the puppy?",
+                        choices: [
+                            "gave biscuits",
+                            "took it to a clinic",
+                            "were waiting there",
+                            "saw a puppy"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        text: "Which verb follows a different past-tense pattern from the others?",
+                        choices: [
+                            "started",
+                            "waited",
+                            "played",
+                            "saw"
+                        ],
+                        answer: 3
+                    },
+                    {
+                        text: 'A student writes:\n"While we waited at the bus stop, we see a puppy."\nWhich revision best matches the tense used in the passage?',
+                        choices: [
+                            "see → saw",
+                            "see → seeing",
+                            "see → sees",
+                            "see → seen"
+                        ],
+                        answer: 0
+                    }
+                ]
+            },
+            {
+                id: 3,
+                title: "The Science Fair",
+                icon: "🔬",
+                passage: "Last month, students from different schools participated in a science fair. Kavya presented a project about solar energy. As the judges were asking questions, she was explaining how the model worked. Many visitors gathered around her table and listened carefully to her presentation.",
+                questions: [
+                    {
+                        text: "Which action was happening at the same time as the judges' questions?",
+                        choices: [
+                            "presented a project",
+                            "gathered around the table",
+                            "listened carefully",
+                            "was explaining the model"
+                        ],
+                        answer: 3
+                    },
+                    {
+                        text: 'Statement: "were asking" is in the past continuous tense.\nReason: It describes an action that was in progress at a particular time in the past.',
+                        choices: [
+                            "Both are correct and the reason explains the statement.",
+                            "Both are correct but not related.",
+                            "Statement is correct, reason is wrong.",
+                            "Statement is wrong, reason is correct."
+                        ],
+                        answer: 0
+                    },
+                    {
+                        text: 'Why is "presented" used in the passage?',
+                        choices: [
+                            "The presentation is happening now.",
+                            "The presentation happened before the present time.",
+                            "The presentation happens every day.",
+                            "The presentation will happen later."
+                        ],
+                        answer: 1
+                    },
+                    {
+                        text: 'A child writes:\n"Kavya explain the model while the judges were asking questions."\nWhat should be corrected?',
+                        choices: [
+                            "explain → explained",
+                            "explain → was explaining",
+                            "judges → judge",
+                            "model → models"
+                        ],
+                        answer: 1
+                    }
+                ]
+            },
+            {
+                id: 4,
+                title: "A Visit to a Historical Fort",
+                icon: "🏰",
+                passage: "During the winter holidays, Kabir visited a historical fort with his family. The guide told interesting stories about kings and battles. As the group was walking through a large courtyard, Kabir found an old cannon. He took several photographs and later shared them with his classmates.",
+                questions: [
+                    {
+                        text: "Which action was happening when Kabir found the cannon?",
+                        choices: [
+                            "visited a fort",
+                            "told stories",
+                            "was walking through the courtyard",
+                            "shared photographs"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        text: 'Why is "found" used instead of "finded"?',
+                        choices: [
+                            'Because "find" is an irregular verb with a different past form.',
+                            'Because all verbs ending in "d" are irregular.',
+                            'Because "found" is a present-tense verb.',
+                            'Because "finded" is used only in stories.'
+                        ],
+                        answer: 0
+                    },
+                    {
+                        text: "Which verb phrase belongs to a different tense group?",
+                        choices: [
+                            "visited",
+                            "told",
+                            "found",
+                            "was walking"
+                        ],
+                        answer: 3
+                    },
+                    {
+                        text: "Which statement best explains why both simple past and past continuous verbs are used in this passage?",
+                        choices: [
+                            "All actions happened repeatedly.",
+                            "Some actions were completed, while another action was ongoing at that time.",
+                            "Every action happened at the exact same moment.",
+                            "The passage describes present-day events."
+                        ],
+                        answer: 1
+                    }
+                ]
+            }
+        ];
+
+        // Build Flattened Questions List from Scenarios
+        const allQuestionsList = [];
+        scenarios.forEach((sc, scIdx) => {
+            sc.questions.forEach((q) => {
+                allQuestionsList.push({
+                    ...q,
+                    scenarioIdx: scIdx
+                });
+            });
+        });
+        const TOTAL_QUESTIONS = allQuestionsList.length;
+
+        // Game State Variables
+        let totalQuestionsAsked = 0;
+        let score = 0;
+        let attemptsLeft = 2;
+        let timerSeconds = 45;
+        let timerInterval = null;
+        let questionAnswered = false;
+        let splashTimeout = null;
+
+        // Audio Assets & Web Audio Fallback Synthesizer
+        const correctAudio = new Audio('assets/correct.mp3');
+        const wrongAudio = new Audio('assets/wrong.mp3');
+
+        function playSyntheticSound(isCorrect) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                if (isCorrect) {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.4);
+                } else {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, ctx.currentTime);
+                    osc.frequency.setValueAtTime(164.81, ctx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.4);
+                }
+            } catch (e) {
+                // Ignore web audio errors if blocked
+            }
+        }
+
+        function playSound(isCorrect) {
+            if (isCorrect) {
+                correctAudio.play().catch(() => playSyntheticSound(true));
+            } else {
+                wrongAudio.play().catch(() => playSyntheticSound(false));
+            }
+        }
+
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 65,
+                    spread: 80,
+                    origin: { y: 0.7 },
+                    colors: ['#6366f1', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6']
+                });
+            }
+        }
+
+        function initSplash() {
+            setTimeout(() => {
+                const splashProgress = document.getElementById('splash-progress');
+                if (splashProgress) splashProgress.style.width = '100%';
+            }, 50);
+
+            splashTimeout = setTimeout(() => {
+                showRulesScreen();
+            }, 5000);
+        }
+
+        function showRulesScreen() {
+            if (splashTimeout) clearTimeout(splashTimeout);
+            const splash = document.getElementById('splash-screen');
+            const rules = document.getElementById('rules-screen');
+            if (splash) splash.classList.add('hidden');
+            if (rules) rules.classList.remove('hidden');
+        }
+
+        function startGame() {
+            const rules = document.getElementById('rules-screen');
+            const game = document.getElementById('game-screen');
+            if (rules) rules.classList.add('hidden');
+            if (game) {
+                game.classList.remove('hidden');
+                game.classList.add('flex');
+            }
+            loadCurrentQuestion();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerSeconds = 45;
+            const timerEl = document.getElementById('timer-text');
+            const timerBox = document.getElementById('timer-box');
+            
+            timerEl.textContent = timerSeconds;
+            timerBox.classList.remove('timer-warning');
+
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                timerEl.textContent = timerSeconds;
+
+                if (timerSeconds <= 10) {
+                    timerBox.classList.add('timer-warning');
+                }
+
+                if (timerSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function handleTimeOut() {
+            if (questionAnswered) return;
+            playSound(false);
+            questionAnswered = true;
+
+            const qData = allQuestionsList[totalQuestionsAsked];
+            const choicesContainer = document.getElementById('choices-container');
+            const btns = choicesContainer.getElementsByTagName('button');
+
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].disabled = true;
+                if (i === qData.answer) {
+                    btns[i].className = "tactile-btn border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-bold p-3.5 sm:p-4 rounded-2xl text-left text-xs sm:text-sm flex items-center gap-3";
+                } else {
+                    btns[i].className = "tactile-btn border border-slate-200 bg-slate-50 text-slate-400 p-3.5 sm:p-4 rounded-2xl text-left text-xs sm:text-sm opacity-50";
+                }
+            }
+
+            showFeedback(false, "⏰ Time's up! The correct answer is highlighted in green.");
+        }
+
+        function loadCurrentQuestion() {
+            questionAnswered = false;
+            attemptsLeft = 2;
+            
+            const qData = allQuestionsList[totalQuestionsAsked];
+            const currentScenario = scenarios[qData.scenarioIdx];
+
+            // Progress Bar
+            const progressPercent = ((totalQuestionsAsked) / TOTAL_QUESTIONS) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            // Scenario Card Update
+            document.getElementById('scenario-badge').textContent = `Scenario ${qData.scenarioIdx + 1} of ${scenarios.length}`;
+            document.getElementById('scenario-icon').textContent = currentScenario.icon;
+            document.getElementById('scenario-title').textContent = currentScenario.title;
+            document.getElementById('scenario-text').textContent = currentScenario.passage;
+
+            // Question Header & Attempts Indicator
+            document.getElementById('q-counter').textContent = `Question ${totalQuestionsAsked + 1} of ${TOTAL_QUESTIONS}`;
+            document.getElementById('attempts-count').textContent = attemptsLeft;
+            document.getElementById('attempts-container').className = "flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100";
+
+            // Format question text with line breaks if present
+            document.getElementById('question-text').innerHTML = qData.text.replace(/\n/g, '<br>');
+
+            // Choices Buttons
+            const choicesContainer = document.getElementById('choices-container');
+            choicesContainer.innerHTML = '';
+
+            const prefixes = ['a', 'b', 'c', 'd'];
+            qData.choices.forEach((choice, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "tactile-btn border-2 border-indigo-100/90 hover:border-indigo-400 bg-white hover:bg-indigo-50/50 text-slate-800 font-semibold p-3.5 sm:p-4 rounded-2xl text-left text-xs sm:text-sm flex items-start gap-3 shadow-sm";
+                btn.onclick = () => selectChoice(idx);
+                
+                btn.innerHTML = `
+                    <span class="w-6 h-6 rounded-xl bg-indigo-100 text-indigo-800 flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5 border border-indigo-200">
+                        ${prefixes[idx]}
+                    </span>
+                    <span class="flex-grow leading-snug pt-0.5">${choice}</span>
+                `;
+                choicesContainer.appendChild(btn);
+            });
+
+            document.getElementById('feedback-area').classList.add('hidden');
+            startTimer();
+        }
+
+        function selectChoice(chosenIdx) {
+            if (questionAnswered) return;
+
+            const qData = allQuestionsList[totalQuestionsAsked];
+            const choicesContainer = document.getElementById('choices-container');
+            const btns = choicesContainer.getElementsByTagName('button');
+
+            if (chosenIdx === qData.answer) {
+                // Correct Answer!
+                stopTimer();
+                playSound(true);
+                triggerConfetti();
+                questionAnswered = true;
+
+                const points = attemptsLeft === 2 ? 10 : 5;
+                score += points;
+                document.getElementById('score-text').textContent = score;
+
+                btns[chosenIdx].className = "tactile-btn border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-bold p-3.5 sm:p-4 rounded-2xl text-left text-xs sm:text-sm flex items-start gap-3 shadow-md";
+                
+                for (let b of btns) b.disabled = true;
+
+                showFeedback(true, `✨ Excellent! Correct Answer (+${points} pts)`);
+            } else {
+                // Wrong Answer
+                playSound(false);
+                attemptsLeft--;
+
+                document.getElementById('attempts-count').textContent = attemptsLeft;
+
+                btns[chosenIdx].disabled = true;
+                btns[chosenIdx].className = "tactile-btn border-2 border-rose-300 bg-rose-50 text-rose-500 p-3.5 sm:p-4 rounded-2xl text-left text-xs sm:text-sm flex items-start gap-3 opacity-60 line-through";
+
+                const qCard = document.getElementById('question-card');
+                qCard.classList.add('shake');
+                setTimeout(() => qCard.classList.remove('shake'), 400);
+
+                if (attemptsLeft > 0) {
+                    document.getElementById('attempts-container').className = "flex items-center gap-1.5 text-xs font-bold text-rose-700 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200 animate-bounce";
+                    showFeedback(false, "Oops! That's not quite right. Try 1 more time!");
+                } else {
+                    stopTimer();
+                    questionAnswered = true;
+                    
+                    btns[qData.answer].className = "tactile-btn border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-bold p-3.5 sm:p-4 rounded-2xl text-left text-xs sm:text-sm flex items-start gap-3 shadow-md";
+
+                    for (let b of btns) b.disabled = true;
+
+                    showFeedback(false, "Nice try! The correct answer is now highlighted in green.");
+                }
+            }
+        }
+
+        function showFeedback(isSuccess, text) {
+            const feedbackArea = document.getElementById('feedback-area');
+            const feedbackMsg = document.getElementById('feedback-message');
+            
+            feedbackArea.classList.remove('hidden');
+            if (isSuccess) {
+                feedbackMsg.className = "text-xs sm:text-sm font-bold text-emerald-700 flex items-center gap-1.5";
+            } else {
+                feedbackMsg.className = "text-xs sm:text-sm font-bold text-indigo-900 flex items-center gap-1.5";
+            }
+            feedbackMsg.innerHTML = text;
+        }
+
+        function nextQuestion() {
+            totalQuestionsAsked++;
+            if (totalQuestionsAsked < TOTAL_QUESTIONS) {
+                loadCurrentQuestion();
+            } else {
+                showFinalResults();
+            }
+        }
+
+        function showFinalResults() {
+            stopTimer();
+            document.getElementById('progress-bar').style.width = '100%';
+
+            const maxScore = TOTAL_QUESTIONS * 10;
+            const percentage = Math.round((score / maxScore) * 100);
+
+            let trophy = "🌟";
+            let remark = "Good Effort!";
+            if (percentage >= 85) {
+                trophy = "🏆";
+                remark = "Past Tense Master!";
+                triggerConfetti();
+            } else if (percentage >= 60) {
+                trophy = "🥇";
+                remark = "Great Explorer!";
+            }
+
+            const mainElem = document.querySelector('#game-screen main');
+            mainElem.innerHTML = `
+                <div class="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 card-shadow border border-indigo-100 text-center flex flex-col items-center gap-5 my-auto">
+                    <div class="text-6xl sm:text-7xl mb-1 animate-bounce filter drop-shadow">${trophy}</div>
+                    <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-slate-900">${remark}</h2>
+                    <p class="text-slate-600 text-sm sm:text-base max-w-md">
+                        You've completed all 16 questions on Simple Past and Past Continuous Tenses!
+                    </p>
+                    
+                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-100 rounded-3xl p-5 w-full max-w-xs my-1 shadow-inner">
+                        <span class="text-xs uppercase tracking-wider font-extrabold text-indigo-500 block">Final Score</span>
+                        <span class="font-heading text-3xl sm:text-4xl font-extrabold text-indigo-600">${score} / ${maxScore}</span>
+                        <span class="text-xs text-indigo-800 font-bold block mt-1">${percentage}% Accuracy</span>
+                    </div>
+
+                    <button onclick="location.reload()" class="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-heading font-bold px-8 py-3.5 rounded-2xl text-base shadow-lg shadow-indigo-300 transition-all active:scale-95 flex items-center gap-2">
+                        <span>Play Again</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </button>
+                </div>
+            `;
+        }
+
+        // Initialize Game Flow on Window Load
+        window.onload = function() {
+            initSplash();
+        };
+    </script>
+</body>
+</html>
