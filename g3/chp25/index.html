@@ -325,14 +325,15 @@
   <!-- Floating Background Animation -->
   <div class="bg-animation" id="bg-animation"></div>
 
-  <!-- Mandatory Innovine Logo Overlay -->
+  <!-- Mandatory Logo Overlay (First 5 seconds) -->
   <div id="logo-overlay">
-    <img src="g3/chp25/assets/innovine-logo.png" alt="Innovine Logo" id="logo-img">
+    <img src="g3/chp25/assets/logo.png" alt="Logo" id="logo-img">
   </div>
 
   <!-- Audio Elements -->
   <audio id="audio-correct" src="g3/chp25/assets/correct.mp3" preload="auto"></audio>
   <audio id="audio-wrong" src="g3/chp25/assets/wrong.mp3" preload="auto"></audio>
+  <audio id="audio-claps" src="g3/chp25/assets/freesound_community-claps-44774.mp3" preload="auto"></audio>
 
   <!-- Main Container -->
   <div class="app-container">
@@ -777,6 +778,8 @@
       clearInterval(timer);
       showScreen('result-screen');
       document.getElementById('final-score').innerText = score;
+
+      playAudio('audio-claps');
 
       const percentage = (score / questions.length) * 100;
       let msg = "";
