@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Grade 3 Homophones and Homonyms</title>
+<style>
+:root{--bg1:#f7fbff;--bg2:#eef7ff;--card:#ffffffee;--ink:#17324d;--muted:#5c7287;--accent:#2f80ed;--good:#2eae63;--bad:#e05555;--line:#d9e7f4;--shadow:0 18px 50px rgba(25,60,100,.12)}*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));overflow-x:hidden}.bg{position:fixed;inset:0;pointer-events:none;overflow:hidden}.star,.stream{position:absolute;opacity:.18;animation:float linear infinite}.star{width:10px;height:10px;background:#7bb8ff;clip-path:polygon(50% 0,61% 35%,98% 35%,69% 57%,79% 91%,50% 72%,21% 91%,31% 57%,2% 35%,39% 35%)}.stream{width:2px;height:80px;background:linear-gradient(to bottom,transparent,rgba(63,138,255,.3),transparent)}@keyframes float{from{transform:translateY(110vh) rotate(0)}to{transform:translateY(-20vh) rotate(360deg)}}.wrap{max-width:980px;margin:0 auto;padding:16px}.panel{background:var(--card);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.6);border-radius:24px;box-shadow:var(--shadow)}.screen{display:none}.screen.active{display:block}.hero{min-height:100vh;display:grid;place-items:center}.hero .panel{width:min(920px,100%);padding:22px}.brand{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.logo-box{display:flex;align-items:center;gap:14px}.logo{width:72px;height:72px;object-fit:contain;border-radius:18px;background:#fff;border:1px solid var(--line);padding:8px}.eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}h1{margin:.2em 0 .2em;font-size:clamp(28px,4vw,48px);line-height:1.05}p{margin:.35em 0;color:var(--muted);line-height:1.5}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.chip{background:#f4f9ff;border:1px solid var(--line);border-radius:16px;padding:12px;font-size:14px}.btnrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:16px;padding:14px 18px;font-weight:700;cursor:pointer}.primary{background:var(--accent);color:#fff}.secondary{background:#eaf2fb;color:var(--ink)}.game{padding-bottom:28px}.topbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;padding:14px 16px;margin-top:14px}.score,.timer{font-weight:700}.meter{height:10px;background:#edf4fb;border-radius:999px;overflow:hidden;margin-top:10px}.meter>div{height:100%;width:0;background:linear-gradient(90deg,#6db4ff,#2f80ed);transition:width .25s}.card{margin-top:14px;padding:18px}.qhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.tag{font-size:13px;color:#fff;background:var(--accent);padding:7px 10px;border-radius:999px}.question{font-size:clamp(20px,2.6vw,30px);font-weight:800;margin:10px 0 12px}.passage{background:#f8fbff;border:1px solid var(--line);border-radius:18px;padding:14px;color:#35506a}.opts{display:grid;gap:10px;margin-top:14px}.opt{width:100%;text-align:left;padding:14px 15px;border-radius:16px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:16px}.opt:hover{border-color:#9bc0ea}.opt.wrong{border-color:var(--bad);background:#fff3f3}.opt.correct{border-color:var(--good);background:#effcf4}.feedback{min-height:26px;margin-top:12px;font-weight:700}.cross{display:inline-block;color:var(--bad);font-size:20px;transform:translateY(2px)}.starburst{position:fixed;inset:0;pointer-events:none;overflow:hidden}.conf{position:absolute;font-size:18px;animation:pop 1s ease-out forwards}.xmark{position:absolute;font-size:24px;color:var(--bad);animation:fade .8s ease-out forwards}@keyframes pop{0%{transform:translateY(0) scale(.4) rotate(0);opacity:1}100%{transform:translateY(-90px) scale(1.2) rotate(220deg);opacity:0}}@keyframes fade{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.2);opacity:0}}.result{display:grid;place-items:center;min-height:100vh}.result .panel{width:min(760px,100%);padding:24px;text-align:center}.big{font-size:clamp(34px,5vw,60px);font-weight:900}.small{font-size:15px;color:var(--muted)}.final-box{margin-top:16px;padding:16px;border-radius:18px;background:#f8fbff;border:1px solid var(--line);text-align:left}.hidden{display:none !important}@media (max-width:720px){.meta{grid-template-columns:repeat(2,1fr)}.brand{align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="starburst" id="fx"></div>
+
+<section class="screen hero active" id="introScreen">
+  <div class="panel wrap">
+    <div class="brand">
+      <div class="logo-box">
+        <img class="logo" src="assets/innovine-logo.png" alt="Innovine logo" />
+        <div>
+          <div class="eyebrow">Innovine</div>
+          <h1>Homophones and Homonyms</h1>
+          <p>Grade 3 interactive MCQ journey with a smooth timer, retry support, and a final challenge.</p>
+        </div>
+      </div>
+      <div class="chip">One-file HTML • Mobile-friendly</div>
+    </div>
+    <div class="meta">
+      <div class="chip"><strong>Grade:</strong> 3</div>
+      <div class="chip"><strong>Subject:</strong> English</div>
+      <div class="chip"><strong>Topic:</strong> Homophones &amp; Homonyms</div>
+      <div class="chip"><strong>Questions:</strong> 16</div>
+    </div>
+    <p>This activity uses competency-based questions from the provided scenarios. Read each passage carefully, choose the best answer, and use the second chance wisely if needed.</p>
+    <div class="btnrow">
+      <button class="btn primary" id="startBtn">Start Activity</button>
+      <button class="btn secondary" id="practiceBtn">Review Instructions</button>
+    </div>
+    <p class="small">The Innovine logo appears at the start for 5 seconds. Audio is enabled for correct and wrong answers.</p>
+  </div>
+</section>
+
+<section class="screen game" id="gameScreen">
+  <div class="wrap">
+    <div class="panel topbar">
+      <div class="score">Score: <span id="score">0</span>/<span id="total">16</span></div>
+      <div class="timer">Time left: <span id="timeLeft">45</span>s</div>
+      <div class="tag" id="attemptTag">Attempt 1 / 2</div>
+    </div>
+    <div class="meter"><div id="meterFill"></div></div>
+
+    <div class="panel card">
+      <div class="qhead"><div class="tag" id="qTag">Question 1</div><div class="small" id="chapterTag">Chapter-based flow</div></div>
+      <div class="question" id="questionText"></div>
+      <div class="passage hidden" id="passageBox"></div>
+      <div class="opts" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="btnrow">
+        <button class="btn secondary hidden" id="nextBtn">Next Question</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="screen result" id="resultScreen">
+  <div class="panel wrap">
+    <div class="big">Final Challenge Complete</div>
+    <p class="small" id="resultText"></p>
+    <div class="final-box" id="finalBox"></div>
+    <div class="btnrow" style="justify-content:center">
+      <button class="btn primary" id="restartBtn">Play Again</button>
+    </div>
+  </div>
+</section>
+
+<script>
+const questions = [
+{p:'Scenario 1: The School Cricket Match\nDuring the annual cricket match, the players were excited to represent their houses. Aarav hit the ball high into the air and scored important runs. Later, while discussing the game, the coach pointed to a bat hanging in the sports room and explained how different sports equipment should be stored properly after use.',q:'Which word in the passage is a homonym?',o:['coach','player','bat','house'],a:2,e:'Bat is a homonym because it can mean cricket equipment or a flying animal.'},
+{q:'Why is bat considered a homonym?',o:['It has opposite meanings.','It can refer to sports equipment or a flying animal.','It sounds different in different sentences.','It is a compound word.'],a:1,e:'The same spelling is used for two different meanings.'},
+{q:'Statement: Some homonyms have the same spelling but different meanings. Reason: The meaning changes depending on how the word is used.',o:['Both are correct and the reason explains the statement.','Both are correct but not related.','Statement is correct, reason is wrong.','Statement is wrong, reason is correct.'],a:0,e:'Both parts are correct, and the reason explains why.'},
+{q:'Which sentence uses bat with a different meaning from the cricket match?',o:['Aarav picked up his bat before the game.','The bat flew out of the cave at sunset.','The coach checked the bat carefully.','The player cleaned his bat after practice.'],a:1,e:'Here, bat means a flying animal, not sports equipment.'},
+{p:'Scenario 2: A Visit to the Flower Show\nStudents visited a flower exhibition organised in the city park. They admired colourful roses, lilies and orchids. One student wanted to buy a bouquet for her grandmother. At the entrance, she saw a sign that read, "Please stand in a line while purchasing tickets."',q:'Which pair contains words that sound the same but have different meanings?',o:['flower – flour','line – stand','ticket – park','buy – bouquet'],a:0,e:'Flower and flour sound alike but mean different things.'},
+{q:'Why are flower and flour homophones?',o:['They have the same spelling.','They have opposite meanings.','They sound alike but have different meanings and spellings.','They are both names of plants.'],a:2,e:'Homophones sound the same, even if their spellings and meanings differ.'},
+{q:'Which pair is NOT a pair of homophones?',o:['flower – flour','sea – see','sun – son','flower – rose'],a:3,e:'Flower and rose are different words with different sounds.'},
+{q:'A student says: "Flower and flour are homonyms because they are spelled the same." Which part shows incorrect understanding?',o:['flower and flour','homonyms','spelled the same','Flower and flour are homonyms because they are spelled the same'],a:3,e:'They are not spelled the same, and they are homophones, not homonyms.'},
+{p:'Scenario 3: The Family Picnic by the River\nA family spent Sunday at a riverside picnic spot. While the children played games, their grandfather sat on the river bank and watched the water flow past. Later, their parents visited a nearby bank to withdraw money before buying snacks for the journey home.',q:'Why is bank a homonym in this scenario?',o:['It has different spellings.','It means exactly the same thing in both sentences.','It refers to a riverside in one case and a financial institution in another.','It is a synonym.'],a:2,e:'Bank has two meanings, but the spelling stays the same.'},
+{q:'Statement: "Bank" can be a homonym. Reason: It can have more than one meaning while keeping the same spelling.',o:['Both are correct and the reason explains the statement.','Both are correct but not related.','Statement is correct, reason is wrong.','Statement is wrong, reason is correct.'],a:0,e:'The reason correctly explains why bank is a homonym.'},
+{q:'Which sentence uses bank in the same way as "river bank"?',o:['My mother visited the bank to deposit money.','We sat on the bank and watched the boats.','The bank opens at 10 o\'clock.','The bank issued a new card.'],a:1,e:'This sentence uses bank as the edge of a river.'},
+{q:'Which word below could also be a homonym?',o:['bell','light','school','pencil'],a:1,e:'Light can mean not heavy or brightness.'},
+{p:'Scenario 4: The Science Exhibition\nAt the science exhibition, students displayed working models and experiments. One group presented a project about saving energy. Their teacher asked them to write clearly on the board so that visitors could read the information easily. Another student said he felt bored while waiting for his turn and leaned against the wooden board near the display area.',q:'Which word is used with two different meanings in the passage?',o:['teacher','student','board','project'],a:2,e:'Board can mean a writing surface or a wooden plank.'},
+{q:'Why is board a homonym?',o:['It has different spellings.','It can mean a writing surface or a wooden plank.','It sounds like another word.','It is an action word.'],a:1,e:'The spelling stays the same, but the meaning changes.'},
+{q:'Which pair belongs to a different category?',o:['flower – flour','sea – see','right – write','board – board'],a:3,e:'The first three are homophones; board – board is a homonym.'},
+{q:'Which statement best explains the difference between homophones and homonyms?',o:['Homophones and homonyms are exactly the same.','Homophones sound the same but usually have different spellings and meanings, while homonyms share the same spelling but have different meanings.','Homophones are opposites, and homonyms are synonyms.','Both are types of punctuation marks.'],a:1,e:'That is the correct difference in simple Grade 3 language.'}
+];
+let i=0,score=0,attempt=1,locked=false,time=45,timer=null;
+const el=s=>document.getElementById(s),show=s=>{['introScreen','gameScreen','resultScreen'].forEach(id=>el(id).classList.remove('active'));el(s).classList.add('active')};
+const audioOk='assets/correct.mp3',audioBad='assets/wrong.mp3';
+function sfx(src){try{new Audio(src).play()}catch(e){}}
+function confetti(ok=true){const fx=el('fx');for(let k=0;k<14;k++){const d=document.createElement('div');d.className=ok?'conf':'xmark';d.textContent=ok?'★':'✕';d.style.left=Math.random()*100+'vw';d.style.top='85vh';d.style.animationDuration=(.7+Math.random()*.6)+'s';d.style.color=ok?'#7acb88':'#e05555';fx.appendChild(d);setTimeout(()=>d.remove(),1300)}}
+function startTimer(){clearInterval(timer);time=45;el('timeLeft').textContent=time;timer=setInterval(()=>{time--;el('timeLeft').textContent=time;if(time<=0){clearInterval(timer);handle(false,true)}},1000)}
+function render(){locked=false;attempt=1;el('attemptTag').textContent='Attempt 1 / 2';el('nextBtn').classList.add('hidden');el('feedback').textContent='';el('passageBox').classList.toggle('hidden',!questions[i].p);el('passageBox').textContent=questions[i].p||'';el('questionText').textContent=questions[i].q;el('qTag').textContent='Question '+(i+1);el('options').innerHTML='';el('meterFill').style.width=((i)/questions.length*100)+'%';questions[i].o.forEach((t,idx)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=String.fromCharCode(65+idx)+'. '+t;b.onclick=()=>handle(idx,false);el('options').appendChild(b)});el('score').textContent=score;startTimer()}
+function handle(choice,timeout){if(locked)return;locked=true;clearInterval(timer);const q=questions[i];const opts=[...el('options').children];if(timeout){el('feedback').innerHTML='<span class="cross">✕</span> Time up. Correct answer: <strong>'+q.o[q.a]+'</strong>. '+q.e;opts[q.a].classList.add('correct');sfx(audioBad);confetti(false);el('nextBtn').classList.remove('hidden');return}
+if(choice===q.a){score++;el('score').textContent=score;opts[choice].classList.add('correct');el('feedback').textContent='Correct! '+q.e;sfx(audioOk);confetti(true);el('nextBtn').classList.remove('hidden')}else{opts[choice].classList.add('wrong');sfx(audioBad);confetti(false);if(attempt===1){attempt=2;locked=false;el('attemptTag').textContent='Retry available: 1';el('feedback').innerHTML='Try again. You have one more chance.'}else{opts[q.a].classList.add('correct');el('feedback').innerHTML='<span class="cross">✕</span> Correct answer: <strong>'+q.o[q.a]+'</strong>. '+q.e;el('nextBtn').classList.remove('hidden')}}}
+el('nextBtn').onclick=()=>{i++;if(i>=questions.length){show('resultScreen');clearInterval(timer);el('resultText').textContent='You scored '+score+' out of '+questions.length+'.';el('finalBox').innerHTML='<strong>Final challenge:</strong> You completed all 16 competency-based questions with gradual difficulty and full topic coverage.';return}render()};
+el('startBtn').onclick=()=>{show('gameScreen');i=0;score=0;render()};
+el('practiceBtn').onclick=()=>alert('Read each question carefully. You get one retry after the first wrong attempt. After the second wrong attempt, the correct answer and a short explanation will appear.');
+el('restartBtn').onclick=()=>{show('introScreen')};
+for(let k=0;k<18;k++){const s=document.createElement('div');s.className=k%3===0?'star':'stream';s.style.left=Math.random()*100+'vw';s.style.animationDuration=(8+Math.random()*8)+'s';s.style.animationDelay=(-Math.random()*10)+'s';s.style.top=Math.random()*100+'vh';document.getElementById('bg').appendChild(s)}
+show('introScreen');
+</script>
+</body>
+</html>
