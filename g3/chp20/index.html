@@ -93,6 +93,7 @@
       line-height: 1.8;
       margin-bottom: 25px;
       padding: 0 20px;
+      list-style-type: none;
     }
 
     .start-btn {
@@ -317,7 +318,7 @@
 </head>
 <body>
 
-  <!-- Audio Elements -->
+  <!-- Audio Elements configured with asset paths -->
   <audio id="audio-correct" src="g3/chp20/assets/correct.mp3" preload="auto"></audio>
   <audio id="audio-wrong" src="g3/chp20/assets/wrong.mp3" preload="auto"></audio>
 
@@ -369,7 +370,7 @@
   </div>
 
   <script>
-    // 1. Splash Screen Timer (3 Seconds)
+    // Splash Screen Transition
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
         const splash = document.getElementById('splash-screen');
@@ -381,7 +382,7 @@
       }, 3000);
     });
 
-    // Audio & Web Audio API Fallback
+    // Web Audio API Synthesizer Fallback
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
 
@@ -401,6 +402,7 @@
       
       if (playPromise !== undefined) {
         playPromise.catch(() => {
+          // If media file fails to play or load, fall back to synthesized audio
           playSynthSound(isCorrect);
         });
       }
