@@ -359,9 +359,17 @@
     <img src="g3/chp21/assets/innovine-logo.png" alt="Logo" id="logo-img" onerror="handleLogoError(this)">
   </div>
 
-  <!-- Audio Elements -->
-  <audio id="audio-correct" src="g3/chp21/assets/correct.mp3" preload="auto"></audio>
-  <audio id="audio-wrong" src="g3/chp21/assets/wrong.mp3" preload="auto"></audio>
+  <!-- HTML Audio Tags with Path Fallback -->
+  <audio id="audio-correct" preload="auto">
+    <source src="g3/chp21/assets/correct.mp3" type="audio/mpeg">
+    <source src="assets/correct.mp3" type="audio/mpeg">
+    <source src="correct.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="audio-wrong" preload="auto">
+    <source src="g3/chp21/assets/wrong.mp3" type="audio/mpeg">
+    <source src="assets/wrong.mp3" type="audio/mpeg">
+    <source src="wrong.mp3" type="audio/mpeg">
+  </audio>
 
   <!-- Main Container -->
   <div class="app-container">
@@ -416,6 +424,69 @@
   </div>
 
   <script>
+    // Audio Context Synthesizer (Zero-dependency Audio Fallback)
+    let audioCtx = null;
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Play Audio File or Fall Back to Web Audio Chime
+    function playSound(type) {
+      initAudioContext();
+      const audioElement = document.getElementById(type === 'correct' ? 'audio-correct' : 'audio-wrong');
+
+      if (audioElement) {
+        audioElement.currentTime = 0;
+        const playPromise = audioElement.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Audio file missing or blocked -> use Web Audio Synth Sound
+            playSynthSound(type);
+          });
+        }
+      } else {
+        playSynthSound(type);
+      }
+    }
+
+    // Web Audio Synthesizer Sound Generator
+    function playSynthSound(type) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'correct') {
+        // Heroic Victory Chime (C5 -> E5 -> G5)
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.1);
+        osc.frequency.setValueAtTime(783.99, now + 0.2);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
+      } else {
+        // Superhero Buzz / Fail Sound
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.setValueAtTime(140, now + 0.15);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      }
+    }
+
     // Automatic Image Fallback Handler
     function handleLogoError(img) {
       if (img.src.includes('g3/chp21/assets/innovine-logo.png')) {
@@ -659,15 +730,6 @@
     let timer;
     let timeLeft = 60;
 
-    // Audio Player
-    function playAudio(id) {
-      const audio = document.getElementById(id);
-      if(audio) {
-        audio.currentTime = 0;
-        audio.play().catch(() => {});
-      }
-    }
-
     // Superhero Particle Burst FX
     function triggerComicFX(e) {
       const x = e ? e.clientX : window.innerWidth / 2;
@@ -684,6 +746,7 @@
 
     // Flow Logic
     function startQuiz() {
+      initAudioContext();
       showScreen('quiz-screen');
       currentQ = 0;
       score = 0;
@@ -742,7 +805,7 @@
     }
 
     function handleTimeout() {
-      playAudio('audio-wrong');
+      playSound('wrong');
       const qData = questions[currentQ];
       const options = document.querySelectorAll('.option-btn');
       options.forEach(opt => opt.disabled = true);
@@ -762,7 +825,7 @@
       if (selectedIndex === qData.answer) {
         // Correct Answer
         clearInterval(timer);
-        playAudio('audio-correct');
+        playSound('correct');
         triggerComicFX(event);
 
         btnEl.classList.add('correct');
@@ -781,7 +844,7 @@
 
       } else {
         // Wrong Answer
-        playAudio('audio-wrong');
+        playSound('wrong');
         btnEl.classList.add('wrong');
         btnEl.disabled = true;
         attemptsLeft--;
