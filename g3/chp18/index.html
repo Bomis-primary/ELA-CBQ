@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grade 3 English: Synonyms Quest</title>
+  <style>
+    :root {
+      --primary: #4cd137;
+      --secondary: #00a8ff;
+      --accent: #fbc531;
+      --bg-gradient: linear-gradient(135deg, #74b9ff 0%, #a29bfe 50%, #81ecec 100%);
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --correct: #44bd32;
+      --wrong: #e84118;
+      --text: #2f3640;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Playground Floating Theme Particles */
+    .bg-playground {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .pg-item {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.25;
+      animation: bounceFloat 10s infinite ease-in-out;
+    }
+
+    @keyframes bounceFloat {
+      0% { transform: translateY(100vh) rotate(0deg); }
+      50% { transform: translateY(40vh) rotate(180deg); }
+      100% { transform: translateY(-100px) rotate(360deg); }
+    }
+
+    /* Splash Screen Logo Overlay */
+    #logo-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+
+    #logo-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    #logo-overlay img {
+      max-width: 250px;
+      max-height: 200px;
+      animation: pulse 1.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); }
+      100% { transform: scale(1.05); }
+    }
+
+    /* Main Container */
+    .container {
+      width: 90%;
+      max-width: 650px;
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      padding: 25px;
+      z-index: 10;
+      position: relative;
+      backdrop-filter: blur(8px);
+      border: 3px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    /* Typography & Headers */
+    h1 {
+      color: #0097e6;
+      margin-bottom: 8px;
+      font-size: 1.8rem;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      color: #718093;
+      margin-bottom: 15px;
+    }
+
+    .badge {
+      background: var(--primary);
+      color: #fff;
+      padding: 4px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    /* Scenario Box */
+    .scenario-box {
+      background: #f5f6fa;
+      border-left: 5px solid var(--secondary);
+      padding: 12px 15px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+      width: 100%;
+      color: #2f3640;
+    }
+
+    .scenario-title {
+      font-weight: bold;
+      color: #0097e6;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* Top Stats Bar */
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 15px;
+      font-weight: bold;
+      background: #e1b12c1a;
+      padding: 10px 15px;
+      border-radius: 12px;
+    }
+
+    .timer-box {
+      color: #e84118;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Question Box */
+    .question-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: left;
+      width: 100%;
+      white-space: pre-line;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .option-btn {
+      background: #ffffff;
+      border: 2px solid #dcdde1;
+      border-radius: 12px;
+      padding: 12px 15px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text);
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: #f5f6fa;
+      border-color: #00a8ff;
+      transform: translateY(-2deg);
+    }
+
+    .option-btn.correct {
+      background: #44bd32 !important;
+      border-color: #44bd32 !important;
+      color: white !important;
+    }
+
+    .option-btn.wrong {
+      background: #e84118 !important;
+      border-color: #e84118 !important;
+      color: white !important;
+    }
+
+    .option-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    /* Feedback & Explanation */
+    .feedback-box {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      text-align: left;
+      font-size: 0.95rem;
+      display: none;
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box.retry {
+      background: #fbc53133;
+      border: 1px solid #e1b12c;
+      color: #c23616;
+    }
+
+    .feedback-box.final-wrong {
+      background: #e84118;
+      color: white;
+    }
+
+    .feedback-box.correct-fb {
+      background: #44bd3233;
+      border: 1px solid #44bd32;
+      color: #27ae60;
+    }
+
+    /* Control Buttons */
+    .btn {
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 168, 255, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: #0097e6;
+      transform: translateY(-2deg);
+    }
+
+    /* Confetti */
+    .star-confetti {
+      position: absolute;
+      pointer-events: none;
+      animation: pop 0.8s ease-out forwards;
+      font-size: 1.5rem;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0) translate(0, 0); opacity: 1; }
+      100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; }
+    }
+
+    /* Progress bar */
+    .progress-container {
+      width: 100%;
+      background: #dcdde1;
+      height: 8px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Theme: Playground Animation -->
+  <div class="bg-playground" id="bgPlayground"></div>
+
+  <!-- Mandatory Branding: Innovine Logo Overlay (5 Seconds) -->
+  <div id="logo-overlay">
+    <img src="assets/innovine-logo.png" alt="Innovine Logo" id="logo-img">
+  </div>
+
+  <!-- Sound Audio Elements -->
+  <audio id="sound-correct" src="assets/correct.mp3" preload="auto"></audio>
+  <audio id="sound-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+  <!-- Main Interactive Container -->
+  <div class="container">
+
+    <!-- Intro Screen -->
+    <div id="intro-screen" class="screen active">
+      <span class="badge">Grade 3 • English</span>
+      <h1>Playground Synonyms Challenge 🛝</h1>
+      <h2>Mastering Similar Words Through Fun Scenarios!</h2>
+      <p style="margin-bottom: 20px; font-size: 0.95rem; line-height: 1.5; color: #718093;">
+        Welcome to the Playground Synonyms Challenge! Match words with similar meanings across 16 exciting scenarios.<br><br>
+        ⏱️ <b>60 seconds</b> per question.<br>
+        💡 <b>1 Retry</b> allowed per wrong attempt.
+      </p>
+      <button class="btn" onclick="startQuiz()">Start Playground Quest 🚀</button>
+    </div>
+
+    <!-- Question Flow Screen -->
+    <div id="quiz-screen" class="screen">
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <div class="stats-bar">
+        <span>Question <span id="q-num">1</span>/16</span>
+        <div class="timer-box">⏰ <span id="timer">60</span>s</div>
+        <span>Score: <span id="score">0</span></span>
+      </div>
+
+      <div class="scenario-box" id="scenario-box">
+        <span class="scenario-title" id="scenario-title">Scenario Title</span>
+        <span id="scenario-text">Scenario text...</span>
+      </div>
+
+      <div class="question-text" id="question-text">Question text goes here</div>
+
+      <div class="options-grid" id="options-grid"></div>
+
+      <div class="feedback-box" id="feedback-box"></div>
+
+      <button class="btn" id="next-btn" onclick="nextQuestion()" style="display: none;">Next Question ➔</button>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="screen">
+      <h1>Playground Challenge Complete! 🎉</h1>
+      <p style="font-size: 1.2rem; margin-top: 10px;">Your Final Score:</p>
+      <div style="font-size: 3rem; font-weight: bold; color: var(--primary); margin: 15px 0;" id="final-score">0 / 160</div>
+      <p id="result-message" style="margin-bottom: 20px; color: #718093;"></p>
+      <button class="btn" onclick="restartQuiz()">Play Again 🔄</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Logo Overlay Timer (5 Seconds Rule)
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const overlay = document.getElementById('logo-overlay');
+        if (overlay) overlay.classList.add('hidden');
+      }, 5000);
+      initPlaygroundTheme();
+    });
+
+    // Quiz Questions Data
+    const quizData = [
+      {
+        scenarioTitle: "Scenario 1: The School Talent Show",
+        scenarioText: "The annual talent show was held in the school auditorium. Students performed dances, songs and short plays. Before going on stage, Rhea felt afraid because many parents and teachers were watching. After her performance ended, the audience clapped loudly, and she felt happy and proud of herself.",
+        question: "Q1. Which word from the lesson could replace \"afraid\" in the passage?",
+        options: [
+          "a) wealthy",
+          "b) scared",
+          "c) lovely",
+          "d) quick"
+        ],
+        answer: 1,
+        explanation: "'Scared' and 'afraid' are synonyms because both describe feeling fear."
+      },
+      {
+        scenarioTitle: "Scenario 1: The School Talent Show",
+        scenarioText: "Understanding word replacements for emotions.",
+        question: "Q2. Why can \"glad\" replace \"happy\" in the passage?",
+        options: [
+          "a) Both words express a similar feeling.",
+          "b) Both words describe speed.",
+          "c) Both words describe size.",
+          "d) Both words name a person."
+        ],
+        answer: 0,
+        explanation: "'Glad' and 'happy' are synonyms because both describe joy and positive feelings."
+      },
+      {
+        scenarioTitle: "Scenario 1: The School Talent Show",
+        scenarioText: "Analyzing relationships between synonyms.",
+        question: "Q3. Assertion–Reason:\nStatement: \"scared\" is a synonym of \"afraid.\"\nReason: Both words have nearly the same meaning.",
+        options: [
+          "a) Both are correct and the reason explains the statement.",
+          "b) Both are correct but not related.",
+          "c) Statement is correct, reason is wrong.",
+          "d) Statement is wrong, reason is correct."
+        ],
+        answer: 0,
+        explanation: "Synonyms are words with nearly identical meanings, which directly justifies the statement."
+      },
+      {
+        scenarioTitle: "Scenario 1: The School Talent Show",
+        scenarioText: "Matching feelings in context.",
+        question: "Q4. Which sentence best matches the feeling in the passage?",
+        options: [
+          "a) Rhea felt scared before performing.",
+          "b) Rhea felt wealthy before performing.",
+          "c) Rhea felt delicious before performing.",
+          "d) Rhea felt broad before performing."
+        ],
+        answer: 0,
+        explanation: "'Scared' accurately matches 'afraid' in the context of feeling nervous before going on stage."
+      },
+      {
+        scenarioTitle: "Scenario 2: A Family Visit to the Market",
+        scenarioText: "On Sunday morning, Kabir accompanied his grandmother to the local market. They wanted to buy fresh vegetables and fruits for the week. After comparing different stalls, they chose a shop that offered good quality produce at a reasonable cost. Kabir helped carry the bags home.",
+        question: "Q5. Which word could replace \"buy\" in the passage?",
+        options: [
+          "a) purchase",
+          "b) arrive",
+          "c) connect",
+          "d) exit"
+        ],
+        answer: 0,
+        explanation: "'Purchase' and 'buy' are synonyms meaning to acquire something by paying money."
+      },
+      {
+        scenarioTitle: "Scenario 2: A Family Visit to the Market",
+        scenarioText: "Evaluating price and cost relationships.",
+        question: "Q6. Why can \"price\" replace \"cost\" in the passage?",
+        options: [
+          "a) Both words relate to how much something is worth.",
+          "b) Both words describe size.",
+          "c) Both words describe location.",
+          "d) Both words describe movement."
+        ],
+        answer: 0,
+        explanation: "'Price' and 'cost' both refer to the monetary value or amount needed to pay for goods."
+      },
+      {
+        scenarioTitle: "Scenario 2: A Family Visit to the Market",
+        scenarioText: "Finding pairs that are NOT synonyms.",
+        question: "Q7. Which word pair does NOT belong with the others?",
+        options: [
+          "a) buy – purchase",
+          "b) choose – select",
+          "c) cost – price",
+          "d) buy – arrive"
+        ],
+        answer: 3,
+        explanation: "'Buy' and 'arrive' have completely different meanings, so they are not synonyms."
+      },
+      {
+        scenarioTitle: "Scenario 2: A Family Visit to the Market",
+        scenarioText: "A student says: \"Kabir arrived some vegetables from the market.\"",
+        question: "Q8. Which word shows incorrect understanding of synonyms?",
+        options: [
+          "a) Kabir",
+          "b) vegetables",
+          "c) arrived",
+          "d) market"
+        ],
+        answer: 2,
+        explanation: "'Arrived' means reached a place; it cannot replace 'bought' or 'purchased'."
+      },
+      {
+        scenarioTitle: "Scenario 3: The Nature Trail",
+        scenarioText: "Students from Class 3 went on a nature trail organised by their school. The guide showed them a beautiful waterfall hidden among the trees. They walked along a narrow path and finally reached a viewing area. Everyone took photographs and admired the lovely scenery around them.",
+        question: "Q9. Which word from the lesson could replace \"beautiful\"?",
+        options: [
+          "a) lovely",
+          "b) quick",
+          "c) sick",
+          "d) broad"
+        ],
+        answer: 0,
+        explanation: "'Lovely' and 'beautiful' are synonyms used to describe something attractive or pleasant to look at."
+      },
+      {
+        scenarioTitle: "Scenario 3: The Nature Trail",
+        scenarioText: "Understanding place and destination verbs.",
+        question: "Q10. Why is \"arrive\" a suitable synonym for \"reach\"?",
+        options: [
+          "a) Both words can describe getting to a place.",
+          "b) Both words describe appearance.",
+          "c) Both words describe feelings.",
+          "d) Both words describe sound."
+        ],
+        answer: 0,
+        explanation: "Both 'reach' and 'arrive' express reaching or getting to a location."
+      },
+      {
+        scenarioTitle: "Scenario 3: The Nature Trail",
+        scenarioText: "Evaluating statement and reason relationships.",
+        question: "Q11. Assertion–Reason:\nStatement: \"lovely scenery\" and \"beautiful scenery\" have similar meanings.\nReason: \"lovely\" and \"beautiful\" are synonyms.",
+        options: [
+          "a) Both are correct and the reason explains the statement.",
+          "b) Both are correct but not related.",
+          "c) Statement is correct, reason is wrong.",
+          "d) Statement is wrong, reason is correct."
+        ],
+        answer: 0,
+        explanation: "Because 'lovely' and 'beautiful' are synonyms, phrases using them carry the same meaning."
+      },
+      {
+        scenarioTitle: "Scenario 3: The Nature Trail",
+        scenarioText: "Selecting sentence matching trail scenario.",
+        question: "Q12. Which sentence best matches the passage?",
+        options: [
+          "a) The students arrived at the viewing area.",
+          "b) The students selected at the viewing area.",
+          "c) The students purchased at the viewing area.",
+          "d) The students connected at the viewing area."
+        ],
+        answer: 0,
+        explanation: "'Arrived' correctly replaces 'reached' in describing getting to the viewing area."
+      },
+      {
+        scenarioTitle: "Scenario 4: Helping a Friend",
+        scenarioText: "One afternoon, Nidhi noticed that her friend was absent from school. Later, she learned that her friend was ill and resting at home. Nidhi called to check on her and shared the class notes. Her friend thanked her for being kind and helpful during a difficult time.",
+        question: "Q13. Which word from the lesson could replace \"ill\"?",
+        options: [
+          "a) wealthy",
+          "b) sick",
+          "c) quick",
+          "d) glad"
+        ],
+        answer: 1,
+        explanation: "'Sick' and 'ill' are synonyms describing someone who is unwell."
+      },
+      {
+        scenarioTitle: "Scenario 4: Helping a Friend",
+        scenarioText: "Understanding words describing challenges.",
+        question: "Q14. Why can \"difficult\" be replaced by \"hard\"?",
+        options: [
+          "a) Both words describe something that is not easy.",
+          "b) Both words describe health.",
+          "c) Both words describe people.",
+          "d) Both words describe places."
+        ],
+        answer: 0,
+        explanation: "Both 'difficult' and 'hard' mean requiring effort and not being easy."
+      },
+      {
+        scenarioTitle: "Scenario 4: Helping a Friend",
+        scenarioText: "Identifying word pairs that are NOT synonyms.",
+        question: "Q15. Which pair does NOT show synonyms?",
+        options: [
+          "a) ill – sick",
+          "b) difficult – hard",
+          "c) happy – glad",
+          "d) happy – arrive"
+        ],
+        answer: 3,
+        explanation: "'Happy' (a feeling) and 'arrive' (an action) are completely unrelated."
+      },
+      {
+        scenarioTitle: "Scenario 4: Helping a Friend",
+        scenarioText: "Final Overall Concept Review.",
+        question: "Q16. Which statement best explains synonyms?",
+        options: [
+          "a) Synonyms are words that always have opposite meanings.",
+          "b) Synonyms are words that have the same or nearly the same meaning.",
+          "c) Synonyms are words that rhyme with each other.",
+          "d) Synonyms are words that belong to different languages."
+        ],
+        answer: 1,
+        explanation: "By definition, synonyms are words that share the same or almost identical meanings."
+      }
+    ];
+
+    // App State Variables
+    let currentQ = 0;
+    let score = 0;
+    let timer = 60;
+    let timerInterval = null;
+    let attemptsLeft = 2;
+
+    // Background Theme Setup
+    function initPlaygroundTheme() {
+      const container = document.getElementById('bgPlayground');
+      const icons = ['🛝', '⚽', '🎈', '🪁', '🚲', '⭐'];
+      for (let i = 0; i < 15; i++) {
+        const item = document.createElement('div');
+        item.className = 'pg-item';
+        item.textContent = icons[Math.floor(Math.random() * icons.length)];
+        item.style.left = Math.random() * 100 + 'vw';
+        item.style.animationDelay = Math.random() * 8 + 's';
+        item.style.animationDuration = (8 + Math.random() * 6) + 's';
+        container.appendChild(item);
+      }
+    }
+
+    // Helper Sound Player
+    function playSound(id) {
+      const audio = document.getElementById(id);
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(() => {});
+      }
+    }
+
+    // Start Interactive
+    function startQuiz() {
+      document.getElementById('intro-screen').classList.remove('active');
+      document.getElementById('quiz-screen').classList.add('active');
+      currentQ = 0;
+      score = 0;
+      loadQuestion();
+    }
+
+    // Load Question Logic
+    function loadQuestion() {
+      clearInterval(timerInterval);
+      attemptsLeft = 2;
+
+      const qData = quizData[currentQ];
+
+      // Update Header Stats
+      document.getElementById('q-num').textContent = currentQ + 1;
+      document.getElementById('score').textContent = score;
+      document.getElementById('progress-bar').style.width = ((currentQ + 1) / quizData.length * 100) + '%';
+
+      // Load Question & Scenario
+      document.getElementById('scenario-title').textContent = qData.scenarioTitle;
+      document.getElementById('scenario-text').textContent = qData.scenarioText;
+      document.getElementById('question-text').textContent = qData.question;
+
+      // Hide Feedback & Next
+      const fbBox = document.getElementById('feedback-box');
+      fbBox.className = 'feedback-box';
+      fbBox.style.display = 'none';
+
+      document.getElementById('next-btn').style.display = 'none';
+
+      // Load Options
+      const optionsGrid = document.getElementById('options-grid');
+      optionsGrid.innerHTML = '';
+
+      qData.options.forEach((optText, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span>${optText}</span><span class="status-icon"></span>`;
+        btn.onclick = () => handleAnswer(index, btn);
+        optionsGrid.appendChild(btn);
+      });
+
+      // Grade 3 Rule: 60-Second Timer
+      timer = 60;
+      document.getElementById('timer').textContent = timer;
+      timerInterval = setInterval(() => {
+        timer--;
+        document.getElementById('timer').textContent = timer;
+        if (timer <= 0) {
+          clearInterval(timerInterval);
+          handleTimeOut();
+        }
+      }, 1000);
+    }
+
+    // Handle Option Selection
+    function handleAnswer(selectedIndex, btnElement) {
+      const qData = quizData[currentQ];
+      const buttons = document.querySelectorAll('.option-btn');
+      const fbBox = document.getElementById('feedback-box');
+
+      if (selectedIndex === qData.answer) {
+        // Correct Answer
+        clearInterval(timerInterval);
+        playSound('sound-correct');
+        btnElement.classList.add('correct');
+        btnElement.querySelector('.status-icon').textContent = ' ✓';
+        triggerStarConfetti(btnElement);
+
+        buttons.forEach(b => b.disabled = true);
+
+        score += 10;
+        document.getElementById('score').textContent = score;
+
+        fbBox.className = 'feedback-box show correct-fb';
+        fbBox.textContent = '🌟 Excellent! Correct Synonym!';
+
+        document.getElementById('next-btn').style.display = 'block';
+      } else {
+        // Wrong Answer
+        playSound('sound-wrong');
+        attemptsLeft--;
+
+        if (attemptsLeft === 1) {
+          // One Retry Allowed
+          btnElement.classList.add('wrong');
+          btnElement.disabled = true;
+          btnElement.querySelector('.status-icon').textContent = ' ✗';
+
+          fbBox.className = 'feedback-box show retry';
+          fbBox.textContent = '⚠️ That\'s not quite right. You have 1 retry remaining! Try again!';
+        } else {
+          // Second Wrong Attempt
+          clearInterval(timerInterval);
+          buttons.forEach(b => b.disabled = true);
+
+          btnElement.classList.add('wrong');
+          btnElement.querySelector('.status-icon').textContent = ' ✗';
+
+          buttons[qData.answer].classList.add('correct');
+          buttons[qData.answer].querySelector('.status-icon').textContent = ' ✓';
+
+          fbBox.className = 'feedback-box show final-wrong';
+          fbBox.innerHTML = `❌ Incorrect. <b>Explanation:</b> ${qData.explanation}`;
+
+          document.getElementById('next-btn').style.display = 'block';
+        }
+      }
+    }
+
+    // Handle Timeout
+    function handleTimeOut() {
+      const qData = quizData[currentQ];
+      const buttons = document.querySelectorAll('.option-btn');
+      const fbBox = document.getElementById('feedback-box');
+
+      playSound('sound-wrong');
+      buttons.forEach(b => b.disabled = true);
+      buttons[qData.answer].classList.add('correct');
+
+      fbBox.className = 'feedback-box show final-wrong';
+      fbBox.innerHTML = `⏰ <b>Time's Up!</b> ${qData.explanation}`;
+
+      document.getElementById('next-btn').style.display = 'block';
+    }
+
+    // Visual Star Confetti Effect
+    function triggerStarConfetti(element) {
+      const rect = element.getBoundingClientRect();
+      for (let i = 0; i < 8; i++) {
+        const star = document.createElement('div');
+        star.className = 'star-confetti';
+        star.textContent = '⭐';
+        star.style.left = (rect.left + rect.width / 2) + 'px';
+        star.style.top = (rect.top + rect.height / 2) + 'px';
+
+        const tx = (Math.random() - 0.5) * 160;
+        const ty = (Math.random() - 0.5) * 160;
+        star.style.setProperty('--tx', `${tx}px`);
+        star.style.setProperty('--ty', `${ty}px`);
+
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 800);
+      }
+    }
+
+    // Next Question
+    function nextQuestion() {
+      currentQ++;
+      if (currentQ < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    // Show Final Results
+    function showResults() {
+      document.getElementById('quiz-screen').classList.remove('active');
+      document.getElementById('result-screen').classList.add('active');
+
+      const maxScore = quizData.length * 10;
+      document.getElementById('final-score').textContent = `${score} / ${maxScore}`;
+
+      const msg = document.getElementById('result-message');
+      if (score >= maxScore * 0.8) {
+        msg.textContent = '🏆 Fantastic Synonym Champion! You know your word meanings inside out!';
+      } else if (score >= maxScore * 0.5) {
+        msg.textContent = '👍 Good job! With a little more practice, you will master all the synonyms!';
+      } else {
+        msg.textContent = '💪 Great effort! Re-read the passage scenarios and try again!';
+      }
+    }
+
+    // Restart Quiz
+    function restartQuiz() {
+      document.getElementById('result-screen').classList.remove('active');
+      startQuiz();
+    }
+  </script>
+</body>
+</html>
