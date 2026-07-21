@@ -3,103 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade 3: Prepositions Aqua Quest</title>
+    <title>Grade 3: Prepositions Water Quest</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ocean: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            500: '#06b6d4',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        heading: ['Fredoka', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Nunito', sans-serif;
-            background: linear-gradient(180deg, #0284c7 0%, #0369a1 35%, #0f4c81 70%, #092b4a 100%);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #0c4a6e 50%, #0284c7 100%);
             min-height: 100vh;
+            color: #0f172a;
             user-select: none;
             -webkit-user-select: none;
-            position: relative;
-            overflow-x: hidden;
         }
 
         .font-heading {
-            font-family: 'Fredoka', sans-serif;
+            font-family: 'Fredoka', cursive, sans-serif;
         }
 
-        .card-shadow {
-            box-shadow: 0 20px 35px -10px rgba(2, 132, 199, 0.3), 0 10px 15px -5px rgba(0, 0, 0, 0.2);
-        }
-
-        .option-card {
-            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border-top-left-radius: 0.5rem;
-            border-bottom-left-radius: 0.5rem;
-            border-top-right-radius: 1.25rem;
-            border-bottom-right-radius: 1.25rem;
-        }
-
-        .option-card:hover:not(:disabled) {
-            transform: translateX(6px) translateY(-2px);
-            box-shadow: 0 10px 20px -4px rgba(14, 165, 233, 0.35);
-        }
-
-        .option-card:active:not(:disabled) {
-            transform: translateX(2px) translateY(1px);
-        }
-
-        /* Floating water bubble animation */
+        /* Animated Water Bubbles */
         .bubble {
             position: absolute;
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.1));
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            bottom: -50px;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             pointer-events: none;
-            animation: floatUp 8s infinite ease-in;
-            z-index: 0;
+            animation: floatUp 8s infinite linear;
+            box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
         @keyframes floatUp {
             0% {
-                transform: translateY(105vh) scale(0.3);
-                opacity: 0.2;
+                transform: translateY(0) scale(0.8);
+                opacity: 0;
             }
-            50% {
-                opacity: 0.8;
-            }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
             100% {
-                transform: translateY(-10vh) scale(1.2);
+                transform: translateY(-110vh) scale(1.2);
                 opacity: 0;
             }
         }
 
-        @keyframes timer-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.08); color: #ef4444; }
-            100% { transform: scale(1); }
+        /* Water Ripple & Glass Effects */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
         }
 
-        .timer-warning {
-            animation: timer-pulse 0.8s infinite ease-in-out;
-            color: #dc2626 !important;
-            border-color: #fca5a5 !important;
-            background-color: #fef2f2 !important;
+        .option-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .shake {
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        .option-card:hover:not(:disabled) {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.25);
         }
 
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-3px, 0, 0); }
-            20%, 80% { transform: translate3d(5px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
-            40%, 60% { transform: translate3d(6px, 0, 0); }
+        .option-card:active:not(:disabled) {
+            transform: translateY(1px);
         }
 
-        .water-wave {
-            background: linear-gradient(135deg, #0284c7 0%, #06b6d4 100%);
+        /* Confetti Canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(2, 132, 199, 0.5);
+            border-radius: 10px;
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased flex flex-col justify-between min-h-screen p-2 sm:p-4 md:p-6 relative">
+<body class="flex flex-col min-h-screen relative overflow-x-hidden">
 
+    <!-- Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Background Bubbles -->
     <div id="bubbles-container" class="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <div class="bubble w-12 h-12 left-[10%]" style="animation-duration: 9s; animation-delay: 0s;"></div>
         <div class="bubble w-8 h-8 left-[25%]" style="animation-duration: 7s; animation-delay: 2s;"></div>
@@ -108,200 +131,204 @@
         <div class="bubble w-14 h-14 left-[85%]" style="animation-duration: 10s; animation-delay: 3s;"></div>
     </div>
 
-    <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-lg flex flex-col items-center justify-center p-6 transition-opacity duration-500">
-        <div class="max-w-xs w-full flex flex-col items-center gap-6 text-center">
-            <div class="h-28 sm:h-36 w-auto flex items-center justify-center p-4 bg-white/10 backdrop-blur-md rounded-3xl border border-sky-400/30 shadow-2xl">
-                <img src="assets/innovine-logo.png" alt="Innovine Logo" class="max-h-full max-w-full object-contain" onerror="this.onerror=null; this.outerHTML='<div class=\'font-heading font-extrabold text-sky-300 text-3xl sm:text-4xl tracking-tight flex items-center gap-2\'>🌊 Innovine</div>';">
+    <!-- PURE WHITE SPLASH SCREEN (ONLY LOGO) -->
+    <div id="splash-screen" class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-6 transition-opacity duration-500">
+        <div class="max-w-xs sm:max-w-sm w-full flex flex-col items-center justify-center">
+            <div class="h-32 sm:h-44 w-auto flex items-center justify-center p-2">
+                <img src="assets/innovine-logo.png" alt="Innovine Logo" class="max-h-full max-w-full object-contain" onerror="this.onerror=null; this.outerHTML='<div class=\'font-heading font-extrabold text-sky-600 text-3xl sm:text-5xl tracking-tight flex items-center gap-2\'>🌊 Innovine</div>';">
             </div>
-            
-            <div class="text-center">
-                <span class="text-xs uppercase tracking-widest text-sky-300 font-bold block mb-1">Grade 3 English Quest</span>
-                <h2 class="font-heading font-extrabold text-white text-xl sm:text-2xl">Prepositions Aqua Voyage</h2>
-            </div>
-
-            <div class="w-full bg-sky-950 h-3 rounded-full overflow-hidden p-0.5 border border-sky-600/40 shadow-inner">
-                <div id="splash-progress" class="bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-500 h-full w-0 rounded-full transition-all duration-[5000ms] ease-linear"></div>
-            </div>
-            <button onclick="showRulesScreen()" class="text-xs text-sky-200 hover:text-white underline font-semibold transition-colors mt-2">
-                Skip Intro →
-            </button>
         </div>
     </div>
 
-    <div id="rules-screen" class="max-w-2xl mx-auto w-full flex-grow flex flex-col items-center justify-center gap-6 my-auto hidden z-10">
-        <div class="bg-white/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 card-shadow border border-sky-100 w-full text-center flex flex-col items-center gap-5">
-            <div class="bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-700 text-white font-heading font-extrabold text-2xl sm:text-3xl px-8 py-3 rounded-2xl shadow-lg shadow-sky-200 flex items-center gap-2">
-                <span>🌊 Prepositions Aqua Master!</span>
+    <!-- RULES SCREEN -->
+    <div id="rules-screen" class="max-w-2xl mx-auto w-full flex-grow flex flex-col items-center justify-center p-4 my-auto hidden z-10">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 w-full text-center space-y-6 border-b-8 border-sky-600">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-100 text-sky-700 font-bold text-sm tracking-wide">
+                🌊 GRADE 3 GRAMMAR QUEST
             </div>
-            
-            <p class="text-slate-600 text-sm sm:text-base max-w-md font-medium leading-relaxed">
-                Explore position words like <span class="text-sky-700 font-bold">in, on, under, between, near, next to, inside, behind, in front of</span> across 4 exciting real-life stories!
+            <h1 class="font-heading text-3xl sm:text-4xl font-extrabold text-slate-800">
+                Prepositions Water Challenge
+            </h1>
+            <p class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-lg mx-auto">
+                Explore water adventures and master prepositions like <strong class="text-sky-600">in, on, under, between, near, next to, inside, behind, in front of</strong>!
             </p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 w-full text-left max-w-lg">
-                <div class="bg-sky-50/80 p-3.5 rounded-2xl border border-sky-100 flex items-start gap-3">
-                    <span class="text-2xl p-1 bg-white rounded-xl shadow-sm">📚</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+                <div class="bg-sky-50 border border-sky-200 p-3.5 rounded-2xl flex items-center gap-3">
+                    <span class="text-2xl">⏱️</span>
                     <div>
-                        <h4 class="font-heading font-bold text-sky-950 text-sm">Read Scenarios</h4>
-                        <p class="text-xs text-slate-500">Read each passage carefully to spot where objects are located.</p>
+                        <div class="font-bold text-sky-900 text-sm">45 Seconds</div>
+                        <div class="text-xs text-sky-700">Timer per question</div>
                     </div>
                 </div>
-
-                <div class="bg-sky-50/80 p-3.5 rounded-2xl border border-sky-100 flex items-start gap-3">
-                    <span class="text-2xl p-1 bg-white rounded-xl shadow-sm">⏱️</span>
+                <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-2xl flex items-center gap-3">
+                    <span class="text-2xl">🎯</span>
                     <div>
-                        <h4 class="font-heading font-bold text-sky-950 text-sm">45-Second Timer</h4>
-                        <p class="text-xs text-slate-500">Solve each preposition question before time ticks away.</p>
+                        <div class="font-bold text-amber-900 text-sm">2 Attempts</div>
+                        <div class="text-xs text-amber-700">Per question allowed</div>
                     </div>
                 </div>
-
-                <div class="bg-sky-50/80 p-3.5 rounded-2xl border border-sky-100 flex items-start gap-3">
-                    <span class="text-2xl p-1 bg-white rounded-xl shadow-sm">🎯</span>
+                <div class="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl flex items-center gap-3">
+                    <span class="text-2xl">🏆</span>
                     <div>
-                        <h4 class="font-heading font-bold text-sky-950 text-sm">2 Attempts</h4>
-                        <p class="text-xs text-slate-500">Earn 10 points on 1st try, or 5 points on 2nd try.</p>
-                    </div>
-                </div>
-
-                <div class="bg-sky-50/80 p-3.5 rounded-2xl border border-sky-100 flex items-start gap-3">
-                    <span class="text-2xl p-1 bg-white rounded-xl shadow-sm">🏆</span>
-                    <div>
-                        <h4 class="font-heading font-bold text-sky-950 text-sm">Aqua Trophy</h4>
-                        <p class="text-xs text-slate-500">Answer 16 questions to win your ocean champion badge!</p>
+                        <div class="font-bold text-emerald-900 text-sm">16 Questions</div>
+                        <div class="text-xs text-emerald-700">Across 4 scenarios</div>
                     </div>
                 </div>
             </div>
 
-            <button onclick="startGame()" class="bg-gradient-to-r from-sky-500 via-cyan-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 active:scale-95 text-white font-heading font-bold px-8 py-3.5 rounded-2xl text-base sm:text-lg shadow-xl shadow-sky-300/60 transition-all flex items-center gap-2 mt-2">
-                <span>Start Aqua Quest!</span>
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            <button id="start-btn" onclick="startGame()" class="w-full py-4 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-heading font-bold text-xl rounded-2xl shadow-lg hover:shadow-sky-500/30 active:scale-98 transition-all flex items-center justify-center gap-2">
+                <span>Start Water Quest</span> 🚀
             </button>
         </div>
     </div>
 
-    <div id="game-screen" class="max-w-4xl mx-auto w-full flex-grow flex-col justify-between gap-4 hidden z-10">
+    <!-- MAIN GAME SCREEN -->
+    <div id="game-screen" class="max-w-3xl mx-auto w-full flex-grow flex flex-col p-4 hidden z-10">
         
-        <!-- Header Bar -->
-        <header class="bg-white/90 backdrop-blur-md rounded-2xl p-3 sm:p-4 card-shadow border border-sky-100 flex justify-between items-center">
+        <!-- Top Status Bar -->
+        <div class="glass-card rounded-2xl p-3 sm:p-4 mb-4 flex items-center justify-between gap-2 shadow-md">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🌊</span>
+                <div>
+                    <div id="question-tracker" class="font-heading font-bold text-sky-900 text-sm sm:text-base">
+                        Question 1 of 16
+                    </div>
+                    <div id="attempt-badge" class="text-xs font-semibold text-sky-600 bg-sky-100 px-2 py-0.5 rounded-full inline-block">
+                        Attempt 1 of 2
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timer Circle / Bar -->
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gradient-to-br from-cyan-500 via-sky-600 to-blue-700 text-white rounded-2xl font-bold text-xl sm:text-2xl shrink-0 shadow-md shadow-sky-200">
-                    🐬
+                <div class="relative w-12 h-12 flex items-center justify-center">
+                    <svg class="w-12 h-12 transform -rotate-90">
+                        <circle cx="24" cy="24" r="20" stroke="#e2e8f0" stroke-width="4" fill="transparent" />
+                        <circle id="timer-circle" cx="24" cy="24" r="20" stroke="#0284c7" stroke-width="4" stroke-dasharray="125.6" stroke-dashoffset="0" stroke-linecap="round" fill="transparent" class="transition-all duration-1000" />
+                    </svg>
+                    <span id="timer-text" class="absolute font-heading font-bold text-slate-800 text-sm">45</span>
                 </div>
-                <div>
-                    <h1 class="font-heading text-base sm:text-lg font-bold text-slate-900 leading-tight">Prepositions Quest</h1>
-                    <p class="text-xs text-sky-600 font-bold uppercase tracking-wide">Grade 3 • Water Edition</p>
-                </div>
-            </div>
 
-            <!-- Stats Bar -->
-            <div class="flex items-center gap-3 sm:gap-5">
-                <!-- Score -->
                 <div class="text-right">
-                    <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Score</span>
-                    <span id="score-text" class="font-heading text-lg sm:text-2xl font-extrabold text-sky-600">0</span>
-                </div>
-
-                <!-- Timer Box -->
-                <div id="timer-box" class="bg-sky-50 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-2xl flex items-center gap-2 border border-sky-200/80 shadow-inner">
-                    <span class="text-base sm:text-lg">⏱️</span>
-                    <span id="timer-text" class="font-heading font-extrabold text-base sm:text-lg text-slate-800 w-7 text-center">45</span>
+                    <div class="text-xs text-slate-500 font-semibold uppercase">Score</div>
+                    <div id="score-text" class="font-heading font-bold text-emerald-600 text-xl">0</div>
                 </div>
             </div>
-        </header>
+        </div>
 
-        <!-- Main Game Container -->
-        <main class="flex-grow flex flex-col gap-4">
-            
-            <!-- Custom Progress Bar -->
-            <div class="w-full bg-sky-900/40 h-3 rounded-full overflow-hidden p-0.5 border border-sky-300/30 backdrop-blur-sm">
-                <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 via-amber-300 to-emerald-400 h-full w-0 rounded-full transition-all duration-300 ease-out"></div>
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-200/60 rounded-full h-2.5 mb-4 overflow-hidden p-0.5 border border-white/50">
+            <div id="progress-bar" class="bg-gradient-to-r from-sky-400 to-blue-600 h-full rounded-full transition-all duration-300 w-0"></div>
+        </div>
+
+        <!-- Scenario Context Card -->
+        <div id="scenario-card" class="bg-gradient-to-r from-sky-900 via-sky-800 to-blue-900 text-white rounded-2xl p-4 sm:p-5 mb-4 shadow-xl border border-sky-400/30 relative overflow-hidden">
+            <div class="absolute -right-4 -bottom-4 text-7xl opacity-10 font-bold select-none pointer-events-none">🌊</div>
+            <div class="flex items-center gap-2 text-sky-300 text-xs font-bold uppercase tracking-wider mb-1">
+                <span>📖 Story Context</span>
+            </div>
+            <h2 id="scenario-title" class="font-heading font-bold text-lg sm:text-xl text-sky-100 mb-2">
+                Scenario Title
+            </h2>
+            <p id="scenario-text" class="text-sky-100/90 text-sm sm:text-base leading-relaxed bg-white/10 p-3.5 rounded-xl backdrop-blur-md border border-white/10">
+                Scenario paragraph...
+            </p>
+        </div>
+
+        <!-- Question & Options Card -->
+        <div class="glass-card rounded-2xl p-4 sm:p-6 mb-4 flex-grow flex flex-col justify-between space-y-4">
+            <div id="question-box">
+                <h3 id="question-text" class="font-heading font-bold text-slate-800 text-base sm:text-lg mb-3 leading-snug">
+                    Question text goes here?
+                </h3>
             </div>
 
-            <!-- Scenario Reading Card -->
-            <section class="bg-gradient-to-br from-slate-950 via-sky-950 to-blue-950 text-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 card-shadow relative overflow-hidden border border-sky-800/60">
-                <div class="absolute -right-10 -top-10 w-40 h-40 bg-sky-500/20 rounded-full blur-2xl pointer-events-none"></div>
-                <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-cyan-500/15 rounded-full blur-2xl pointer-events-none"></div>
-                
-                <div class="flex items-center justify-between mb-3 relative z-10">
-                    <span id="scenario-badge" class="bg-sky-500/30 text-sky-200 border border-sky-400/30 text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-md">
-                        Scenario 1 of 4
-                    </span>
-                    <span id="scenario-icon" class="text-3xl filter drop-shadow">📚</span>
-                </div>
-                <h2 id="scenario-title" class="font-heading text-lg sm:text-2xl font-bold text-amber-200 mb-2 relative z-10">
-                    Loading Scenario...
-                </h2>
-                <p id="scenario-text" class="text-sm sm:text-base leading-relaxed text-sky-100/90 font-medium relative z-10">
-                    Loading passage...
-                </p>
-            </section>
+            <!-- Options Container -->
+            <div id="options-container" class="grid grid-cols-1 gap-2.5 sm:gap-3">
+                <!-- Dynamic options generated in JS -->
+            </div>
 
-            <!-- Question Card -->
-            <section id="question-card" class="bg-white/95 backdrop-blur-md rounded-2xl sm:rounded-3xl p-5 sm:p-6 card-shadow border border-sky-100 flex flex-col justify-between gap-4 flex-grow">
-                <div>
-                    <!-- Header Bar for Question Card -->
-                    <div class="flex justify-between items-center mb-3">
-                        <span id="q-counter" class="text-xs font-extrabold text-sky-800 uppercase tracking-wider bg-sky-50 px-3.5 py-1.5 rounded-full border border-sky-100">
-                            Question 1 of 16
-                        </span>
-                        <div id="attempts-container" class="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100">
-                            <span>Attempts left:</span>
-                            <span id="attempts-count" class="text-sm font-extrabold text-emerald-800">2</span>
-                        </div>
-                    </div>
+            <!-- Feedback Box -->
+            <div id="feedback-box" class="hidden p-3.5 rounded-xl text-sm font-semibold flex items-center justify-between transition-all">
+                <span id="feedback-message">Feedback text</span>
+                <button id="next-btn" onclick="nextQuestion()" class="px-5 py-2 bg-sky-600 hover:bg-sky-700 text-white font-heading font-bold rounded-xl shadow-md transition-all hidden">
+                    Next Question ➔
+                </button>
+            </div>
+        </div>
+    </div>
 
-                    <!-- Question Text -->
-                    <h3 id="question-text" class="font-heading text-base sm:text-lg font-bold text-slate-800 leading-snug pt-1">
-                        Loading question...
-                    </h3>
-                </div>
+    <!-- RESULTS SCREEN -->
+    <div id="results-screen" class="max-w-lg mx-auto w-full flex-grow flex flex-col items-center justify-center p-4 my-auto hidden z-10">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 w-full text-center space-y-6 border-b-8 border-emerald-500">
+            <div class="text-6xl animate-bounce">🏆</div>
+            <h2 class="font-heading text-3xl font-extrabold text-slate-800">
+                Quest Completed!
+            </h2>
+            <p class="text-slate-600">Great job navigating the Prepositions Water Quest!</p>
 
-                <!-- Choices Options Container -->
-                <div id="choices-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- Dynamic choice buttons inserted here -->
-                </div>
+            <div class="bg-gradient-to-br from-sky-50 to-blue-50 border border-sky-200 rounded-2xl p-5 space-y-3">
+                <div class="text-xs font-bold text-sky-600 uppercase tracking-wider">Final Score</div>
+                <div id="final-score" class="font-heading text-5xl font-extrabold text-sky-900">0 / 16</div>
+                <div id="score-percentage" class="text-sm font-semibold text-slate-600">0% Correct</div>
+            </div>
 
-                <!-- Feedback Banner & Next Button -->
-                <div id="feedback-area" class="min-h-[52px] flex items-center justify-between gap-3 pt-3 border-t border-slate-100 hidden">
-                    <div id="feedback-message" class="text-xs sm:text-sm font-bold flex-grow">
-                        <!-- Message goes here -->
-                    </div>
-                    <button id="next-btn" onclick="nextQuestion()" class="bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-heading font-bold px-5 py-2.5 rounded-xl text-sm transition-all shadow-md flex items-center gap-2 shrink-0 active:scale-95">
-                        <span>Next Question</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                    </button>
-                </div>
-            </section>
-        </main>
-
-        <!-- Footer -->
-        <footer class="text-center text-xs text-sky-200/90 font-medium py-1">
-            Grade 3 English Language Arts • Prepositions of Place (in, on, under, between, near, next to, inside, behind, in front of)
-        </footer>
+            <button onclick="restartGame()" class="w-full py-4 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-heading font-bold text-xl rounded-2xl shadow-lg hover:shadow-sky-500/30 active:scale-98 transition-all flex items-center justify-center gap-2">
+                <span>Play Again</span> 🔄
+            </button>
+        </div>
     </div>
 
     <script>
-        // Verbatim Content for Grade 3 Prepositions
-        const scenarios = [
+        // Audio elements with Web Audio fallback
+        const audioCorrect = new Audio('assets/correct.mp3');
+        const audioWrong = new Audio('assets/wrong.mp3');
+
+        function playSound(isCorrect) {
+            const audio = isCorrect ? audioCorrect : audioWrong;
+            audio.play().catch(() => {
+                // Fallback to Web Audio API synth sound if assets fail or blocked by autoplay
+                try {
+                    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    if (isCorrect) {
+                        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                        osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.2); // E5
+                        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                        osc.start();
+                        osc.stop(ctx.currentTime + 0.3);
+                    } else {
+                        osc.frequency.setValueAtTime(220, ctx.currentTime); // A3
+                        osc.frequency.exponentialRampToValueAtTime(164.81, ctx.currentTime + 0.2); // E3
+                        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                        osc.start();
+                        osc.stop(ctx.currentTime + 0.3);
+                    }
+                } catch(e) {}
+            });
+        }
+
+        // Verbatim Game Data for Grade 3 Prepositions
+        const gameData = [
             {
-                id: 1,
-                title: "The School Library Treasure Hunt",
-                icon: "📚",
-                passage: "During Library Week, students participated in a treasure hunt. Clues were hidden in different parts of the library. One clue was inside a storybook, another was under a reading table, and a third clue was placed between two shelves. The final clue was near the librarian's desk, where students received their prizes.",
+                scenarioTitle: "Scenario 1: The School Library Treasure Hunt",
+                scenarioText: "During Library Week, students participated in a treasure hunt. Clues were hidden in different parts of the library. One clue was inside a storybook, another was under a reading table, and a third clue was placed between two shelves. The final clue was near the librarian's desk, where students received their prizes.",
                 questions: [
                     {
-                        text: 'Where was one of the clues hidden?',
-                        choices: [
-                            "quickly a storybook",
-                            "inside a storybook",
-                            "yesterday a storybook",
-                            "carefully a storybook"
-                        ],
+                        question: "Where was one of the clues hidden?",
+                        options: ["quickly a storybook", "inside a storybook", "yesterday a storybook", "carefully a storybook"],
                         answer: 1
                     },
                     {
-                        text: 'Why is "between" used in the passage?',
-                        choices: [
+                        question: "Why is \"between\" used in the passage?",
+                        options: [
                             "To show when the clue was found",
                             "To show how the clue was hidden",
                             "To show the clue's position relative to two shelves",
@@ -310,8 +337,8 @@
                         answer: 2
                     },
                     {
-                        text: 'Statement: "near" tells the location of the final clue.\nReason: Prepositions help show where people or things are located.',
-                        choices: [
+                        question: "Statement: \"near\" tells the location of the final clue.\nReason: Prepositions help show where people or things are located.",
+                        options: [
                             "Both are correct and the reason explains the statement.",
                             "Both are correct but not related.",
                             "Statement is correct, reason is wrong.",
@@ -320,56 +347,34 @@
                         answer: 0
                     },
                     {
-                        text: 'Which word does NOT belong to the same group as the others?',
-                        choices: [
-                            "under",
-                            "between",
-                            "near",
-                            "quietly"
-                        ],
+                        question: "Which word does NOT belong to the same group as the others?",
+                        options: ["under", "between", "near", "quietly"],
                         answer: 3
                     }
                 ]
             },
             {
-                id: 2,
-                title: "A Visit to the Science Museum",
-                icon: "🚀",
-                passage: "Class 3 students visited a science museum during an educational trip. A model rocket stood in front of the space gallery. A small satellite model hung above it, while information panels were placed beside different exhibits. Some students noticed a robot standing next to the entrance, and others explored exhibits inside the innovation hall.",
+                scenarioTitle: "Scenario 2: A Visit to the Science Museum",
+                scenarioText: "Class 3 students visited a science museum during an educational trip. A model rocket stood in front of the space gallery. A small satellite model hung above it, while information panels were placed beside different exhibits. Some students noticed a robot standing next to the entrance, and others explored exhibits inside the innovation hall.",
                 questions: [
                     {
-                        text: 'Where was the model rocket located?',
-                        choices: [
-                            "beside the space gallery",
-                            "in front of the space gallery",
-                            "under the space gallery",
-                            "behind the space gallery"
-                        ],
+                        question: "Where was the model rocket located?",
+                        options: ["beside the space gallery", "in front of the space gallery", "under the space gallery", "behind the space gallery"],
                         answer: 1
                     },
                     {
-                        text: 'A student says:\n"The robot was next to the entrance."\nWhat does "next to" tell us?',
-                        choices: [
-                            "When the robot arrived",
-                            "How the robot moved",
-                            "The robot's position near the entrance",
-                            "Why the robot was displayed"
-                        ],
+                        question: "A student says: \"The robot was next to the entrance.\"\nWhat does \"next to\" tell us?",
+                        options: ["When the robot arrived", "How the robot moved", "The robot's position near the entrance", "Why the robot was displayed"],
                         answer: 2
                     },
                     {
-                        text: 'A child says:\n"The satellite model was above the rocket because above tells when something happens."\nWhich part shows incorrect understanding?',
-                        choices: [
-                            "satellite model",
-                            "above the rocket",
-                            "above tells when something happens",
-                            "rocket"
-                        ],
+                        question: "A child says: \"The satellite model was above the rocket because above tells when something happens.\"\nWhich part shows incorrect understanding?",
+                        options: ["satellite model", "above the rocket", "above tells when something happens", "rocket"],
                         answer: 2
                     },
                     {
-                        text: 'Why is "inside" used in the passage?',
-                        choices: [
+                        question: "Why is \"inside\" used in the passage?",
+                        options: [
                             "To show a location within the innovation hall",
                             "To describe the innovation hall",
                             "To show an action",
@@ -380,24 +385,17 @@
                 ]
             },
             {
-                id: 3,
-                title: "Preparing for the School Play",
-                icon: "🎭",
-                passage: "Students were preparing for a school play based on a folk tale. During rehearsal, a wooden chair was placed on the stage. A basket was kept under the chair as part of the set. One actor stood behind a painted tree while another waited in front of the curtain for his turn to enter.",
+                scenarioTitle: "Scenario 3: Preparing for the School Play",
+                scenarioText: "Students were preparing for a school play based on a folk tale. During rehearsal, a wooden chair was placed on the stage. A basket was kept under the chair as part of the set. One actor stood behind a painted tree while another waited in front of the curtain for his turn to enter.",
                 questions: [
                     {
-                        text: 'Where was the basket?',
-                        choices: [
-                            "on the chair",
-                            "near the chair",
-                            "under the chair",
-                            "behind the chair"
-                        ],
+                        question: "Where was the basket?",
+                        options: ["on the chair", "near the chair", "under the chair", "behind the chair"],
                         answer: 2
                     },
                     {
-                        text: 'Statement: "behind" is a preposition of place.\nReason: It shows the position of one thing at the back of another.',
-                        choices: [
+                        question: "Statement: \"behind\" is a preposition of place.\nReason: It shows the position of one thing at the back of another.",
+                        options: [
                             "Both are correct and the reason explains the statement.",
                             "Both are correct but not related.",
                             "Statement is correct, reason is wrong.",
@@ -406,18 +404,13 @@
                         answer: 0
                     },
                     {
-                        text: 'Which word belongs to a different category?',
-                        choices: [
-                            "behind",
-                            "in front of",
-                            "under",
-                            "actor"
-                        ],
+                        question: "Which word belongs to a different category?",
+                        options: ["behind", "in front of", "under", "actor"],
                         answer: 3
                     },
                     {
-                        text: 'Which sentence best matches the situation in the passage?',
-                        choices: [
+                        question: "Which sentence best matches the situation in the passage?",
+                        options: [
                             "The actor stood behind the painted tree.",
                             "The actor stood yesterday the painted tree.",
                             "The actor stood carefully the painted tree.",
@@ -428,24 +421,17 @@
                 ]
             },
             {
-                id: 4,
-                title: "Community Garden Day",
-                icon: "🌱",
-                passage: "Families gathered at a community garden to plant vegetables and flowers. Seed packets were kept inside a storage box. Gardening tools lay on a bench near the flower beds. Two watering cans were placed between large pots, while a wheelbarrow stood behind the shed. Volunteers worked together throughout the morning.",
+                scenarioTitle: "Scenario 4: Community Garden Day",
+                scenarioText: "Families gathered at a community garden to plant vegetables and flowers. Seed packets were kept inside a storage box. Gardening tools lay on a bench near the flower beds. Two watering cans were placed between large pots, while a wheelbarrow stood behind the shed. Volunteers worked together throughout the morning.",
                 questions: [
                     {
-                        text: 'Where were the gardening tools?',
-                        choices: [
-                            "inside a storage box",
-                            "on a bench near the flower beds",
-                            "between large pots",
-                            "behind the shed"
-                        ],
+                        question: "Where were the gardening tools?",
+                        options: ["inside a storage box", "on a bench near the flower beds", "between large pots", "behind the shed"],
                         answer: 1
                     },
                     {
-                        text: 'Why is "between" used in the passage?',
-                        choices: [
+                        question: "Why is \"between\" used in the passage?",
+                        options: [
                             "To show a position in the middle of two large pots",
                             "To show when the watering cans were used",
                             "To describe the watering cans",
@@ -454,18 +440,13 @@
                         answer: 0
                     },
                     {
-                        text: 'A student writes:\n"The wheelbarrow stood behind the shed because behind tells how the wheelbarrow stood."\nWhich part shows incorrect understanding?',
-                        choices: [
-                            "wheelbarrow stood",
-                            "behind the shed",
-                            "behind tells how the wheelbarrow stood",
-                            "shed"
-                        ],
+                        question: "A student writes: \"The wheelbarrow stood behind the shed because behind tells how the wheelbarrow stood.\"\nWhich part shows incorrect understanding?",
+                        options: ["wheelbarrow stood", "behind the shed", "behind tells how the wheelbarrow stood", "shed"],
                         answer: 2
                     },
                     {
-                        text: 'Which statement best explains how prepositions are used in the passages?',
-                        choices: [
+                        question: "Which statement best explains how prepositions are used in the passages?",
+                        options: [
                             "They describe the colour of objects.",
                             "They tell where people, animals or things are located.",
                             "They tell when actions happen.",
@@ -477,129 +458,110 @@
             }
         ];
 
-        // Build Flattened Questions List from Scenarios
-        const allQuestionsList = [];
-        scenarios.forEach((sc, scIdx) => {
-            sc.questions.forEach((q) => {
-                allQuestionsList.push({
-                    ...q,
-                    scenarioIdx: scIdx
+        let allQuestions = [];
+        gameData.forEach(scenario => {
+            scenario.questions.forEach(q => {
+                allQuestions.push({
+                    scenarioTitle: scenario.scenarioTitle,
+                    scenarioText: scenario.scenarioText,
+                    ...q
                 });
             });
         });
-        const TOTAL_QUESTIONS = allQuestionsList.length;
 
-        // Game State Variables
-        let totalQuestionsAsked = 0;
+        const TOTAL_QUESTIONS = allQuestions.length;
+        let currentQuestionIndex = 0;
         let score = 0;
         let attemptsLeft = 2;
         let timerSeconds = 45;
         let timerInterval = null;
-        let questionAnswered = false;
-        let splashTimeout = null;
 
-        // Audio Assets & Web Audio Fallback Synthesizer
-        const correctAudio = new Audio('assets/correct.mp3');
-        const wrongAudio = new Audio('assets/wrong.mp3');
-
-        function playSyntheticSound(isCorrect) {
-            try {
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                if (!AudioCtx) return;
-                const ctx = new AudioCtx();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                
-                if (isCorrect) {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
-                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
-                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-                    osc.start(ctx.currentTime);
-                    osc.stop(ctx.currentTime + 0.4);
-                } else {
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(220, ctx.currentTime);
-                    osc.frequency.setValueAtTime(164.81, ctx.currentTime + 0.15);
-                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-                    osc.start(ctx.currentTime);
-                    osc.stop(ctx.currentTime + 0.4);
-                }
-            } catch (e) {
-                // Ignore web audio errors if blocked
-            }
-        }
-
-        function playSound(isCorrect) {
-            if (isCorrect) {
-                correctAudio.play().catch(() => playSyntheticSound(true));
-            } else {
-                wrongAudio.play().catch(() => playSyntheticSound(false));
-            }
-        }
-
-        function triggerConfetti() {
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 70,
-                    spread: 85,
-                    origin: { y: 0.7 },
-                    colors: ['#38bdf8', '#34d399', '#f59e0b', '#60a5fa', '#a78bfa']
-                });
-            }
-        }
-
-        function initSplash() {
+        window.addEventListener('load', () => {
+            // Splash screen transitions after 3 seconds automatically
             setTimeout(() => {
-                const splashProgress = document.getElementById('splash-progress');
-                if (splashProgress) splashProgress.style.width = '100%';
-            }, 50);
-
-            splashTimeout = setTimeout(() => {
-                showRulesScreen();
-            }, 5000);
-        }
-
-        function showRulesScreen() {
-            if (splashTimeout) clearTimeout(splashTimeout);
-            const splash = document.getElementById('splash-screen');
-            const rules = document.getElementById('rules-screen');
-            if (splash) splash.classList.add('hidden');
-            if (rules) rules.classList.remove('hidden');
-        }
+                const splash = document.getElementById('splash-screen');
+                splash.classList.add('opacity-0');
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                    document.getElementById('rules-screen').classList.remove('hidden');
+                }, 500);
+            }, 3000);
+        });
 
         function startGame() {
-            const rules = document.getElementById('rules-screen');
-            const game = document.getElementById('game-screen');
-            if (rules) rules.classList.add('hidden');
-            if (game) {
-                game.classList.remove('hidden');
-                game.classList.add('flex');
+            document.getElementById('rules-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(timerInterval);
+            attemptsLeft = 2;
+            timerSeconds = 45;
+
+            const currentQ = allQuestions[currentQuestionIndex];
+
+            // Update Header & Progress
+            document.getElementById('question-tracker').innerText = `Question ${currentQuestionIndex + 1} of ${TOTAL_QUESTIONS}`;
+            document.getElementById('score-text').innerText = score;
+            updateAttemptBadge();
+
+            const progressPct = ((currentQuestionIndex) / TOTAL_QUESTIONS) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPct}%`;
+
+            // Update Scenario Context
+            document.getElementById('scenario-title').innerText = currentQ.scenarioTitle;
+            document.getElementById('scenario-text').innerText = currentQ.scenarioText;
+
+            // Update Question
+            document.getElementById('question-text').innerText = currentQ.question;
+
+            // Options rendering
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const optionLetters = ['a', 'b', 'c', 'd'];
+            currentQ.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `option-card w-full p-3.5 sm:p-4 bg-white hover:bg-sky-50 border-2 border-slate-200 hover:border-sky-400 rounded-2xl text-left flex items-start gap-3 text-slate-700 font-medium text-sm sm:text-base shadow-sm active:scale-98 disabled:pointer-events-none`;
+                btn.onclick = () => selectOption(idx);
+                btn.id = `option-${idx}`;
+
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-full bg-sky-100 text-sky-700 font-heading font-bold flex items-center justify-center text-xs sm:text-sm shrink-0 border border-sky-200">
+                        ${optionLetters[idx]}
+                    </span>
+                    <span class="pt-0.5 leading-snug">${opt}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Reset feedback
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.className = 'hidden p-3.5 rounded-xl text-sm font-semibold flex items-center justify-between transition-all';
+            document.getElementById('next-btn').classList.add('hidden');
+
+            startTimer();
+        }
+
+        function updateAttemptBadge() {
+            const badge = document.getElementById('attempt-badge');
+            if (attemptsLeft === 2) {
+                badge.innerText = "Attempt 1 of 2";
+                badge.className = "text-xs font-semibold text-sky-600 bg-sky-100 px-2 py-0.5 rounded-full inline-block";
+            } else {
+                badge.innerText = "Attempt 2 of 2";
+                badge.className = "text-xs font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full inline-block";
             }
-            loadCurrentQuestion();
         }
 
         function startTimer() {
-            clearInterval(timerInterval);
-            timerSeconds = 45;
-            const timerEl = document.getElementById('timer-text');
-            const timerBox = document.getElementById('timer-box');
-            
-            timerEl.textContent = timerSeconds;
-            timerBox.classList.remove('timer-warning');
-
+            updateTimerUI();
             timerInterval = setInterval(() => {
                 timerSeconds--;
-                timerEl.textContent = timerSeconds;
-
-                if (timerSeconds <= 10) {
-                    timerBox.classList.add('timer-warning');
-                }
+                updateTimerUI();
 
                 if (timerSeconds <= 0) {
                     clearInterval(timerInterval);
@@ -608,198 +570,185 @@
             }, 1000);
         }
 
-        function stopTimer() {
-            clearInterval(timerInterval);
+        function updateTimerUI() {
+            document.getElementById('timer-text').innerText = timerSeconds;
+            const circle = document.getElementById('timer-circle');
+            const circumference = 125.6;
+            const offset = circumference - (timerSeconds / 45) * circumference;
+            circle.style.strokeDashoffset = offset;
+
+            if (timerSeconds <= 10) {
+                circle.style.stroke = "#ef4444"; // red
+                document.getElementById('timer-text').className = "absolute font-heading font-bold text-red-600 text-sm animate-pulse";
+            } else {
+                circle.style.stroke = "#0284c7"; // sky blue
+                document.getElementById('timer-text').className = "absolute font-heading font-bold text-slate-800 text-sm";
+            }
         }
 
         function handleTimeOut() {
-            if (questionAnswered) return;
+            disableAllOptions();
             playSound(false);
-            questionAnswered = true;
-
-            const qData = allQuestionsList[totalQuestionsAsked];
-            const choicesContainer = document.getElementById('choices-container');
-            const btns = choicesContainer.getElementsByTagName('button');
-
-            for (let i = 0; i < btns.length; i++) {
-                btns[i].disabled = true;
-                if (i === qData.answer) {
-                    btns[i].className = "option-card border-2 border-emerald-500 border-l-8 border-l-emerald-600 bg-emerald-50 text-emerald-950 font-bold p-3.5 sm:p-4 text-left text-xs sm:text-sm flex items-center gap-3 shadow-md";
-                } else {
-                    btns[i].className = "option-card border border-slate-200 border-l-4 border-l-slate-300 bg-slate-50 text-slate-400 p-3.5 sm:p-4 text-left text-xs sm:text-sm opacity-50";
-                }
-            }
-
-            showFeedback(false, "⏰ Time's up! The correct answer is highlighted in green.");
-        }
-
-        function loadCurrentQuestion() {
-            questionAnswered = false;
-            attemptsLeft = 2;
+            const currentQ = allQuestions[currentQuestionIndex];
             
-            const qData = allQuestionsList[totalQuestionsAsked];
-            const currentScenario = scenarios[qData.scenarioIdx];
+            // Highlight correct option
+            document.getElementById(`option-${currentQ.answer}`).classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900');
 
-            // Progress Bar
-            const progressPercent = ((totalQuestionsAsked) / TOTAL_QUESTIONS) * 100;
-            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
-
-            // Scenario Card Update
-            document.getElementById('scenario-badge').textContent = `Scenario ${qData.scenarioIdx + 1} of ${scenarios.length}`;
-            document.getElementById('scenario-icon').textContent = currentScenario.icon;
-            document.getElementById('scenario-title').textContent = currentScenario.title;
-            document.getElementById('scenario-text').textContent = currentScenario.passage;
-
-            // Question Header & Attempts Indicator
-            document.getElementById('q-counter').textContent = `Question ${totalQuestionsAsked + 1} of ${TOTAL_QUESTIONS}`;
-            document.getElementById('attempts-count').textContent = attemptsLeft;
-            document.getElementById('attempts-container').className = "flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100";
-
-            // Format question text with line breaks if present
-            document.getElementById('question-text').innerHTML = qData.text.replace(/\n/g, '<br>');
-
-            // Choices Buttons - Ocean themed tag cards with badges
-            const choicesContainer = document.getElementById('choices-container');
-            choicesContainer.innerHTML = '';
-
-            const prefixes = ['A', 'B', 'C', 'D'];
-            qData.choices.forEach((choice, idx) => {
-                const btn = document.createElement('button');
-                btn.className = "option-card border-2 border-sky-100 border-l-8 border-l-sky-500 hover:border-l-cyan-400 bg-white hover:bg-sky-50/50 text-slate-800 font-semibold p-3.5 sm:p-4 text-left text-xs sm:text-sm flex items-start gap-3 shadow-sm";
-                btn.onclick = () => selectChoice(idx);
-                
-                btn.innerHTML = `
-                    <span class="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 text-white flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5 shadow-sm">
-                        ${prefixes[idx]}
-                    </span>
-                    <span class="flex-grow leading-snug pt-0.5">${choice}</span>
-                `;
-                choicesContainer.appendChild(btn);
-            });
-
-            document.getElementById('feedback-area').classList.add('hidden');
-            startTimer();
+            showFeedback(false, "⏰ Time's up! Here is the correct answer.");
         }
 
-        function selectChoice(chosenIdx) {
-            if (questionAnswered) return;
+        function selectOption(selectedIdx) {
+            const currentQ = allQuestions[currentQuestionIndex];
+            const isCorrect = selectedIdx === currentQ.answer;
 
-            const qData = allQuestionsList[totalQuestionsAsked];
-            const choicesContainer = document.getElementById('choices-container');
-            const btns = choicesContainer.getElementsByTagName('button');
-
-            if (chosenIdx === qData.answer) {
-                // Correct Answer!
-                stopTimer();
+            if (isCorrect) {
+                clearInterval(timerInterval);
+                disableAllOptions();
                 playSound(true);
                 triggerConfetti();
-                questionAnswered = true;
 
-                const points = attemptsLeft === 2 ? 10 : 5;
-                score += points;
-                document.getElementById('score-text').textContent = score;
+                // Increment score based on attempts
+                score += (attemptsLeft === 2) ? 10 : 5;
+                document.getElementById('score-text').innerText = score;
 
-                btns[chosenIdx].className = "option-card border-2 border-emerald-500 border-l-8 border-l-emerald-600 bg-emerald-50 text-emerald-950 font-bold p-3.5 sm:p-4 text-left text-xs sm:text-sm flex items-start gap-3 shadow-md";
-                
-                for (let b of btns) b.disabled = true;
+                // Highlight choice
+                const btn = document.getElementById(`option-${selectedIdx}`);
+                btn.classList.remove('bg-white', 'border-slate-200');
+                btn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
 
-                showFeedback(true, `✨ Terrific! Correct Answer (+${points} pts)`);
+                showFeedback(true, "🎉 Excellent! Correct Answer!");
             } else {
-                // Wrong Answer
                 playSound(false);
                 attemptsLeft--;
 
-                document.getElementById('attempts-count').textContent = attemptsLeft;
-
-                btns[chosenIdx].disabled = true;
-                btns[chosenIdx].className = "option-card border-2 border-rose-300 border-l-8 border-l-rose-500 bg-rose-50 text-rose-600 p-3.5 sm:p-4 text-left text-xs sm:text-sm flex items-start gap-3 opacity-60 line-through";
-
-                const qCard = document.getElementById('question-card');
-                qCard.classList.add('shake');
-                setTimeout(() => qCard.classList.remove('shake'), 400);
+                const btn = document.getElementById(`option-${selectedIdx}`);
+                btn.disabled = true;
+                btn.classList.remove('bg-white', 'hover:bg-sky-50');
+                btn.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-700', 'opacity-60');
 
                 if (attemptsLeft > 0) {
-                    document.getElementById('attempts-container').className = "flex items-center gap-1.5 text-xs font-bold text-rose-700 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200 animate-bounce";
-                    showFeedback(false, "Oops! Try 1 more time!");
+                    updateAttemptBadge();
+                    showFeedback(false, "❌ Incorrect. Try again! You have 1 attempt left.", false);
                 } else {
-                    stopTimer();
-                    questionAnswered = true;
+                    clearInterval(timerInterval);
+                    disableAllOptions();
                     
-                    btns[qData.answer].className = "option-card border-2 border-emerald-500 border-l-8 border-l-emerald-600 bg-emerald-50 text-emerald-950 font-bold p-3.5 sm:p-4 text-left text-xs sm:text-sm flex items-start gap-3 shadow-md";
+                    // Show correct answer
+                    const correctBtn = document.getElementById(`option-${currentQ.answer}`);
+                    correctBtn.classList.add('bg-emerald-100', 'border-emerald-500', 'text-emerald-900', 'font-bold');
 
-                    for (let b of btns) b.disabled = true;
-
-                    showFeedback(false, "Nice effort! The correct answer is highlighted in green.");
+                    showFeedback(false, "❌ Not quite! The correct answer is highlighted.");
                 }
             }
         }
 
-        function showFeedback(isSuccess, text) {
-            const feedbackArea = document.getElementById('feedback-area');
-            const feedbackMsg = document.getElementById('feedback-message');
-            
-            feedbackArea.classList.remove('hidden');
-            if (isSuccess) {
-                feedbackMsg.className = "text-xs sm:text-sm font-bold text-emerald-700 flex items-center gap-1.5";
-            } else {
-                feedbackMsg.className = "text-xs sm:text-sm font-bold text-sky-900 flex items-center gap-1.5";
+        function disableAllOptions() {
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`option-${i}`);
+                if (btn) btn.disabled = true;
             }
-            feedbackMsg.innerHTML = text;
+        }
+
+        function showFeedback(isSuccess, message, showNext = true) {
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackMsg = document.getElementById('feedback-message');
+            const nextBtn = document.getElementById('next-btn');
+
+            feedbackBox.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-rose-50', 'text-rose-800', 'border-rose-200', 'bg-amber-50', 'text-amber-800', 'border-amber-200');
+
+            if (isSuccess) {
+                feedbackBox.classList.add('bg-emerald-50', 'text-emerald-800', 'border', 'border-emerald-200');
+            } else if (!showNext) {
+                feedbackBox.classList.add('bg-amber-50', 'text-amber-800', 'border', 'border-amber-200');
+            } else {
+                feedbackBox.classList.add('bg-rose-50', 'text-rose-800', 'border', 'border-rose-200');
+            }
+
+            feedbackMsg.innerText = message;
+
+            if (showNext) {
+                nextBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.add('hidden');
+            }
         }
 
         function nextQuestion() {
-            totalQuestionsAsked++;
-            if (totalQuestionsAsked < TOTAL_QUESTIONS) {
-                loadCurrentQuestion();
+            currentQuestionIndex++;
+            if (currentQuestionIndex < TOTAL_QUESTIONS) {
+                loadQuestion();
             } else {
-                showFinalResults();
+                showResults();
             }
         }
 
-        function showFinalResults() {
-            stopTimer();
-            document.getElementById('progress-bar').style.width = '100%';
+        function showResults() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
 
             const maxScore = TOTAL_QUESTIONS * 10;
-            const percentage = Math.round((score / maxScore) * 100);
+            document.getElementById('final-score').innerText = `${score} / ${maxScore}`;
 
-            let trophy = "🐬";
-            let remark = "Splendid Job!";
-            if (percentage >= 85) {
-                trophy = "🏆";
-                remark = "Preposition Ocean Champion!";
-                triggerConfetti();
-            } else if (percentage >= 60) {
-                trophy = "🥇";
-                remark = "Aqua Explorer!";
-            }
+            const pct = Math.round((score / maxScore) * 100);
+            document.getElementById('score-percentage').innerText = `${pct}% Performance Rating`;
 
-            const mainElem = document.querySelector('#game-screen main');
-            mainElem.innerHTML = `
-                <div class="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 card-shadow border border-sky-100 text-center flex flex-col items-center gap-5 my-auto">
-                    <div class="text-6xl sm:text-7xl mb-1 animate-bounce filter drop-shadow">${trophy}</div>
-                    <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-slate-900">${remark}</h2>
-                    <p class="text-slate-600 text-sm sm:text-base max-w-md">
-                        You've completed all 16 questions on Grade 3 Prepositions of Place!
-                    </p>
-                    
-                    <div class="bg-gradient-to-br from-sky-50 to-cyan-50 border border-sky-100 rounded-3xl p-5 w-full max-w-xs my-1 shadow-inner">
-                        <span class="text-xs uppercase tracking-wider font-extrabold text-sky-600 block">Final Score</span>
-                        <span class="font-heading text-3xl sm:text-4xl font-extrabold text-sky-700">${score} / ${maxScore}</span>
-                        <span class="text-xs text-sky-800 font-bold block mt-1">${percentage}% Accuracy</span>
-                    </div>
-
-                    <button onclick="location.reload()" class="bg-gradient-to-r from-sky-500 via-cyan-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-heading font-bold px-8 py-3.5 rounded-2xl text-base shadow-lg shadow-sky-200 transition-all active:scale-95 flex items-center gap-2">
-                        <span>Play Again</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    </button>
-                </div>
-            `;
+            triggerConfetti();
         }
 
-        window.onload = function() {
-            initSplash();
-        };
+        function restartGame() {
+            document.getElementById('results-screen').classList.add('hidden');
+            document.getElementById('rules-screen').classList.remove('hidden');
+        }
+
+        function triggerConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#0284c7', '#06b6d4', '#10b981', '#f59e0b', '#ec4899', '#3b82f6'];
+
+            for (let i = 0; i < 70; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 14,
+                    vy: (Math.random() - 0.7) * 14,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    life: 100
+                });
+            }
+
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let activeParticles = false;
+
+                particles.forEach(p => {
+                    if (p.life > 0) {
+                        activeParticles = true;
+                        p.x += p.vx;
+                        p.y += p.vy;
+                        p.vy += 0.3; // gravity
+                        p.life -= 1.5;
+
+                        ctx.fillStyle = p.color;
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+                if (activeParticles) {
+                    requestAnimationFrame(animateConfetti);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            animateConfetti();
+        }
     </script>
 </body>
 </html>
