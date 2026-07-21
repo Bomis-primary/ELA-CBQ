@@ -50,9 +50,23 @@
       border: 3px solid var(--strawberry);
     }
 
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .logo-container img {
       height: 45px;
+      max-width: 180px;
       object-fit: contain;
+    }
+
+    .logo-fallback {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--strawberry);
+      letter-spacing: 0.5px;
     }
 
     .score-badge {
@@ -114,6 +128,7 @@
       font-weight: bold;
       line-height: 1.4;
       color: #333;
+      white-space: pre-line;
     }
 
     /* Options */
@@ -245,14 +260,15 @@
 </head>
 <body>
 
-  <!-- Audio Elements -->
-  <audio id="audio-correct" src="g3/chp20/assets/correct.mp3"></audio>
-  <audio id="audio-wrong" src="g3/chp20/assets/wrong.mp3"></audio>
+  <!-- Audio Elements with direct asset links -->
+  <audio id="audio-correct" src="g3/chp20/assets/correct.mp3" preload="auto"></audio>
+  <audio id="audio-wrong" src="g3/chp20/assets/wrong.mp3" preload="auto"></audio>
 
   <!-- Header -->
   <div class="header">
     <div class="logo-container">
-      <img src="g3/chp20/assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
+      <img id="logo-img" src="g3/chp20/assets/innovine-logo.png" alt="Innovine" onerror="showLogoText()">
+      <span id="logo-text" class="logo-fallback" style="display: none;">INNOVINE</span>
     </div>
     <div class="score-badge">🍨 Scoops: <span id="score">0</span> / 16</div>
   </div>
@@ -284,6 +300,65 @@
   </div>
 
   <script>
+    function showLogoText() {
+      document.getElementById('logo-img').style.display = 'none';
+      document.getElementById('logo-text').style.display = 'inline';
+    }
+
+    // Audio Player with Synthesized Fallback
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playSound(isCorrect) {
+      const audioEl = document.getElementById(isCorrect ? 'audio-correct' : 'audio-wrong');
+      
+      // Try playing local file first
+      let playPromise = audioEl.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Fallback to Web Audio Synthesizer if local MP3 is missing/blocked
+          playSynthSound(isCorrect);
+        });
+      }
+    }
+
+    function playSynthSound(isCorrect) {
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (isCorrect) {
+        // High cheery chime
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.2); // A5
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else {
+        // Low buzz tone
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.25);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+    }
+
     const quizData = [
       // Scenario 1
       {
@@ -420,24 +495,18 @@
     const progressFill = document.getElementById('progress-fill');
     const quizContainer = document.getElementById('quiz-container');
 
-    const correctAudio = document.getElementById('audio-correct');
-    const wrongAudio = document.getElementById('audio-wrong');
-
     function loadQuestion() {
       const currentQ = quizData[currentIdx];
       
-      // Update Scenarios & Question Info
       scenarioTitleEl.textContent = currentQ.scenarioTitle;
       scenarioTextEl.textContent = currentQ.scenarioText;
       qNumberEl.textContent = `Question ${currentIdx + 1} of ${quizData.length}`;
       qTextEl.innerText = currentQ.question;
       
-      // Reset UI state
       optionsGridEl.innerHTML = '';
       nextBtn.disabled = true;
       selectedOption = null;
       
-      // Render Options
       currentQ.options.forEach((optText, index) => {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
@@ -446,39 +515,32 @@
         optionsGridEl.appendChild(btn);
       });
 
-      // Update Progress
       const progressPercent = ((currentIdx) / quizData.length) * 100;
       progressFill.style.width = `${progressPercent}%`;
     }
 
     function handleOptionSelect(index, button) {
-      if (selectedOption !== null) return; // Prevent double clicking
+      if (selectedOption !== null) return;
       
       selectedOption = index;
       const currentQ = quizData[currentIdx];
       const allButtons = optionsGridEl.querySelectorAll('.option-btn');
 
-      if (index === currentQ.answer) {
+      const isCorrect = (index === currentQ.answer);
+
+      if (isCorrect) {
         button.classList.add('selected-correct');
         score++;
         scoreEl.textContent = score;
-        playAudio(correctAudio);
       } else {
         button.classList.add('selected-wrong');
         allButtons[currentQ.answer].classList.add('selected-correct');
-        playAudio(wrongAudio);
       }
 
-      // Disable all options after selection
+      playSound(isCorrect);
+
       allButtons.forEach(btn => btn.disabled = true);
       nextBtn.disabled = false;
-    }
-
-    function playAudio(audioEl) {
-      if (audioEl) {
-        audioEl.currentTime = 0;
-        audioEl.play().catch(e => console.log('Audio playback prevented by browser policy'));
-      }
     }
 
     function nextQuestion() {
