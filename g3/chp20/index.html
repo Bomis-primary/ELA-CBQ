@@ -134,12 +134,6 @@
       object-fit: contain;
     }
 
-    .logo-fallback {
-      font-weight: 800;
-      font-size: 1.2rem;
-      color: var(--strawberry);
-    }
-
     .score-badge {
       background: var(--vanilla);
       padding: 8px 16px;
@@ -392,7 +386,6 @@
     let audioCtx = null;
 
     function startGame() {
-      // Initialize Audio Context on user click
       if (!audioCtx) {
         audioCtx = new AudioContext();
       }
