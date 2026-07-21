@@ -35,6 +35,84 @@
       padding: 20px 10px;
     }
 
+    /* Splash Screen */
+    #splash-screen {
+      position: fixed;
+      inset: 0;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.6s ease, visibility 0.6s;
+    }
+
+    #splash-screen img {
+      max-width: 250px;
+      max-height: 120px;
+      object-fit: contain;
+      margin-bottom: 20px;
+      animation: pulse 1.5s infinite alternate;
+    }
+
+    .splash-text {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--strawberry);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); }
+      100% { transform: scale(1.05); }
+    }
+
+    /* Instructions Screen */
+    #instructions-screen {
+      width: 100%;
+      max-width: 700px;
+      background: white;
+      border-radius: 25px;
+      padding: 35px 25px;
+      box-shadow: var(--shadow);
+      border: 4px solid var(--strawberry);
+      text-align: center;
+      margin-top: 40px;
+      display: none;
+    }
+
+    .instructions-title {
+      font-size: 1.8rem;
+      color: var(--strawberry);
+      margin-bottom: 20px;
+    }
+
+    .instructions-list {
+      text-align: left;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 25px;
+      padding: 0 20px;
+    }
+
+    .start-btn {
+      background: var(--strawberry);
+      color: white;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(255, 107, 139, 0.4);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .start-btn:hover {
+      background: #FF5277;
+      transform: scale(1.05);
+    }
+
     /* Header Bar */
     .header {
       width: 100%;
@@ -50,12 +128,6 @@
       border: 3px solid var(--strawberry);
     }
 
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
     .logo-container img {
       height: 45px;
       max-width: 180px;
@@ -66,7 +138,6 @@
       font-weight: 800;
       font-size: 1.2rem;
       color: var(--strawberry);
-      letter-spacing: 0.5px;
     }
 
     .score-badge {
@@ -88,6 +159,7 @@
       box-shadow: var(--shadow);
       border: 4px solid var(--mint);
       position: relative;
+      display: none;
     }
 
     .scenario-box {
@@ -105,9 +177,6 @@
       font-weight: bold;
       color: var(--chocolate);
       margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .question-box {
@@ -148,8 +217,6 @@
       text-align: left;
       cursor: pointer;
       transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
       color: var(--chocolate);
       font-weight: 600;
     }
@@ -252,30 +319,41 @@
       cursor: pointer;
       margin-top: 20px;
     }
-
-    .restart-btn:hover {
-      background: #82E0BF;
-    }
   </style>
 </head>
 <body>
 
-  <!-- Audio Elements with direct asset links -->
+  <!-- Audio Elements -->
   <audio id="audio-correct" src="g3/chp20/assets/correct.mp3" preload="auto"></audio>
   <audio id="audio-wrong" src="g3/chp20/assets/wrong.mp3" preload="auto"></audio>
 
-  <!-- Header -->
-  <div class="header">
+  <!-- 1. Splash Screen (3 Seconds) -->
+  <div id="splash-screen">
+    <img id="splash-logo" src="g3/chp20/assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
+    <div class="splash-text">INNOVINE</div>
+  </div>
+
+  <!-- 2. Instructions Screen -->
+  <div id="instructions-screen">
+    <h1 class="instructions-title">🍨 Ice Cream Parlor Challenge!</h1>
+    <ul class="instructions-list">
+      <li>📖 Read each short story scenario carefully.</li>
+      <li>💡 Answer questions about <strong>Compound Words</strong>.</li>
+      <li>🍨 Earn an ice cream scoop for every correct answer!</li>
+      <li>🔊 Listen for audio feedback on every choice.</li>
+    </ul>
+    <button class="start-btn" onclick="startGame()">Start Game 🍦</button>
+  </div>
+
+  <!-- 3. Quiz Interface -->
+  <div class="header" id="game-header" style="display: none;">
     <div class="logo-container">
-      <img id="logo-img" src="g3/chp20/assets/innovine-logo.png" alt="Innovine" onerror="showLogoText()">
-      <span id="logo-text" class="logo-fallback" style="display: none;">INNOVINE</span>
+      <img src="g3/chp20/assets/innovine-logo.png" alt="Innovine" onerror="this.style.display='none'">
     </div>
     <div class="score-badge">🍨 Scoops: <span id="score">0</span> / 16</div>
   </div>
 
-  <!-- Main Quiz Container -->
   <div class="container" id="quiz-container">
-    
     <div class="scenario-box" id="scenario-box">
       <div class="scenario-title">🍦 <span id="scenario-title">Scenario 1</span></div>
       <div id="scenario-text">Scenario details will appear here.</div>
@@ -286,9 +364,7 @@
       <div class="q-text" id="q-text">Question prompt goes here?</div>
     </div>
 
-    <div class="options-grid" id="options-grid">
-      <!-- Option buttons dynamically generated -->
-    </div>
+    <div class="options-grid" id="options-grid"></div>
 
     <div class="controls">
       <div class="progress-bar">
@@ -296,40 +372,50 @@
       </div>
       <button class="next-btn" id="next-btn" onclick="nextQuestion()" disabled>Next 🍨</button>
     </div>
-
   </div>
 
   <script>
-    function showLogoText() {
-      document.getElementById('logo-img').style.display = 'none';
-      document.getElementById('logo-text').style.display = 'inline';
-    }
+    // 1. Splash Screen Timer (3 Seconds)
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        splash.style.opacity = '0';
+        setTimeout(() => {
+          splash.style.display = 'none';
+          document.getElementById('instructions-screen').style.display = 'block';
+        }, 600);
+      }, 3000);
+    });
 
-    // Audio Player with Synthesized Fallback
+    // Audio & Web Audio API Fallback
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
 
+    function startGame() {
+      // Initialize Audio Context on user click
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      }
+      document.getElementById('instructions-screen').style.display = 'none';
+      document.getElementById('game-header').style.display = 'flex';
+      document.getElementById('quiz-container').style.display = 'block';
+      loadQuestion();
+    }
+
     function playSound(isCorrect) {
       const audioEl = document.getElementById(isCorrect ? 'audio-correct' : 'audio-wrong');
-      
-      // Try playing local file first
       let playPromise = audioEl.play();
       
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // Fallback to Web Audio Synthesizer if local MP3 is missing/blocked
           playSynthSound(isCorrect);
         });
       }
     }
 
     function playSynthSound(isCorrect) {
-      if (!audioCtx) {
-        audioCtx = new AudioContext();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      if (!audioCtx) audioCtx = new AudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
 
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -339,16 +425,14 @@
       const now = audioCtx.currentTime;
 
       if (isCorrect) {
-        // High cheery chime
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, now); // C5
-        osc.frequency.exponentialRampToValueAtTime(880, now + 0.2); // A5
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
         gain.gain.setValueAtTime(0.3, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
         osc.start(now);
         osc.stop(now + 0.3);
       } else {
-        // Low buzz tone
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(180, now);
         osc.frequency.exponentialRampToValueAtTime(110, now + 0.25);
@@ -568,9 +652,6 @@
         </div>
       `;
     }
-
-    // Initialize
-    loadQuestion();
   </script>
 </body>
 </html>
