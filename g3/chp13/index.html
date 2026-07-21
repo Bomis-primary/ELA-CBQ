@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Grade 3 English: The Future Tense</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f4efe6 0%, #e8decb 100%);
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --primary: #4a6b5d;
+      --primary-hover: #3b574a;
+      --accent: #8c6d53;
+      --accent-light: #e0d0c1;
+      --text-dark: #2c3531;
+      --text-muted: #665c54;
+      --correct-color: #2e7d32;
+      --correct-bg: #e8f5e9;
+      --wrong-color: #c62828;
+      --wrong-bg: #ffebee;
+      --border-radius: 16px;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--bg-gradient);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Subtle background theme animation */
+    .bg-leaf {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: var(--primary);
+      opacity: 0.15;
+      border-radius: 0 70% 0 70%;
+      pointer-events: none;
+      animation: float 14s infinite linear;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(105vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.2; }
+      90% { opacity: 0.2; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Splash / Logo Screen */
+    #splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #f4efe6;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+
+    #splash-screen img {
+      max-width: 220px;
+      max-height: 140px;
+      object-fit: contain;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* Main Container */
+    .app-container {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      position: relative;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      z-index: 10;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Headers & Typography */
+    .header-tag {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+
+    /* Intro Screen */
+    .intro-info {
+      background: #f8f5f0;
+      border-left: 4px solid var(--accent);
+      padding: 16px;
+      border-radius: 8px;
+      margin: 16px 0 24px;
+    }
+
+    .intro-info ul {
+      list-style: none;
+      margin-top: 8px;
+    }
+
+    .intro-info li {
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 14px 20px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(74, 107, 93, 0.25);
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    /* Quiz Bar Top */
+    .quiz-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #f0e8dd;
+    }
+
+    .badge {
+      background: #f0e8dd;
+      color: var(--text-dark);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .timer-badge {
+      background: #fff3e0;
+      color: #e65100;
+      border: 1px solid #ffe0b2;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .timer-badge.warning {
+      background: #ffebee;
+      color: #c62828;
+      border-color: #ffcdd2;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.6; }
+    }
+
+    /* Scenario Card */
+    .scenario-card {
+      background: #fdfaf6;
+      border: 1px solid #efe4d5;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      line-height: 1.45;
+    }
+
+    .scenario-title {
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .question-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    /* Options */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      background: #fff;
+      border: 2px solid #e8e0d5;
+      border-radius: 12px;
+      font-size: 1rem;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #faf8f5;
+    }
+
+    .option-btn.selected {
+      border-color: var(--accent);
+      background: #fdf8f3;
+    }
+
+    .option-btn.correct {
+      background: var(--correct-bg) !important;
+      border-color: var(--correct-color) !important;
+      color: var(--correct-color) !important;
+      font-weight: 600;
+    }
+
+    .option-btn.wrong {
+      background: var(--wrong-bg) !important;
+      border-color: var(--wrong-color) !important;
+      color: var(--wrong-color) !important;
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    /* Retry / Explanation Box */
+    .feedback-box {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      display: none;
+      animation: fadeIn 0.3s forwards;
+    }
+
+    .feedback-box.warning {
+      display: block;
+      background: #fff8e1;
+      border: 1px solid #ffe082;
+      color: #8f6b00;
+    }
+
+    .feedback-box.explanation {
+      display: block;
+      background: #eef6f2;
+      border: 1px solid #b2dfdb;
+      color: #004d40;
+    }
+
+    /* Final Challenge Banner */
+    .final-challenge-banner {
+      background: linear-gradient(135deg, #8c6d53, #6b503a);
+      color: white;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Result Screen */
+    .result-score {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 20px rgba(74, 107, 93, 0.3);
+    }
+
+    .score-circle .number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .score-circle .label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+
+    /* Star Confetti & Animations */
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .star-particle {
+      position: absolute;
+      color: #fbc02d;
+      font-size: 20px;
+      animation: starFall 1.5s ease-out forwards;
+    }
+
+    @keyframes starFall {
+      0% { transform: translateY(-20px) rotate(0deg) scale(0.5); opacity: 1; }
+      50% { opacity: 1; transform: translateY(40vh) rotate(180deg) scale(1.2); }
+      100% { transform: translateY(100vh) rotate(360deg) scale(0.2); opacity: 0; }
+    }
+
+    .cross-indicator {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.5);
+      color: var(--wrong-color);
+      font-size: 90px;
+      font-weight: 900;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .cross-indicator.show {
+      opacity: 0.85;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 480px) {
+      .app-container { padding: 18px; }
+      h1 { font-size: 1.5rem; }
+      .question-text { font-size: 1rem; }
+      .option-btn { font-size: 0.92rem; padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Background Theme Leaves -->
+  <div class="bg-leaf" style="left: 10%; animation-delay: 0s;"></div>
+  <div class="bg-leaf" style="left: 30%; animation-delay: 4s;"></div>
+  <div class="bg-leaf" style="left: 60%; animation-delay: 2s;"></div>
+  <div class="bg-leaf" style="left: 85%; animation-delay: 7s;"></div>
+
+  <!-- Mandatory Innovine Splash Screen -->
+  <div id="splash-screen">
+    <img src="assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';" />
+    <h2 id="logo-fallback" style="display:none; color: var(--primary);">Innovine</h2>
+  </div>
+
+  <!-- Confetti Container -->
+  <div class="confetti-container" id="confetti-container"></div>
+  <!-- Visual Red Cross Overlay -->
+  <div class="cross-indicator" id="cross-indicator">✕</div>
+
+  <!-- Main Container -->
+  <div class="app-container">
+
+    <!-- 1. Intro Screen -->
+    <div id="intro-screen" class="screen active">
+      <div class="header-tag">Grade 3 • English Grammar</div>
+      <h1>The Future Tense</h1>
+      <p>Simple Future & Future Continuous</p>
+
+      <div class="intro-info">
+        <ul>
+          <li>⏱️ <strong>Timer:</strong> 60 seconds per question</li>
+          <li>💡 <strong>Retry:</strong> 1 second chance per question if wrong</li>
+          <li>🏆 <strong>Final Challenge:</strong> Special final assessment at Question 16</li>
+        </ul>
+      </div>
+
+      <button class="btn" onclick="startQuiz()">Start Quiz ➔</button>
+    </div>
+
+    <!-- 2. Question Screen -->
+    <div id="quiz-screen" class="screen">
+      <div id="final-banner" class="final-challenge-banner" style="display: none;">
+        🔥 FINAL CHALLENGE QUESTION
+      </div>
+
+      <div class="quiz-bar">
+        <span class="badge" id="question-progress">Q 1 / 16</span>
+        <span class="badge" id="score-tracker">Score: 0</span>
+        <span class="badge timer-badge" id="timer-display">⏱️ 60s</span>
+      </div>
+
+      <div class="scenario-card" id="scenario-box">
+        <div class="scenario-title" id="scenario-title">Scenario</div>
+        <div id="scenario-text">Scenario details...</div>
+      </div>
+
+      <div class="question-text" id="question-text">Question goes here...</div>
+
+      <div class="options-grid" id="options-container">
+        <!-- Options rendered dynamically -->
+      </div>
+
+      <div id="feedback-box" class="feedback-box"></div>
+
+      <button class="btn" id="next-btn" style="display: none;" onclick="nextQuestion()">Next Question ➔</button>
+    </div>
+
+    <!-- 3. Result Screen -->
+    <div id="result-screen" class="screen">
+      <div class="header-tag" style="text-align: center;">Quiz Complete!</div>
+      <h1 style="text-align: center;" id="result-title">Great Job!</h1>
+
+      <div class="result-score">
+        <div class="score-circle">
+          <span class="number" id="final-score">0</span>
+          <span class="label" id="score-percentage">0%</span>
+        </div>
+        <p id="result-message">You have completed the Future Tense competency module.</p>
+      </div>
+
+      <button class="btn" onclick="restartQuiz()">Try Again ↺</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Audio configuration (enabled because user confirmed assets)
+    const soundCorrect = new Audio('assets/correct.mp3');
+    const soundWrong = new Audio('assets/wrong.mp3');
+
+    function playSound(type) {
+      try {
+        if (type === 'correct') {
+          soundCorrect.currentTime = 0;
+          soundCorrect.play().catch(() => {});
+        } else if (type === 'wrong') {
+          soundWrong.currentTime = 0;
+          soundWrong.play().catch(() => {});
+        }
+      } catch (e) {
+        // Fallback for autoplay restrictions
+      }
+    }
+
+    // Scenarios & Questions Data
+    const scenarios = {
+      1: {
+        title: "Scenario 1: The School Eco-Fair",
+        text: "Next month, Green Valley School will organise an Eco-Fair to encourage students to learn about protecting the environment. Different classes will set up stalls on recycling, water conservation and gardening. On the day of the fair, Class 3 students will be presenting models, while their teachers will be guiding visitors around the exhibition."
+      },
+      2: {
+        title: "Scenario 2: The Family Train Journey",
+        text: "During the winter holidays, Mehul and his family will travel to Jaipur by train. They will leave early in the morning and reach by afternoon. While the train will be crossing rivers and fields, Mehul will be looking out of the window and taking photographs of the scenery for his travel journal."
+      },
+      3: {
+        title: "Scenario 3: Preparing for the Inter-School Quiz",
+        text: "Two weeks from now, a team of students will represent their school at an inter-school quiz competition. They will revise current affairs, science facts and sports news every day. On the evening before the competition, they will be reviewing important notes together while their coach will be checking the final preparations."
+      },
+      4: {
+        title: "Scenario 4: A Visit to the Planetarium",
+        text: "Next Saturday, Class 3 students will visit a planetarium to learn about space. They will attend a special show about planets and stars. During the presentation, the guide will be explaining how astronauts live in space, while students will be observing different models and asking questions about space travel."
+      }
+    };
+
+    const questions = [
+      {
+        scenarioId: 1,
+        question: "Q1. Which action will be happening over a period of time during the Eco-Fair?",
+        options: [
+          "will organise an Eco-Fair",
+          "will set up stalls",
+          "will be presenting models",
+          "will learn about protecting the environment"
+        ],
+        answer: 2, // c
+        explanation: "'Will be presenting' is in the future continuous tense, describing an action that will be in progress over time."
+      },
+      {
+        scenarioId: 1,
+        question: "Q2. Why is 'will organise' used in the passage?",
+        options: [
+          "The Eco-Fair is happening now.",
+          "The Eco-Fair happened earlier.",
+          "The Eco-Fair is planned for a future time.",
+          "The Eco-Fair happens every year."
+        ],
+        answer: 2, // c
+        explanation: "Simple future tense ('will organise') is used for events planned to happen in the future."
+      },
+      {
+        scenarioId: 1,
+        question: "Q3. Statement: 'will be guiding' is in the future continuous tense.\nReason: It describes an action that will be in progress at a particular time in the future.",
+        options: [
+          "Both are correct and the reason explains the statement.",
+          "Both are correct but not related.",
+          "Statement is correct, reason is wrong.",
+          "Statement is wrong, reason is correct."
+        ],
+        answer: 0, // a
+        explanation: "The verb 'will be guiding' follows 'will be + verb-ing', which indicates an action ongoing at a continuous point in the future."
+      },
+      {
+        scenarioId: 1,
+        question: "Q4. A student writes: 'The teachers guide visitors around the exhibition during the Eco-Fair next month.' Which revision best matches the passage?",
+        options: [
+          "guide → guided",
+          "guide → will guide",
+          "guide → will be guiding",
+          "guide → guiding"
+        ],
+        answer: 2, // c
+        explanation: "The passage specifically describes the action in progress during the event: 'will be guiding'."
+      },
+      {
+        scenarioId: 2,
+        question: "Q5. Which action will be in progress during the train journey?",
+        options: [
+          "will travel to Jaipur",
+          "will leave early",
+          "will be looking out of the window",
+          "will reach by afternoon"
+        ],
+        answer: 2, // c
+        explanation: "'Will be looking' denotes an ongoing action happening while the journey takes place."
+      },
+      {
+        scenarioId: 2,
+        question: "Q6. A student writes: 'While the train crosses rivers, Mehul will be taking photographs.' Which revision best matches the future timeline in the passage?",
+        options: [
+          "crosses → crossed",
+          "crosses → will cross",
+          "crosses → crossing",
+          "crosses → had crossed"
+        ],
+        answer: 1, // b
+        explanation: "'Will cross' correctly aligns the action with the future timeline of the passage."
+      },
+      {
+        scenarioId: 2,
+        question: "Q7. Which verb phrase belongs to a different future tense group?",
+        options: [
+          "will be crossing",
+          "will be looking",
+          "will be taking",
+          "will leave"
+        ],
+        answer: 3, // d
+        explanation: "'Will leave' is Simple Future, whereas all the other options are Future Continuous ('will be + -ing')."
+      },
+      {
+        scenarioId: 2,
+        question: "Q8. Why is 'will be taking' used in the passage?",
+        options: [
+          "To describe a completed action",
+          "To describe a regular habit",
+          "To describe an action that will be happening during a future time",
+          "To describe an action happening now"
+        ],
+        answer: 2, // c
+        explanation: "Future continuous tense shows an action happening over a duration of time in the future."
+      },
+      {
+        scenarioId: 3,
+        question: "Q9. Which action will happen repeatedly before the competition?",
+        options: [
+          "will represent their school",
+          "will be reviewing important notes",
+          "will revise current affairs and science facts",
+          "will be checking final preparations"
+        ],
+        answer: 2, // c
+        explanation: "The text states they 'will revise... every day', indicating a repeated action."
+      },
+      {
+        scenarioId: 3,
+        question: "Q10. Statement: 'will be reviewing' is a future continuous verb phrase.\nReason: It describes an action that will be ongoing at a future point in time.",
+        options: [
+          "Both are correct and the reason explains the statement.",
+          "Both are correct but not related.",
+          "Statement is correct, reason is wrong.",
+          "Statement is wrong, reason is correct."
+        ],
+        answer: 0, // a
+        explanation: "Future continuous tense is formed by 'will be + verb-ing' to express an ongoing future action."
+      },
+      {
+        scenarioId: 3,
+        question: "Q11. A child writes: 'The coach checking the final preparations tomorrow evening.' What should be corrected?",
+        options: [
+          "coach → coaches",
+          "checking → checked",
+          "Add 'will be' before checking",
+          "preparations → preparation"
+        ],
+        answer: 2, // c
+        explanation: "Adding 'will be' completes the future continuous structure: 'will be checking'."
+      },
+      {
+        scenarioId: 3,
+        question: "Q12. Why is 'will represent' used in the passage?",
+        options: [
+          "The competition already happened.",
+          "The competition is happening now.",
+          "The event is scheduled for the future.",
+          "The event happens every day."
+        ],
+        answer: 2, // c
+        explanation: "Simple future tense is used for scheduled single events taking place ahead in time."
+      },
+      {
+        scenarioId: 4,
+        question: "Q13. Which action will be happening while the guide explains about astronauts?",
+        options: [
+          "will visit a planetarium",
+          "will attend a special show",
+          "will be observing different models",
+          "will learn about space"
+        ],
+        answer: 2, // c
+        explanation: "The passage notes students 'will be observing different models' simultaneously during the presentation."
+      },
+      {
+        scenarioId: 4,
+        question: "Q14. A student writes: 'The guide explains how astronauts live in space during the presentation next Saturday.' Which revision best matches the passage?",
+        options: [
+          "explains → explained",
+          "explains → will explain",
+          "explains → will be explaining",
+          "explains → explaining"
+        ],
+        answer: 2, // c
+        explanation: "'Will be explaining' matches the continuous action described for next Saturday's show."
+      },
+      {
+        scenarioId: 4,
+        question: "Q15. Which verb phrase belongs to a different tense group?",
+        options: [
+          "will be explaining",
+          "will be observing",
+          "will be asking",
+          "will attend"
+        ],
+        answer: 3, // d
+        explanation: "'Will attend' is Simple Future Tense, while the others are Future Continuous Tense."
+      },
+      {
+        scenarioId: 4,
+        isFinalChallenge: true,
+        question: "Q16. Integrated Understanding: Which statement best explains the use of both simple future and future continuous verbs in the passages?",
+        options: [
+          "All actions are completed before the future event begins.",
+          "Simple future describes future actions, while future continuous describes actions that will be in progress at a future time.",
+          "Future continuous is used for every future action.",
+          "Both tenses always mean exactly the same thing."
+        ],
+        answer: 1, // b
+        explanation: "Simple future ('will + verb') states future events, while future continuous ('will be + verb-ing') highlights ongoing actions in the future."
+      }
+    ];
+
+    // App State Variables
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let attemptsLeft = 2;
+    let timerInterval = null;
+    let timeLeft = 60; // Grade 3 requirement: 60s
+
+    // Mandatory 5 second logo display on load
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        splash.style.opacity = '0';
+        setTimeout(() => {
+          splash.style.visibility = 'hidden';
+        }, 800);
+      }, 5000);
+    });
+
+    function startQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      showScreen('quiz-screen');
+      loadQuestion();
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function loadQuestion() {
+      clearInterval(timerInterval);
+      attemptsLeft = 2;
+      
+      const qData = questions[currentQuestionIndex];
+      const scenario = scenarios[qData.scenarioId];
+
+      // Score and Progress UI
+      document.getElementById('question-progress').innerText = `Q ${currentQuestionIndex + 1} / ${questions.length}`;
+      document.getElementById('score-tracker').innerText = `Score: ${score}`;
+
+      // Final Challenge styling
+      const finalBanner = document.getElementById('final-banner');
+      if (qData.isFinalChallenge) {
+        finalBanner.style.display = 'block';
+      } else {
+        finalBanner.style.display = 'none';
+      }
+
+      // Scenario & Question Text
+      document.getElementById('scenario-title').innerText = scenario.title;
+      document.getElementById('scenario-text').innerText = scenario.text;
+      document.getElementById('question-text').innerText = qData.question;
+
+      // Clear previous states
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+      
+      const feedbackBox = document.getElementById('feedback-box');
+      feedbackBox.className = 'feedback-box';
+      feedbackBox.innerText = '';
+      
+      document.getElementById('next-btn').style.display = 'none';
+
+      // Render Options
+      qData.options.forEach((optionText, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span>${String.fromCharCode(97 + index)}) ${optionText}</span>`;
+        btn.onclick = () => handleAnswer(index, btn);
+        optionsContainer.appendChild(btn);
+      });
+
+      // Start Timer
+      startTimer();
+    }
+
+    function startTimer() {
+      timeLeft = 60;
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          handleTimeOut();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const timerDisplay = document.getElementById('timer-display');
+      timerDisplay.innerText = `⏱️ ${timeLeft}s`;
+      if (timeLeft <= 10) {
+        timerDisplay.classList.add('warning');
+      } else {
+        timerDisplay.classList.remove('warning');
+      }
+    }
+
+    function handleTimeOut() {
+      showWrongIndicator();
+      playSound('wrong');
+      disableOptions();
+      revealAnswer("Time's up!");
+    }
+
+    function handleAnswer(selectedIndex, btnElement) {
+      const qData = questions[currentQuestionIndex];
+      const options = document.querySelectorAll('.option-btn');
+
+      if (selectedIndex === qData.answer) {
+        // Correct Answer
+        clearInterval(timerInterval);
+        btnElement.classList.add('correct');
+        playSound('correct');
+        triggerConfetti();
+        score++;
+        document.getElementById('score-tracker').innerText = `Score: ${score}`;
+        disableOptions();
+        
+        const feedback = document.getElementById('feedback-box');
+        feedback.className = 'feedback-box explanation';
+        feedback.innerText = `✓ Correct! ${qData.explanation}`;
+        
+        document.getElementById('next-btn').style.display = 'block';
+      } else {
+        // Wrong Answer
+        attemptsLeft--;
+        playSound('wrong');
+        showWrongIndicator();
+
+        if (attemptsLeft === 1) {
+          // Retry allowed
+          btnElement.classList.add('wrong');
+          btnElement.disabled = true;
+          
+          const feedback = document.getElementById('feedback-box');
+          feedback.className = 'feedback-box warning';
+          feedback.innerText = '⚠️ Incorrect! You have 1 retry left for this question.';
+        } else {
+          // No attempts left -> Show correct answer + explanation
+          clearInterval(timerInterval);
+          btnElement.classList.add('wrong');
+          disableOptions();
+          revealAnswer("Incorrect.");
+        }
+      }
+    }
+
+    function revealAnswer(prefixText) {
+      const qData = questions[currentQuestionIndex];
+      const options = document.querySelectorAll('.option-btn');
+      
+      options[qData.answer].classList.add('correct');
+      
+      const feedback = document.getElementById('feedback-box');
+      feedback.className = 'feedback-box explanation';
+      feedback.innerText = `${prefixText} Correct Answer: ${String.fromCharCode(97 + qData.answer)}) ${qData.options[qData.answer]}\n\n${qData.explanation}`;
+      
+      document.getElementById('next-btn').style.display = 'block';
+    }
+
+    function disableOptions() {
+      const options = document.querySelectorAll('.option-btn');
+      options.forEach(opt => opt.disabled = true);
+    }
+
+    function triggerConfetti() {
+      const container = document.getElementById('confetti-container');
+      for (let i = 0; i < 20; i++) {
+        const star = document.createElement('div');
+        star.className = 'star-particle';
+        star.innerText = '★';
+        star.style.left = Math.random() * 100 + 'vw';
+        star.style.animationDelay = (Math.random() * 0.4) + 's';
+        container.appendChild(star);
+
+        setTimeout(() => star.remove(), 1800);
+      }
+    }
+
+    function showWrongIndicator() {
+      const cross = document.getElementById('cross-indicator');
+      cross.classList.add('show');
+      setTimeout(() => {
+        cross.classList.remove('show');
+      }, 700);
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      clearInterval(timerInterval);
+      showScreen('result-screen');
+
+      const finalScoreElem = document.getElementById('final-score');
+      const scorePctElem = document.getElementById('score-percentage');
+      const resultTitle = document.getElementById('result-title');
+      const resultMessage = document.getElementById('result-message');
+
+      const percentage = Math.round((score / questions.length) * 100);
+
+      finalScoreElem.innerText = `${score}/${questions.length}`;
+      scorePctElem.innerText = `${percentage}%`;
+
+      if (percentage >= 80) {
+        resultTitle.innerText = "🌟 Excellent Work!";
+        resultMessage.innerText = "You have mastered the Simple Future and Future Continuous tenses!";
+        triggerConfetti();
+      } else if (percentage >= 50) {
+        resultTitle.innerText = "👍 Good Effort!";
+        resultMessage.innerText = "You understand future tenses well. Try again for a perfect score!";
+      } else {
+        resultTitle.innerText = "📘 Keep Practicing!";
+        resultMessage.innerText = "Review the scenarios and try again to improve your score.";
+      }
+    }
+
+    function restartQuiz() {
+      startQuiz();
+    }
+  </script>
+</body>
+</html>
