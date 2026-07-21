@@ -10,7 +10,7 @@
       --primary-dark: #3e6352;
       --secondary: #e8a598;
       --bg-color: #f6f3ed;
-      --card-bg: rgba(255, 255, 255, 0.92);
+      --card-bg: rgba(255, 255, 255, 0.95);
       --text-color: #333333;
       --correct: #4CAF50;
       --wrong: #f44336;
@@ -37,7 +37,7 @@
       position: relative;
     }
 
-    /* Floral Background Animation Layer */
+    /* Floating Floral Background Layer */
     .floral-bg {
       position: fixed;
       top: 0;
@@ -70,25 +70,7 @@
       }
     }
 
-    /* Main Container */
-    .app-container {
-      width: 90%;
-      max-width: 650px;
-      min-height: 520px;
-      background: var(--card-bg);
-      backdrop-filter: blur(8px);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      border: 2px solid #ffffff;
-      padding: 24px;
-      position: relative;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    /* Logo Overlay (5s splash screen) */
+    /* Full-Screen Splash Overlay */
     #splash-screen {
       position: fixed;
       top: 0;
@@ -101,48 +83,163 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    #splash-screen.splash-out {
+      opacity: 0;
+      transform: scale(1.1);
+      pointer-events: none;
     }
 
     #splash-screen img {
-      max-width: 220px;
-      max-height: 120px;
+      max-width: 280px;
+      max-height: 140px;
       object-fit: contain;
-      animation: pulse 1.5s infinite ease-in-out;
+      animation: logoSplash 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     }
 
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+    /* Logo Splash Entrance Animation */
+    @keyframes logoSplash {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      70% {
+        opacity: 1;
+        transform: scale(1.08);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
 
-    /* Header & Stats */
-    .quiz-header {
+    /* Main Container Card */
+    .app-container {
+      width: 92%;
+      max-width: 700px;
+      min-height: 550px;
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      border: 2px solid #ffffff;
+      padding: 24px;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: opacity 0.5s ease;
+    }
+
+    /* Top Persistent Branding Header (Matching Image Reference) */
+    .brand-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding-bottom: 15px;
-      border-bottom: 2px dashed #e2e8f0;
       margin-bottom: 15px;
+      border-bottom: 1px dashed #cbd5e1;
     }
 
-    .badge {
-      background: var(--primary);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.9rem;
+    .brand-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
 
-    .timer-box, .score-box {
-      font-weight: bold;
-      font-size: 1rem;
+    .brand-logo {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .brand-titles h2 {
+      font-size: 1.15rem;
       color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    .brand-titles p {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .header-decor {
+      font-size: 1rem;
+      color: var(--secondary);
+    }
+
+    /* Instructions / Intro Screen */
+    .intro-box {
+      text-align: center;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .intro-title {
+      font-size: 1.6rem;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+    }
+
+    .instructions-card {
+      background: #f8faf9;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 18px 24px;
+      text-align: left;
+      margin: 15px 0 25px 0;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .instructions-card h3 {
+      font-size: 1.05rem;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .instructions-card ul {
+      list-style-type: none;
+    }
+
+    .instructions-card li {
+      font-size: 0.92rem;
+      color: #475569;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Quiz Stats Bar */
+    .quiz-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.92rem;
+      color: #64748b;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .timer-badge {
+      background: #edf7f2;
+      color: var(--primary-dark);
+      padding: 4px 12px;
+      border-radius: 15px;
+      border: 1px solid #bce3d1;
     }
 
     .timer-low {
       color: var(--wrong) !important;
+      background: #ffebee !important;
+      border-color: #ffcdd2 !important;
       animation: blink 0.8s infinite;
     }
 
@@ -151,23 +248,32 @@
       50% { opacity: 0.4; }
     }
 
-    /* Scenario Card */
+    /* Scenario Box */
     .scenario-box {
       background: #f4f8f5;
       border-left: 4px solid var(--primary);
-      padding: 12px 15px;
-      border-radius: 6px;
+      padding: 12px 16px;
+      border-radius: 8px;
       font-size: 0.9rem;
-      color: #4a5568;
-      margin-bottom: 12px;
-      line-height: 1.4;
+      color: #334155;
+      margin-bottom: 16px;
+      line-height: 1.45;
+    }
+
+    .scenario-title {
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     /* Question & Options */
     .question-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #2d3748;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1e293b;
       margin-bottom: 16px;
       line-height: 1.4;
     }
@@ -181,20 +287,19 @@
 
     .option-btn {
       background: #ffffff;
-      border: 2px solid #e2e8f0;
-      border-radius: 12px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
       padding: 12px 16px;
       text-align: left;
       font-size: 0.95rem;
-      color: #2d3748;
+      color: #334155;
       cursor: pointer;
       transition: all 0.2s ease;
-      position: relative;
     }
 
     .option-btn:hover:not(:disabled) {
       border-color: var(--primary);
-      background: #f7faf8;
+      background: #f8faf9;
     }
 
     .option-btn.correct {
@@ -210,17 +315,17 @@
       color: #c62828 !important;
     }
 
-    /* Feedback & Explanation */
+    /* Feedback Box */
     .feedback-container {
       min-height: 48px;
       margin-top: 5px;
     }
 
     .feedback-text {
-      padding: 10px;
+      padding: 10px 14px;
       border-radius: 8px;
       font-size: 0.9rem;
-      line-height: 1.3;
+      line-height: 1.35;
     }
 
     .feedback-text.retry {
@@ -235,18 +340,18 @@
       border: 1px solid #c7d2fe;
     }
 
-    /* Action Buttons */
+    /* Action Button */
     .action-btn {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 12px 24px;
+      padding: 12px 28px;
       border-radius: 25px;
       font-size: 1rem;
       font-weight: bold;
       cursor: pointer;
       transition: background 0.2s;
-      align-self: flex-end;
+      align-self: center;
       margin-top: 10px;
     }
 
@@ -254,29 +359,12 @@
       background: var(--primary-dark);
     }
 
-    /* Intro & Result Screens */
-    .screen-content {
-      text-align: center;
-      padding: 20px 10px;
-    }
-
-    .screen-title {
-      font-size: 1.8rem;
-      color: var(--primary-dark);
-      margin-bottom: 10px;
-    }
-
-    .screen-subtitle {
-      font-size: 1rem;
-      color: #666;
-      margin-bottom: 25px;
-    }
-
+    /* Result Screen */
     .result-score {
-      font-size: 3rem;
+      font-size: 3.2rem;
       font-weight: bold;
       color: var(--primary);
-      margin: 20px 0;
+      margin: 15px 0;
     }
 
     /* Star Confetti Canvas */
@@ -290,14 +378,14 @@
       z-index: 999;
     }
 
-    /* Wrong Cross Overlay Indicator */
+    /* Subtle Red Cross Indicator */
     .wrong-cross {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 8rem;
-      color: rgba(244, 67, 54, 0.4);
+      color: rgba(244, 67, 54, 0.35);
       pointer-events: none;
       z-index: 100;
       display: none;
@@ -307,7 +395,7 @@
     @keyframes popIn {
       0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
       50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
-      100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 0.35; }
     }
 
     .hidden { display: none !important; }
@@ -315,49 +403,68 @@
 </head>
 <body>
 
-  <!-- Floating Floral Background -->
+  <!-- Floating Floral BG -->
   <div class="floral-bg" id="floral-bg"></div>
 
-  <!-- Star FX Canvas -->
+  <!-- Star Particle Canvas FX -->
   <canvas id="canvas-fx"></canvas>
 
-  <!-- Red Cross Visual Overlay -->
+  <!-- Red Cross Indicator -->
   <div class="wrong-cross" id="wrong-cross">❌</div>
 
-  <!-- Mandatory 5s Logo Splash -->
+  <!-- 1. FULL-SCREEN LOGO SPLASH (Auto transitions out) -->
   <div id="splash-screen">
-    <img src="assets/innovine-logo.png" alt="Innovine Logo" id="logo-img" />
+    <img src="assets/innovine-logo.png" alt="Innovine Logo" />
   </div>
 
-  <!-- Main Interactive App Container -->
+  <!-- APP CONTAINER -->
   <div class="app-container">
 
-    <!-- INTRO SCREEN -->
-    <div id="intro-screen" class="screen-content">
-      <h1 class="screen-title">Grade 3 English</h1>
-      <p class="screen-subtitle">Topic: Antonyms (Words with Opposite Meanings)</p>
-      <p style="margin-bottom: 20px; font-size: 0.95rem; color: #555;">
-        • 16 Competency-Based Questions<br>
-        • 60 Seconds per Question<br>
-        • 1 Retry per Question if you make a mistake
-      </p>
-      <button class="action-btn" style="align-self: center;" onclick="quizApp.startQuiz()">Start Interactive</button>
+    <!-- Persistent Branding Header -->
+    <div class="brand-header">
+      <div class="brand-info">
+        <img src="assets/innovine-logo.png" alt="Innovine Logo" class="brand-logo" />
+        <div class="brand-titles">
+          <h2>Grade 3: English Practice</h2>
+          <p>Chapter 19 — Antonyms (Opposite Meanings)</p>
+        </div>
+      </div>
+      <div class="header-decor">🌸 🌸 🌸</div>
     </div>
 
-    <!-- QUIZ SCREEN -->
-    <div id="quiz-screen" class="hidden">
-      <div class="quiz-header">
-        <span class="badge" id="q-counter">Q 1/16</span>
-        <span class="timer-box" id="timer-text">⏱️ 60s</span>
-        <span class="score-box" id="score-text">Score: 0</span>
+    <!-- 2. INSTRUCTIONS / INTRO SCREEN -->
+    <div id="intro-screen" class="intro-box">
+      <h1 class="intro-title">Welcome to Chapter 19 Challenge!</h1>
+      <p style="color: #64748b; font-size: 0.95rem;">Test your knowledge of words with opposite meanings.</p>
+
+      <div class="instructions-card">
+        <h3>📋 Game Instructions:</h3>
+        <ul>
+          <li>⏱️ <b>Timer:</b> You have 60 seconds per question.</li>
+          <li>🎯 <b>Questions:</b> 16 competency-based scenario questions.</li>
+          <li>🔄 <b>Retries:</b> 1 retry attempt for wrong answers.</li>
+          <li>⭐ <b>Scoring:</b> Earn 10 points for first try, 5 on retry!</li>
+        </ul>
       </div>
 
-      <div class="scenario-box" id="scenario-text">
-        <!-- Dynamic Scenario Content -->
+      <button class="action-btn" onclick="quizApp.startGame()">Start Game</button>
+    </div>
+
+    <!-- 3. GAME PLAY SCREEN -->
+    <div id="quiz-screen" class="hidden">
+      <div class="quiz-stats">
+        <span id="q-counter">Question 1 of 16</span>
+        <span class="timer-badge" id="timer-text">⏱️ 60s</span>
+        <span id="score-text">Score: 0</span>
+      </div>
+
+      <div class="scenario-box" id="scenario-box">
+        <div class="scenario-title">🌸 <span id="scenario-title-text">Scenario</span></div>
+        <div id="scenario-body">Scenario text...</div>
       </div>
 
       <div class="question-title" id="question-text">
-        <!-- Question content -->
+        Question text...
       </div>
 
       <div class="options-grid" id="options-container">
@@ -365,52 +472,57 @@
       </div>
 
       <div class="feedback-container" id="feedback-container">
-        <!-- Hints/Explanations on retries -->
+        <!-- Retry hints & explanations -->
       </div>
 
-      <button class="action-btn hidden" id="next-btn" onclick="quizApp.nextQuestion()">Next Question</button>
+      <div style="display: flex; justify-content: flex-end;">
+        <button class="action-btn hidden" id="next-btn" onclick="quizApp.nextQuestion()">Next Question</button>
+      </div>
     </div>
 
-    <!-- RESULT SCREEN -->
-    <div id="result-screen" class="screen-content hidden">
-      <h1 class="screen-title">Challenge Complete! 🌸</h1>
-      <p class="screen-subtitle">Great job completing the Antonyms Chapter Quiz!</p>
-      <div class="result-score" id="final-score">0 / 16</div>
-      <p id="result-message" style="margin-bottom: 25px; color: #4a5568;"></p>
-      <button class="action-btn" style="align-self: center;" onclick="quizApp.restartQuiz()">Try Again</button>
+    <!-- 4. RESULT SCREEN -->
+    <div id="result-screen" class="intro-box hidden">
+      <h1 class="intro-title">Challenge Complete! 🎉</h1>
+      <p style="color: #64748b;">Here is how you performed:</p>
+      <div class="result-score" id="final-score">0 / 160</div>
+      <p id="result-message" style="margin-bottom: 25px; color: #475569; line-height: 1.4;"></p>
+      <button class="action-btn" onclick="quizApp.restartGame()">Play Again</button>
     </div>
 
   </div>
 
   <script>
-    // Audio Objects (Loaded from assets/)
+    // Audio Setup
     const soundCorrect = new Audio('assets/correct.mp3');
     const soundWrong = new Audio('assets/wrong.mp3');
 
     function playSound(audio) {
       audio.currentTime = 0;
-      audio.play().catch(() => {/* Audio play blocked by browser policy until interaction */});
+      audio.play().catch(() => {/* Audio play blocked until user interaction */});
     }
 
-    // Questions Data Array
+    // 16 Questions Data
     const questionsData = [
       {
-        scenario: "Scenario 1: Sports Day at School\nDuring Sports Day, different races were organised for students. In one race, Aarush ran very fast and crossed the finish line first. Another participant moved slowly but completed the race with determination. The coach praised both students for their effort and sportsmanship.",
-        question: "1. Which word from the lesson is the opposite of fast?",
+        scenTitle: "Scenario 1: Sports Day at School",
+        scenBody: "During Sports Day, different races were organised for students. In one race, Aarush ran very fast and crossed the finish line first. Another participant moved slowly but completed the race with determination. The coach praised both students for their effort and sportsmanship.",
+        question: "Q1. Which word from the lesson is the opposite of fast?",
         options: ["finish", "heavy", "slow", "healthy"],
         answer: 2,
         explanation: "'Slow' means moving with low speed, which is the exact opposite (antonym) of 'fast'."
       },
       {
-        scenario: "Scenario 1: Sports Day at School",
-        question: "2. Why are fast and slow considered antonyms?",
+        scenTitle: "Scenario 1: Sports Day at School",
+        scenBody: "During Sports Day, different races were organised for students. In one race, Aarush ran very fast and crossed the finish line first. Another participant moved slowly but completed the race with determination.",
+        question: "Q2. Why are fast and slow considered antonyms?",
         options: ["They describe the same speed.", "They describe opposite speeds.", "They describe places.", "They describe feelings."],
         answer: 1,
-        explanation: "Words are antonyms when they express completely opposite qualities—in this case, opposite rates of speed."
+        explanation: "Words are antonyms when they express completely opposite qualities—in this case, opposite speeds."
       },
       {
-        scenario: "Scenario 1: Sports Day at School",
-        question: "3. Statement: 'slow' is an antonym of 'fast.'\nReason: Antonyms are words with opposite meanings.",
+        scenTitle: "Scenario 1: Sports Day at School",
+        scenBody: "During Sports Day, different races were organised for students.",
+        question: "Q3. Statement: 'slow' is an antonym of 'fast.'\nReason: Antonyms are words with opposite meanings.",
         options: [
           "Both are correct and the reason explains the statement.",
           "Both are correct but not related.",
@@ -418,11 +530,12 @@
           "Statement is wrong, reason is correct."
         ],
         answer: 0,
-        explanation: "Antonyms are defined as words with opposite meanings, which directly explains why 'slow' is the antonym of 'fast'."
+        explanation: "Antonyms are defined as words with opposite meanings, directly explaining why 'slow' is the antonym of 'fast'."
       },
       {
-        scenario: "Scenario 1: Sports Day at School",
-        question: "4. Which sentence best matches the opposite idea of the passage?",
+        scenTitle: "Scenario 1: Sports Day at School",
+        scenBody: "In one race, Aarush ran very fast and crossed the finish line first.",
+        question: "Q4. Which sentence best matches the opposite idea of the passage?",
         options: [
           "Aarush ran slowly and reached the finish line much later.",
           "Aarush ran quickly and reached first.",
@@ -430,18 +543,20 @@
           "Aarush ran confidently and reached first."
         ],
         answer: 0,
-        explanation: "The passage states Aarush ran fast and finished first. Running slowly and reaching later gives the opposite idea."
+        explanation: "Running slowly and reaching later directly contradicts Aarush running fast and finishing first."
       },
       {
-        scenario: "Scenario 2: The Community Health Camp\nA health camp was organised in a nearby community centre. Doctors checked children's health and gave useful advice. One child had been sick for a few days, but after treatment and rest, he became healthy again. His parents were relieved to see his improvement.",
-        question: "5. Which word is the opposite of sick?",
+        scenTitle: "Scenario 2: The Community Health Camp",
+        scenBody: "A health camp was organised in a nearby community centre. Doctors checked children's health and gave useful advice. One child had been sick for a few days, but after treatment and rest, he became healthy again. His parents were relieved to see his improvement.",
+        question: "Q5. Which word is the opposite of sick?",
         options: ["healthy", "boring", "empty", "outside"],
         answer: 0,
         explanation: "'Sick' means in poor health, whereas 'healthy' means in good physical condition—making them antonyms."
       },
       {
-        scenario: "Scenario 2: The Community Health Camp",
-        question: "6. Why can 'healthy' replace the condition of the child after treatment?",
+        scenTitle: "Scenario 2: The Community Health Camp",
+        scenBody: "One child had been sick for a few days, but after treatment and rest, he became healthy again.",
+        question: "Q6. Why can 'healthy' replace the condition of the child after treatment?",
         options: [
           "It shows the opposite of being sick.",
           "It shows where he was treated.",
@@ -449,32 +564,36 @@
           "It shows when he visited the doctor."
         ],
         answer: 0,
-        explanation: "After receiving treatment, the child recovered from being sick, reaching the opposite state: healthy."
+        explanation: "After receiving treatment, the child recovered from being sick, reaching the opposite condition: healthy."
       },
       {
-        scenario: "Scenario 2: The Community Health Camp",
-        question: "7. Which pair does NOT show opposite meanings?",
+        scenTitle: "Scenario 2: The Community Health Camp",
+        scenBody: "Doctors checked children's health and gave useful advice.",
+        question: "Q7. Which pair does NOT show opposite meanings?",
         options: ["sick – healthy", "fast – slow", "empty – full", "healthy – doctor"],
         answer: 3,
-        explanation: "'Healthy' describes a physical state while 'doctor' is a profession. They are not opposite meanings."
+        explanation: "'Healthy' describes physical condition while 'doctor' is a profession. They are not antonyms."
       },
       {
-        scenario: "Scenario 2: The Community Health Camp",
-        question: "8. A student says: 'Healthy is an antonym of full.' Which word/statement shows incorrect understanding?",
+        scenTitle: "Scenario 2: The Community Health Camp",
+        scenBody: "A student says: 'Healthy is an antonym of full.'",
+        question: "Q8. Which word/phrase shows incorrect understanding?",
         options: ["healthy", "antonym", "full", "healthy is an antonym of full"],
         answer: 3,
         explanation: "The entire statement is incorrect because 'healthy' is the antonym of 'sick', while 'full' is the antonym of 'empty'."
       },
       {
-        scenario: "Scenario 3: The School Reading Corner\nThe school library introduced a new reading corner with storybooks and magazines. Some students found a science magazine very interesting and eagerly discussed it with their friends. A few students picked another magazine but felt it was boring because it did not match their interests.",
-        question: "9. Which word from the lesson is the opposite of interesting?",
+        scenTitle: "Scenario 3: The School Reading Corner",
+        scenBody: "The school library introduced a new reading corner with storybooks and magazines. Some students found a science magazine very interesting and eagerly discussed it with their friends. A few students picked another magazine but felt it was boring because it did not match their interests.",
+        question: "Q9. Which word from the lesson is the opposite of interesting?",
         options: ["healthy", "boring", "heavy", "inside"],
         answer: 1,
-        explanation: "'Interesting' catches your attention, while 'boring' fails to hold interest, making them antonyms."
+        explanation: "'Interesting' holds your attention, while 'boring' fails to hold interest, making them antonyms."
       },
       {
-        scenario: "Scenario 3: The School Reading Corner",
-        question: "10. Statement: 'boring' is an antonym of 'interesting.'\nReason: The two words express opposite opinions about something.",
+        scenTitle: "Scenario 3: The School Reading Corner",
+        scenBody: "Some students found a magazine interesting while others felt it was boring.",
+        question: "Q10. Statement: 'boring' is an antonym of 'interesting.'\nReason: The two words express opposite opinions about something.",
         options: [
           "Both are correct and the reason explains the statement.",
           "Both are correct but not related.",
@@ -482,11 +601,12 @@
           "Statement is wrong, reason is correct."
         ],
         answer: 0,
-        explanation: "Because they convey opposite feelings/opinions about an item, the reason correctly justifies why they are antonyms."
+        explanation: "Because they convey opposite opinions, the reason accurately explains why they are antonyms."
       },
       {
-        scenario: "Scenario 3: The School Reading Corner",
-        question: "11. Why might one student describe a magazine as boring?",
+        scenTitle: "Scenario 3: The School Reading Corner",
+        scenBody: "A few students picked another magazine but felt it was boring.",
+        question: "Q11. Why might one student describe a magazine as boring?",
         options: [
           "Because it did not interest them.",
           "Because it was very healthy.",
@@ -494,11 +614,12 @@
           "Because it was fast."
         ],
         answer: 0,
-        explanation: "If something fails to arouse interest or curiosity in a person, they describe it as boring."
+        explanation: "If an item fails to spark interest or curiosity, a person describes it as boring."
       },
       {
-        scenario: "Scenario 3: The School Reading Corner",
-        question: "12. Which sentence best shows the opposite meaning of the passage?",
+        scenTitle: "Scenario 3: The School Reading Corner",
+        scenBody: "Some students found a science magazine very interesting.",
+        question: "Q12. Which sentence best shows the opposite meaning of the passage?",
         options: [
           "The students found the magazine interesting.",
           "The students found the magazine exciting.",
@@ -506,18 +627,20 @@
           "The students found the magazine useful."
         ],
         answer: 2,
-        explanation: "The passage highlights students finding the magazine very interesting. Saying they found it boring gives the opposite scenario."
+        explanation: "Describing the magazine as boring directly reverses the passage's meaning of finding it interesting."
       },
       {
-        scenario: "Scenario 4: Preparing for a Train Journey\nA family was preparing for a train journey during the holidays. They packed their bags the night before and checked their tickets carefully. One suitcase was full of clothes and books, while another suitcase was completely empty and waiting to be packed. The children sat inside the train while their grandparents waved from outside.",
-        question: "13. Which pair of words from the passage are antonyms?",
+        scenTitle: "Scenario 4: Preparing for a Train Journey",
+        scenBody: "A family was preparing for a train journey during the holidays. They packed their bags the night before and checked their tickets carefully. One suitcase was full of clothes and books, while another suitcase was completely empty and waiting to be packed. The children sat inside the train while their grandparents waved from outside.",
+        question: "Q13. Which pair of words from the passage are antonyms?",
         options: ["train – suitcase", "inside – outside", "books – clothes", "children – grandparents"],
         answer: 1,
-        explanation: "'Inside' and 'outside' express opposite position/location, making them an antonym pair."
+        explanation: "'Inside' and 'outside' describe opposite positions/locations, making them antonyms."
       },
       {
-        scenario: "Scenario 4: Preparing for a Train Journey",
-        question: "14. Why are empty and full antonyms?",
+        scenTitle: "Scenario 4: Preparing for a Train Journey",
+        scenBody: "One suitcase was full of clothes, while another was completely empty.",
+        question: "Q14. Why are empty and full antonyms?",
         options: [
           "They describe opposite amounts.",
           "They describe opposite places.",
@@ -525,18 +648,20 @@
           "They describe opposite actions."
         ],
         answer: 0,
-        explanation: "'Full' means containing as much as possible, while 'empty' means containing nothing—they represent opposite amounts."
+        explanation: "'Full' means containing as much as possible, while 'empty' means containing nothing—representing opposite amounts."
       },
       {
-        scenario: "Scenario 4: Preparing for a Train Journey",
-        question: "15. Which pair does NOT belong with the others?",
+        scenTitle: "Scenario 4: Preparing for a Train Journey",
+        scenBody: "The children sat inside the train while their grandparents waved from outside.",
+        question: "Q15. Which pair does NOT belong with the others?",
         options: ["inside – outside", "front – back", "start – finish", "inside – train"],
         answer: 3,
-        explanation: "All other choices are pairs of opposite words (antonyms). 'Inside – train' is a location relationship, not antonyms."
+        explanation: "The first three are pairs of antonyms. 'Inside – train' describes location, not opposite meanings."
       },
       {
-        scenario: "Scenario 4: Preparing for a Train Journey",
-        question: "16. Which statement best explains antonyms?",
+        scenTitle: "Scenario 4: Preparing for a Train Journey",
+        scenBody: "Antonyms practice overview.",
+        question: "Q16. Which statement best explains antonyms?",
         options: [
           "Antonyms are words that sound alike.",
           "Antonyms are words that have opposite meanings.",
@@ -548,13 +673,13 @@
       }
     ];
 
-    // Quiz Application State & Logic
+    // Quiz Manager
     class QuizApp {
       constructor() {
         this.currentQ = 0;
         this.score = 0;
         this.timer = null;
-        this.timeLeft = 60; // 60s for Grade 3
+        this.timeLeft = 60;
         this.attempts = 0;
         this.initFloralBg();
       }
@@ -573,7 +698,7 @@
         }
       }
 
-      startQuiz() {
+      startGame() {
         document.getElementById('intro-screen').classList.add('hidden');
         document.getElementById('quiz-screen').classList.remove('hidden');
         this.currentQ = 0;
@@ -588,9 +713,10 @@
         document.getElementById('feedback-container').innerHTML = '';
         
         const qData = questionsData[this.currentQ];
-        document.getElementById('q-counter').innerText = `Q ${this.currentQ + 1}/${questionsData.length}`;
+        document.getElementById('q-counter').innerText = `Question ${this.currentQ + 1} of ${questionsData.length}`;
         document.getElementById('score-text').innerText = `Score: ${this.score}`;
-        document.getElementById('scenario-text').innerText = qData.scenario;
+        document.getElementById('scenario-title-text').innerText = qData.scenTitle;
+        document.getElementById('scenario-body').innerText = qData.scenBody;
         document.getElementById('question-text').innerText = qData.question;
 
         const optionsBox = document.getElementById('options-container');
@@ -599,7 +725,7 @@
         qData.options.forEach((optText, idx) => {
           const btn = document.createElement('button');
           btn.className = 'option-btn';
-          btn.innerText = `${String.fromCharCode(65 + idx)}) ${optText}`;
+          btn.innerText = `${String.fromCharCode(97 + idx)}) ${optText}`;
           btn.onclick = () => this.handleAnswer(idx);
           optionsBox.appendChild(btn);
         });
@@ -644,7 +770,7 @@
           if (this.attempts === 0) {
             this.score += 10;
           } else {
-            this.score += 5; // Partial points on retry
+            this.score += 5;
           }
           document.getElementById('score-text').innerText = `Score: ${this.score}`;
           
@@ -663,18 +789,16 @@
           buttons[selectedIndex].disabled = true;
 
           if (this.attempts === 1) {
-            // First Wrong Attempt -> Retry opportunity
             document.getElementById('feedback-container').innerHTML = `
-              <div class="feedback-text retry">💡 Not quite right! Give it one more try.</div>
+              <div class="feedback-text retry">💡 Not quite! Try one more time.</div>
             `;
           } else {
-            // Second Wrong Attempt -> Reveal answer & explanation
             clearInterval(this.timer);
             this.disableOptions();
             buttons[qData.answer].classList.add('correct');
 
             document.getElementById('feedback-container').innerHTML = `
-              <div class="feedback-text explain"><b>Correct Answer: ${String.fromCharCode(65 + qData.answer)}) ${qData.options[qData.answer]}</b><br>${qData.explanation}</div>
+              <div class="feedback-text explain"><b>Correct Answer: ${String.fromCharCode(97 + qData.answer)}) ${qData.options[qData.answer]}</b><br>${qData.explanation}</div>
             `;
             document.getElementById('next-btn').classList.remove('hidden');
           }
@@ -691,7 +815,7 @@
         buttons[qData.answer].classList.add('correct');
 
         document.getElementById('feedback-container').innerHTML = `
-          <div class="feedback-text retry">⏰ Time's up! The correct answer was <b>${String.fromCharCode(65 + qData.answer)}) ${qData.options[qData.answer]}</b>.</div>
+          <div class="feedback-text retry">⏰ Time's up! The correct answer was <b>${String.fromCharCode(97 + qData.answer)}) ${qData.options[qData.answer]}</b>.</div>
         `;
         document.getElementById('next-btn').classList.remove('hidden');
       }
@@ -721,7 +845,7 @@
         let msg = "";
         const percentage = (this.score / maxScore) * 100;
         if (percentage >= 80) {
-          msg = "🌟 Outstanding! You have mastered Antonyms!";
+          msg = "🌟 Outstanding performance! You have mastered Antonyms!";
           triggerStarFX();
         } else if (percentage >= 50) {
           msg = "👍 Good Effort! Keep practicing to improve your score further.";
@@ -731,13 +855,13 @@
         document.getElementById('result-message').innerText = msg;
       }
 
-      restartQuiz() {
+      restartGame() {
         document.getElementById('result-screen').classList.add('hidden');
-        this.startQuiz();
+        this.startGame();
       }
     }
 
-    // Star Confetti Canvas FX
+    // Star Particle Canvas FX
     const canvas = document.getElementById('canvas-fx');
     const ctx = canvas.getContext('2d');
     let stars = [];
@@ -793,24 +917,25 @@
     }
     animateFX();
 
-    // Red Cross Visual Flash Logic
+    // Red Cross Visual Flash
     function showWrongCross() {
       const cross = document.getElementById('wrong-cross');
       cross.style.display = 'block';
       setTimeout(() => {
         cross.style.display = 'none';
-      }, 600);
+      }, 550);
     }
 
-    // Initialize App & Handle Mandatory 5s Logo Splash
+    // App Initialization & Splash sequence
     const quizApp = new QuizApp();
 
     window.addEventListener('DOMContentLoaded', () => {
+      // 1. Splash screen holds for 2.5 seconds then smoothly animates out
       setTimeout(() => {
         const splash = document.getElementById('splash-screen');
-        splash.style.opacity = '0';
-        setTimeout(() => splash.style.display = 'none', 500);
-      }, 5000); // Display Innovine logo for 5s
+        splash.classList.add('splash-out');
+        setTimeout(() => splash.style.display = 'none', 800);
+      }, 2500);
     });
   </script>
 </body>
