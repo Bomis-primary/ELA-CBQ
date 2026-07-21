@@ -327,7 +327,7 @@
 
   <!-- Mandatory Logo Overlay (First 5 seconds) -->
   <div id="logo-overlay">
-    <img src="g3/chp25/assets/logo.png" alt="Logo" id="logo-img">
+    <img src="g3/chp25/assets/logo.png" alt="Logo" id="logo-img" onerror="handleImageError(this)">
   </div>
 
   <!-- Audio Elements -->
@@ -389,6 +389,17 @@
   </div>
 
   <script>
+    // Automatic Image Error Fallback Handler
+    function handleImageError(img) {
+      if (img.src.includes('g3/chp25/assets/logo.png')) {
+        // Try fallback relative path
+        img.src = 'assets/logo.png';
+      } else if (img.src.includes('assets/logo.png')) {
+        // Try direct root path
+        img.src = 'logo.png';
+      }
+    }
+
     // Logo Overlay Timer (Mandatory 5s)
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
