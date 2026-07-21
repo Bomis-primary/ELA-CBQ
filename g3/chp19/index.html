@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grade 3 English - Chapter 19: Antonyms</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f0f7f4 0%, #e8f3ee 50%, #dbece5 100%);
+      --card-bg: #ffffff;
+      --primary: #4a7c59;
+      --primary-hover: #3b6346;
+      --accent-pink: #e8a598;
+      --accent-rose: #d88373;
+      --text-main: #2d3732;
+      --text-muted: #5c6e65;
+      --correct-bg: #e2f3e7;
+      --correct-border: #4caf50;
+      --correct-text: #1b5e20;
+      --wrong-bg: #fde8e8;
+      --wrong-border: #ef5350;
+      --wrong-text: #c62828;
+      --radius: 16px;
+      --shadow: 0 10px 25px rgba(74, 124, 89, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #d0e3d8;
+    }
+
+    /* Floral Top Decoration */
+    .container::before {
+      content: '🌸 🌿 🌺 🌿 🌸';
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 1.2rem;
+      opacity: 0.6;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed #d0e3d8;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-container img {
+      max-height: 45px;
+      width: auto;
+    }
+
+    .header-titles h1 {
+      font-size: 1.4rem;
+      color: var(--primary);
+    }
+
+    .header-titles h2 {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      background-color: #e0ece5;
+      height: 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-pink), var(--primary));
+      transition: width 0.3s ease;
+      border-radius: 6px;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .scenario-card {
+      background: #f4f9f6;
+      border-left: 5px solid var(--primary);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .scenario-title {
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .question-box {
+      margin-bottom: 20px;
+    }
+
+    .question-box h3 {
+      font-size: 1.15rem;
+      color: var(--text-main);
+      margin-bottom: 15px;
+      line-height: 1.5;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      background: #ffffff;
+      border: 2px solid #d0e3d8;
+      border-radius: 12px;
+      padding: 14px 18px;
+      text-align: left;
+      font-size: 1rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .option-btn:hover:not([disabled]) {
+      border-color: var(--primary);
+      background: #f0f7f4;
+      transform: translateY(-2px);
+    }
+
+    .option-btn.correct {
+      background-color: var(--correct-bg) !important;
+      border-color: var(--correct-border) !important;
+      color: var(--correct-text) !important;
+      font-weight: 600;
+    }
+
+    .option-btn.wrong {
+      background-color: var(--wrong-bg) !important;
+      border-color: var(--wrong-border) !important;
+      color: var(--wrong-text) !important;
+    }
+
+    .feedback-box {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 500;
+      display: none;
+    }
+
+    .feedback-box.correct {
+      display: block;
+      background-color: var(--correct-bg);
+      color: var(--correct-text);
+      border: 1px solid var(--correct-border);
+    }
+
+    .feedback-box.wrong {
+      display: block;
+      background-color: var(--wrong-bg);
+      color: var(--wrong-text);
+      border: 1px solid var(--wrong-border);
+    }
+
+    .nav-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 25px;
+    }
+
+    .next-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      display: none;
+    }
+
+    .next-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Score Summary View */
+    .results-screen {
+      text-align: center;
+      padding: 20px 10px;
+      display: none;
+    }
+
+    .results-screen h2 {
+      color: var(--primary);
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .results-screen p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 25px;
+    }
+
+    .score-badge {
+      display: inline-block;
+      background: var(--bg-gradient);
+      border: 3px solid var(--primary);
+      padding: 20px 40px;
+      border-radius: 50px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 30px;
+    }
+
+    .restart-btn {
+      background: var(--accent-rose);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .restart-btn:hover {
+      background: #c56e5f;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <img src="assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
+        <div class="header-titles">
+          <h1>Grade 3: English Practice</h1>
+          <h2>Chapter 19 — Antonyms (Opposite Meanings)</h2>
+        </div>
+      </div>
+    </header>
+
+    <div id="quiz-view">
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <div class="stats-row">
+        <span id="question-tracker">Question 1 of 16</span>
+        <span id="score-tracker">Score: 0</span>
+      </div>
+
+      <div class="scenario-card" id="scenario-card">
+        <div class="scenario-title" id="scenario-title">🌸 Scenario 1</div>
+        <div id="scenario-text">Scenario details will appear here...</div>
+      </div>
+
+      <div class="question-box">
+        <h3 id="question-text">Question text goes here</h3>
+        <div class="options-grid" id="options-container"></div>
+      </div>
+
+      <div class="feedback-box" id="feedback-box"></div>
+
+      <div class="nav-actions">
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question ➔</button>
+      </div>
+    </div>
+
+    <div class="results-screen" id="results-screen">
+      <h2>🌸 Practice Completed! 🌿</h2>
+      <p>Great job working on your antonyms today!</p>
+      <div class="score-badge" id="final-score">0 / 16</div>
+      <br>
+      <button class="restart-btn" onclick="restartQuiz()">Try Again ↺</button>
+    </div>
+  </div>
+
+  <audio id="audio-correct" src="assets/correct.mp3" preload="auto"></audio>
+  <audio id="audio-wrong" src="assets/wrong.mp3" preload="auto"></audio>
+
+  <script>
+    const quizData = [
+      // Scenario 1
+      {
+        scenarioTitle: "Scenario 1: Sports Day at School",
+        scenarioText: "During Sports Day, different races were organised for students. In one race, Aarush ran very fast and crossed the finish line first. Another participant moved slowly but completed the race with determination. The coach praised both students for their effort and sportsmanship.",
+        question: "Q1. Which word from the lesson is the opposite of fast?",
+        options: ["a) finish", "b) heavy", "c) slow", "d) healthy"],
+        answerIndex: 2
+      },
+      {
+        scenarioTitle: "Scenario 1: Sports Day at School",
+        scenarioText: "During Sports Day, different races were organised for students. In one race, Aarush ran very fast and crossed the finish line first. Another participant moved slowly but completed the race with determination. The coach praised both students for their effort and sportsmanship.",
+        question: "Q2. Why are fast and slow considered antonyms?",
+        options: ["a) They describe the same speed.", "b) They describe opposite speeds.", "c) They describe places.", "d) They describe feelings."],
+        answerIndex: 1
+      },
+      {
+        scenarioTitle: "Scenario 1: Sports Day at School",
+        scenarioText: "During Sports Day, different races were organised for students. In one race, Aarush ran very fast and crossed the finish line first. Another participant moved slowly but completed the race with determination. The coach praised both students for their effort and sportsmanship.",
+        question: "Q3. Statement: \"slow\" is an antonym of \"fast.\"\nReason: Antonyms are words with opposite meanings.",
+        options: [
+          "a) Both are correct and the reason explains the statement.",
+          "b) Both are correct but not related.",
+          "c) Statement is correct, reason is wrong.",
+          "d) Statement is wrong, reason is correct."
+        ],
+        answerIndex: 0
+      },
+      {
+        scenarioTitle: "Scenario 1: Sports Day at School",
+        scenarioText: "During Sports Day, different races were organised for students. In one race, Aarush ran very fast and crossed the finish line first. Another participant moved slowly but completed the race with determination. The coach praised both students for their effort and sportsmanship.",
+        question: "Q4. Which sentence best matches the opposite idea of the passage?",
+        options: [
+          "a) Aarush ran slowly and reached the finish line much later.",
+          "b) Aarush ran quickly and reached first.",
+          "c) Aarush ran carefully and reached first.",
+          "d) Aarush ran confidently and reached first."
+        ],
+        answerIndex: 0
+      },
+
+      // Scenario 2
+      {
+        scenarioTitle: "Scenario 2: The Community Health Camp",
+        scenarioText: "A health camp was organised in a nearby community centre. Doctors checked children's health and gave useful advice. One child had been sick for a few days, but after treatment and rest, he became healthy again. His parents were relieved to see his improvement.",
+        question: "Q5. Which word is the opposite of sick?",
+        options: ["a) healthy", "b) boring", "c) empty", "d) outside"],
+        answerIndex: 0
+      },
+      {
+        scenarioTitle: "Scenario 2: The Community Health Camp",
+        scenarioText: "A health camp was organised in a nearby community centre. Doctors checked children's health and gave useful advice. One child had been sick for a few days, but after treatment and rest, he became healthy again. His parents were relieved to see his improvement.",
+        question: "Q6. Why can \"healthy\" replace the condition of the child after treatment?",
+        options: [
+          "a) It shows the opposite of being sick.",
+          "b) It shows where he was treated.",
+          "c) It shows how he walked.",
+          "d) It shows when he visited the doctor."
+        ],
+        answerIndex: 0
+      },
+      {
+        scenarioTitle: "Scenario 2: The Community Health Camp",
+        scenarioText: "A health camp was organised in a nearby community centre. Doctors checked children's health and gave useful advice. One child had been sick for a few days, but after treatment and rest, he became healthy again. His parents were relieved to see his improvement.",
+        question: "Q7. Which pair does NOT show opposite meanings?",
+        options: ["a) sick – healthy", "b) fast – slow", "c) empty – full", "d) healthy – doctor"],
+        answerIndex: 3
+      },
+      {
+        scenarioTitle: "Scenario 2: The Community Health Camp",
+        scenarioText: "A health camp was organised in a nearby community centre. Doctors checked children's health and gave useful advice. One child had been sick for a few days, but after treatment and rest, he became healthy again. His parents were relieved to see his improvement.",
+        question: "Q8. A student says: \"Healthy is an antonym of full.\" Which statement shows incorrect understanding?",
+        options: ["a) healthy", "b) antonym", "c) full", "d) healthy is an antonym of full"],
+        answerIndex: 3
+      },
+
+      // Scenario 3
+      {
+        scenarioTitle: "Scenario 3: The School Reading Corner",
+        scenarioText: "The school library introduced a new reading corner with storybooks and magazines. Some students found a science magazine very interesting and eagerly discussed it with their friends. A few students picked another magazine but felt it was boring because it did not match their interests.",
+        question: "Q9. Which word from the lesson is the opposite of interesting?",
+        options: ["a) healthy", "b) boring", "c) heavy", "d) inside"],
+        answerIndex: 1
+      },
+      {
+        scenarioTitle: "Scenario 3: The School Reading Corner",
+        scenarioText: "The school library introduced a new reading corner with storybooks and magazines. Some students found a science magazine very interesting and eagerly discussed it with their friends. A few students picked another magazine but felt it was boring because it did not match their interests.",
+        question: "Q10. Statement: \"boring\" is an antonym of \"interesting.\"\nReason: The two words express opposite opinions about something.",
+        options: [
+          "a) Both are correct and the reason explains the statement.",
+          "b) Both are correct but not related.",
+          "c) Statement is correct, reason is wrong.",
+          "d) Statement is wrong, reason is correct."
+        ],
+        answerIndex: 0
+      },
+      {
+        scenarioTitle: "Scenario 3: The School Reading Corner",
+        scenarioText: "The school library introduced a new reading corner with storybooks and magazines. Some students found a science magazine very interesting and eagerly discussed it with their friends. A few students picked another magazine but felt it was boring because it did not match their interests.",
+        question: "Q11. Why might one student describe a magazine as boring?",
+        options: [
+          "a) Because it did not interest them.",
+          "b) Because it was very healthy.",
+          "c) Because it was full.",
+          "d) Because it was fast."
+        ],
+        answerIndex: 0
+      },
+      {
+        scenarioTitle: "Scenario 3: The School Reading Corner",
+        scenarioText: "The school library introduced a new reading corner with storybooks and magazines. Some students found a science magazine very interesting and eagerly discussed it with their friends. A few students picked another magazine but felt it was boring because it did not match their interests.",
+        question: "Q12. Which sentence best shows the opposite meaning of the passage?",
+        options: [
+          "a) The students found the magazine interesting.",
+          "b) The students found the magazine exciting.",
+          "c) The students found the magazine boring.",
+          "d) The students found the magazine useful."
+        ],
+        answerIndex: 2
+      },
+
+      // Scenario 4
+      {
+        scenarioTitle: "Scenario 4: Preparing for a Train Journey",
+        scenarioText: "A family was preparing for a train journey during the holidays. They packed their bags the night before and checked their tickets carefully. One suitcase was full of clothes and books, while another suitcase was completely empty and waiting to be packed. The children sat inside the train while their grandparents waved from outside.",
+        question: "Q13. Which pair of words from the passage are antonyms?",
+        options: ["a) train – suitcase", "b) inside – outside", "c) books – clothes", "d) children – grandparents"],
+        answerIndex: 1
+      },
+      {
+        scenarioTitle: "Scenario 4: Preparing for a Train Journey",
+        scenarioText: "A family was preparing for a train journey during the holidays. They packed their bags the night before and checked their tickets carefully. One suitcase was full of clothes and books, while another suitcase was completely empty and waiting to be packed. The children sat inside the train while their grandparents waved from outside.",
+        question: "Q14. Why are empty and full antonyms?",
+        options: [
+          "a) They describe opposite amounts.",
+          "b) They describe opposite places.",
+          "c) They describe opposite people.",
+          "d) They describe opposite actions."
+        ],
+        answerIndex: 0
+      },
+      {
+        scenarioTitle: "Scenario 4: Preparing for a Train Journey",
+        scenarioText: "A family was preparing for a train journey during the holidays. They packed their bags the night before and checked their tickets carefully. One suitcase was full of clothes and books, while another suitcase was completely empty and waiting to be packed. The children sat inside the train while their grandparents waved from outside.",
+        question: "Q15. Which pair does NOT belong with the others?",
+        options: ["a) inside – outside", "b) front – back", "c) start – finish", "d) inside – train"],
+        answerIndex: 3
+      },
+      {
+        scenarioTitle: "Scenario 4: Preparing for a Train Journey",
+        scenarioText: "A family was preparing for a train journey during the holidays. They packed their bags the night before and checked their tickets carefully. One suitcase was full of clothes and books, while another suitcase was completely empty and waiting to be packed. The children sat inside the train while their grandparents waved from outside.",
+        question: "Q16. Which statement best explains antonyms?",
+        options: [
+          "a) Antonyms are words that sound alike.",
+          "b) Antonyms are words that have opposite meanings.",
+          "c) Antonyms are words that are spelled the same.",
+          "d) Antonyms are words used only in stories."
+        ],
+        answerIndex: 1
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
+
+    const scenarioTitleEl = document.getElementById("scenario-title");
+    const scenarioTextEl = document.getElementById("scenario-text");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsContainerEl = document.getElementById("options-container");
+    const feedbackBoxEl = document.getElementById("feedback-box");
+    const nextBtnEl = document.getElementById("next-btn");
+    const progressBarEl = document.getElementById("progress-bar");
+    const questionTrackerEl = document.getElementById("question-tracker");
+    const scoreTrackerEl = document.getElementById("score-tracker");
+
+    const audioCorrect = document.getElementById("audio-correct");
+    const audioWrong = document.getElementById("audio-wrong");
+
+    function loadQuestion() {
+      answered = false;
+      feedbackBoxEl.className = "feedback-box";
+      feedbackBoxEl.style.display = "none";
+      nextBtnEl.style.display = "none";
+
+      const currentQ = quizData[currentQuestionIndex];
+
+      scenarioTitleEl.textContent = "🌸 " + currentQ.scenarioTitle;
+      scenarioTextEl.textContent = currentQ.scenarioText;
+      questionTextEl.innerHTML = currentQ.question.replace(/\n/g, "<br>");
+
+      optionsContainerEl.innerHTML = "";
+      currentQ.options.forEach((optText, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = optText;
+        btn.onclick = () => checkAnswer(index, btn);
+        optionsContainerEl.appendChild(btn);
+      });
+
+      // Update Header stats
+      questionTrackerEl.textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+      scoreTrackerEl.textContent = `Score: ${score}`;
+      
+      const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
+      progressBarEl.style.width = `${progressPercent}%`;
+    }
+
+    function checkAnswer(selectedIndex, selectedBtn) {
+      if (answered) return;
+      answered = true;
+
+      const currentQ = quizData[currentQuestionIndex];
+      const allButtons = optionsContainerEl.querySelectorAll(".option-btn");
+
+      if (selectedIndex === currentQ.answerIndex) {
+        score++;
+        selectedBtn.classList.add("correct");
+        feedbackBoxEl.textContent = "Correct! Well done.";
+        feedbackBoxEl.className = "feedback-box correct";
+        playSound(audioCorrect);
+      } else {
+        selectedBtn.classList.add("wrong");
+        allButtons[currentQ.answerIndex].classList.add("correct");
+        feedbackBoxEl.textContent = `Incorrect. The correct answer was: ${currentQ.options[currentQ.answerIndex]}`;
+        feedbackBoxEl.className = "feedback-box wrong";
+        playSound(audioWrong);
+      }
+
+      allButtons.forEach(btn => btn.disabled = true);
+      scoreTrackerEl.textContent = `Score: ${score}`;
+      nextBtnEl.style.display = "inline-block";
+    }
+
+    function playSound(audioEl) {
+      if (audioEl) {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(e => console.log("Audio play blocked by browser."));
+      }
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById("quiz-view").style.display = "none";
+      const resultsScreen = document.getElementById("results-screen");
+      resultsScreen.style.display = "block";
+      document.getElementById("final-score").textContent = `${score} / ${quizData.length}`;
+      progressBarEl.style.width = "100%";
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      document.getElementById("quiz-view").style.display = "block";
+      document.getElementById("results-screen").style.display = "none";
+      loadQuestion();
+    }
+
+    // Initialize on load
+    loadQuestion();
+  </script>
+</body>
+</html>
