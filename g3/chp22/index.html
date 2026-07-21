@@ -5,25 +5,310 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Grade 3 Homophones and Homonyms</title>
 <style>
-:root{--bg1:#f7fbff;--bg2:#eef7ff;--card:#ffffffee;--ink:#17324d;--muted:#5c7287;--accent:#2f80ed;--good:#2eae63;--bad:#e05555;--line:#d9e7f4;--shadow:0 18px 50px rgba(25,60,100,.12)}*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:linear-gradient(160deg,var(--bg1),var(--bg2));overflow-x:hidden}.bg{position:fixed;inset:0;pointer-events:none;overflow:hidden}.star,.stream{position:absolute;opacity:.18;animation:float linear infinite}.star{width:10px;height:10px;background:#7bb8ff;clip-path:polygon(50% 0,61% 35%,98% 35%,69% 57%,79% 91%,50% 72%,21% 91%,31% 57%,2% 35%,39% 35%)}.stream{width:2px;height:80px;background:linear-gradient(to bottom,transparent,rgba(63,138,255,.3),transparent)}@keyframes float{from{transform:translateY(110vh) rotate(0)}to{transform:translateY(-20vh) rotate(360deg)}}.wrap{max-width:980px;margin:0 auto;padding:16px}.panel{background:var(--card);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.6);border-radius:24px;box-shadow:var(--shadow)}.screen{display:none}.screen.active{display:block}.hero{min-height:100vh;display:grid;place-items:center}.hero .panel{width:min(920px,100%);padding:22px}.brand{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}.logo-box{display:flex;align-items:center;gap:14px}.logo{width:72px;height:72px;object-fit:contain;border-radius:18px;background:#fff;border:1px solid var(--line);padding:8px}.eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}h1{margin:.2em 0 .2em;font-size:clamp(28px,4vw,48px);line-height:1.05}p{margin:.35em 0;color:var(--muted);line-height:1.5}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}.chip{background:#f4f9ff;border:1px solid var(--line);border-radius:16px;padding:12px;font-size:14px}.btnrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:16px;padding:14px 18px;font-weight:700;cursor:pointer}.primary{background:var(--accent);color:#fff}.secondary{background:#eaf2fb;color:var(--ink)}.game{padding-bottom:28px}.topbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;padding:14px 16px;margin-top:14px}.score,.timer{font-weight:700}.meter{height:10px;background:#edf4fb;border-radius:999px;overflow:hidden;margin-top:10px}.meter>div{height:100%;width:0;background:linear-gradient(90deg,#6db4ff,#2f80ed);transition:width .25s}.card{margin-top:14px;padding:18px}.qhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.tag{font-size:13px;color:#fff;background:var(--accent);padding:7px 10px;border-radius:999px}.question{font-size:clamp(20px,2.6vw,30px);font-weight:800;margin:10px 0 12px}.passage{background:#f8fbff;border:1px solid var(--line);border-radius:18px;padding:14px;color:#35506a}.opts{display:grid;gap:10px;margin-top:14px}.opt{width:100%;text-align:left;padding:14px 15px;border-radius:16px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:16px}.opt:hover{border-color:#9bc0ea}.opt.wrong{border-color:var(--bad);background:#fff3f3}.opt.correct{border-color:var(--good);background:#effcf4}.feedback{min-height:26px;margin-top:12px;font-weight:700}.cross{display:inline-block;color:var(--bad);font-size:20px;transform:translateY(2px)}.starburst{position:fixed;inset:0;pointer-events:none;overflow:hidden}.conf{position:absolute;font-size:18px;animation:pop 1s ease-out forwards}.xmark{position:absolute;font-size:24px;color:var(--bad);animation:fade .8s ease-out forwards}@keyframes pop{0%{transform:translateY(0) scale(.4) rotate(0);opacity:1}100%{transform:translateY(-90px) scale(1.2) rotate(220deg);opacity:0}}@keyframes fade{0%{transform:scale(.6);opacity:1}100%{transform:scale(1.2);opacity:0}}.result{display:grid;place-items:center;min-height:100vh}.result .panel{width:min(760px,100%);padding:24px;text-align:center}.big{font-size:clamp(34px,5vw,60px);font-weight:900}.small{font-size:15px;color:var(--muted)}.final-box{margin-top:16px;padding:16px;border-radius:18px;background:#f8fbff;border:1px solid var(--line);text-align:left}.hidden{display:none !important}@media (max-width:720px){.meta{grid-template-columns:repeat(2,1fr)}.brand{align-items:flex-start}}
+:root{
+  --bg1:#f7fbff;
+  --bg2:#eef7ff;
+  --card:#ffffffee;
+  --ink:#17324d;
+  --muted:#5c7287;
+  --accent:#2f80ed;
+  --good:#2eae63;
+  --bad:#e05555;
+  --line:#d9e7f4;
+  --shadow:0 18px 50px rgba(25,60,100,.12);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  overflow-x:hidden;
+}
+.bg{
+  position:fixed;inset:0;pointer-events:none;overflow:hidden;
+}
+.star,.stream{
+  position:absolute;opacity:.18;animation:float linear infinite;
+}
+.star{
+  width:10px;height:10px;background:#7bb8ff;
+  clip-path:polygon(50% 0,61% 35%,98% 35%,69% 57%,79% 91%,50% 72%,21% 91%,31% 57%,2% 35%,39% 35%);
+}
+.stream{
+  width:2px;height:80px;
+  background:linear-gradient(to bottom,transparent,rgba(63,138,255,.3),transparent);
+}
+@keyframes float{
+  from{transform:translateY(110vh) rotate(0)}
+  to{transform:translateY(-20vh) rotate(360deg)}
+}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+.panel{
+  background:var(--card);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.6);
+  border-radius:24px;
+  box-shadow:var(--shadow);
+}
+.screen{display:none}
+.screen.active{display:block}
+
+.splash{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  text-align:center;
+}
+.splash .panel{
+  width:min(540px,100%);
+  padding:26px;
+}
+.logo{
+  width:150px;
+  height:150px;
+  object-fit:contain;
+  display:block;
+  margin:0 auto 14px;
+  border-radius:24px;
+  background:#fff;
+  border:1px solid var(--line);
+  padding:14px;
+}
+.splash h1{
+  margin:0;
+  font-size:clamp(28px,5vw,42px);
+}
+.splash p{
+  margin:10px 0 0;
+  color:var(--muted);
+}
+
+.instructions{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+}
+.instructions .panel{
+  width:min(920px,100%);
+  padding:22px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.brand .mini-logo{
+  width:70px;
+  height:70px;
+  object-fit:contain;
+  border-radius:16px;
+  background:#fff;
+  border:1px solid var(--line);
+  padding:8px;
+}
+.eyebrow{
+  font-size:13px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+h2{
+  margin:.15em 0 .25em;
+  font-size:clamp(28px,4vw,46px);
+  line-height:1.05;
+}
+p{
+  margin:.35em 0;
+  color:var(--muted);
+  line-height:1.5;
+}
+.meta{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin:16px 0;
+}
+.chip{
+  background:#f4f9ff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:12px;
+  font-size:14px;
+}
+.btnrow{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:18px;
+}
+.btn{
+  border:0;
+  border-radius:16px;
+  padding:14px 18px;
+  font-weight:700;
+  cursor:pointer;
+}
+.primary{background:var(--accent);color:#fff}
+.secondary{background:#eaf2fb;color:var(--ink)}
+
+.game{padding-bottom:28px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+  padding:14px 16px;
+  margin-top:14px;
+}
+.score,.timer{font-weight:700}
+.meter{
+  height:10px;
+  background:#edf4fb;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:10px;
+}
+.meter>div{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#6db4ff,#2f80ed);
+  transition:width .25s;
+}
+.card{
+  margin-top:14px;
+  padding:18px;
+}
+.qhead{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.tag{
+  font-size:13px;
+  color:#fff;
+  background:var(--accent);
+  padding:7px 10px;
+  border-radius:999px;
+}
+.question{
+  font-size:clamp(20px,2.6vw,30px);
+  font-weight:800;
+  margin:10px 0 12px;
+}
+.passage{
+  background:#f8fbff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  color:#35506a;
+  white-space:pre-line;
+}
+.opts{
+  display:grid;
+  gap:10px;
+  margin-top:14px;
+}
+.opt{
+  width:100%;
+  text-align:left;
+  padding:14px 15px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:#fff;
+  cursor:pointer;
+  font-size:16px;
+}
+.opt:hover{border-color:#9bc0ea}
+.opt.wrong{border-color:var(--bad);background:#fff3f3}
+.opt.correct{border-color:var(--good);background:#effcf4}
+.feedback{
+  min-height:26px;
+  margin-top:12px;
+  font-weight:700;
+}
+.cross{
+  display:inline-block;
+  color:var(--bad);
+  font-size:20px;
+  transform:translateY(2px);
+}
+.starburst{
+  position:fixed;inset:0;pointer-events:none;overflow:hidden;
+}
+.conf{
+  position:absolute;
+  font-size:18px;
+  animation:pop 1s ease-out forwards;
+}
+.xmark{
+  position:absolute;
+  font-size:24px;
+  color:var(--bad);
+  animation:fade .8s ease-out forwards;
+}
+@keyframes pop{
+  0%{transform:translateY(0) scale(.4) rotate(0);opacity:1}
+  100%{transform:translateY(-90px) scale(1.2) rotate(220deg);opacity:0}
+}
+@keyframes fade{
+  0%{transform:scale(.6);opacity:1}
+  100%{transform:scale(1.2);opacity:0}
+}
+.result{
+  display:grid;
+  place-items:center;
+  min-height:100vh;
+}
+.result .panel{
+  width:min(760px,100%);
+  padding:24px;
+  text-align:center;
+}
+.big{
+  font-size:clamp(34px,5vw,60px);
+  font-weight:900;
+}
+.small{font-size:15px;color:var(--muted)}
+.final-box{
+  margin-top:16px;
+  padding:16px;
+  border-radius:18px;
+  background:#f8fbff;
+  border:1px solid var(--line);
+  text-align:left;
+}
+.hidden{display:none !important}
+@media (max-width:720px){
+  .meta{grid-template-columns:repeat(2,1fr)}
+}
 </style>
 </head>
 <body>
 <div class="bg" id="bg"></div>
 <div class="starburst" id="fx"></div>
 
-<section class="screen hero active" id="introScreen">
+<section class="screen splash active" id="splashScreen">
+  <div class="panel">
+    <img class="logo" src="assets/innovine-logo.png" alt="Innovine logo">
+    <h1>Innovine</h1>
+    <p>Loading your learning activity...</p>
+  </div>
+</section>
+
+<section class="screen instructions" id="instructionsScreen">
   <div class="panel wrap">
     <div class="brand">
-      <div class="logo-box">
-        <img class="logo" src="assets/innovine-logo.png" alt="Innovine logo" />
-        <div>
-          <div class="eyebrow">Innovine</div>
-          <h1>Homophones and Homonyms</h1>
-          <p>Grade 3 interactive MCQ journey with a smooth timer, retry support, and a final challenge.</p>
-        </div>
+      <img class="mini-logo" src="assets/innovine-logo.png" alt="Innovine logo">
+      <div>
+        <div class="eyebrow">Instructions</div>
+        <h2>Homophones and Homonyms</h2>
+        <p>Grade 3 interactive MCQ journey with a smooth timer, retry support, and a final challenge.</p>
       </div>
-      <div class="chip">One-file HTML • Mobile-friendly</div>
     </div>
     <div class="meta">
       <div class="chip"><strong>Grade:</strong> 3</div>
@@ -31,12 +316,11 @@
       <div class="chip"><strong>Topic:</strong> Homophones &amp; Homonyms</div>
       <div class="chip"><strong>Questions:</strong> 16</div>
     </div>
-    <p>This activity uses competency-based questions from the provided scenarios. Read each passage carefully, choose the best answer, and use the second chance wisely if needed.</p>
+    <p>Read each passage carefully, choose the best answer, and use the second chance wisely if needed.</p>
+    <p>One wrong answer gives you a retry. After the second wrong attempt, the correct answer and a short explanation will appear.</p>
     <div class="btnrow">
       <button class="btn primary" id="startBtn">Start Activity</button>
-      <button class="btn secondary" id="practiceBtn">Review Instructions</button>
     </div>
-    <p class="small">The Innovine logo appears at the start for 5 seconds. Audio is enabled for correct and wrong answers.</p>
   </div>
 </section>
 
@@ -50,7 +334,10 @@
     <div class="meter"><div id="meterFill"></div></div>
 
     <div class="panel card">
-      <div class="qhead"><div class="tag" id="qTag">Question 1</div><div class="small" id="chapterTag">Chapter-based flow</div></div>
+      <div class="qhead">
+        <div class="tag" id="qTag">Question 1</div>
+        <div class="small" id="chapterTag">Chapter-based flow</div>
+      </div>
       <div class="question" id="questionText"></div>
       <div class="passage hidden" id="passageBox"></div>
       <div class="opts" id="options"></div>
@@ -92,21 +379,130 @@ const questions = [
 {q:'Which pair belongs to a different category?',o:['flower – flour','sea – see','right – write','board – board'],a:3,e:'The first three are homophones; board – board is a homonym.'},
 {q:'Which statement best explains the difference between homophones and homonyms?',o:['Homophones and homonyms are exactly the same.','Homophones sound the same but usually have different spellings and meanings, while homonyms share the same spelling but have different meanings.','Homophones are opposites, and homonyms are synonyms.','Both are types of punctuation marks.'],a:1,e:'That is the correct difference in simple Grade 3 language.'}
 ];
+
 let i=0,score=0,attempt=1,locked=false,time=45,timer=null;
-const el=s=>document.getElementById(s),show=s=>{['introScreen','gameScreen','resultScreen'].forEach(id=>el(id).classList.remove('active'));el(s).classList.add('active')};
-const audioOk='assets/correct.mp3',audioBad='assets/wrong.mp3';
+const el=s=>document.getElementById(s);
+const screens=['splashScreen','instructionsScreen','gameScreen','resultScreen'];
+const show=s=>{screens.forEach(id=>el(id).classList.remove('active'));el(s).classList.add('active')};
+
 function sfx(src){try{new Audio(src).play()}catch(e){}}
-function confetti(ok=true){const fx=el('fx');for(let k=0;k<14;k++){const d=document.createElement('div');d.className=ok?'conf':'xmark';d.textContent=ok?'★':'✕';d.style.left=Math.random()*100+'vw';d.style.top='85vh';d.style.animationDuration=(.7+Math.random()*.6)+'s';d.style.color=ok?'#7acb88':'#e05555';fx.appendChild(d);setTimeout(()=>d.remove(),1300)}}
-function startTimer(){clearInterval(timer);time=45;el('timeLeft').textContent=time;timer=setInterval(()=>{time--;el('timeLeft').textContent=time;if(time<=0){clearInterval(timer);handle(false,true)}},1000)}
-function render(){locked=false;attempt=1;el('attemptTag').textContent='Attempt 1 / 2';el('nextBtn').classList.add('hidden');el('feedback').textContent='';el('passageBox').classList.toggle('hidden',!questions[i].p);el('passageBox').textContent=questions[i].p||'';el('questionText').textContent=questions[i].q;el('qTag').textContent='Question '+(i+1);el('options').innerHTML='';el('meterFill').style.width=((i)/questions.length*100)+'%';questions[i].o.forEach((t,idx)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=String.fromCharCode(65+idx)+'. '+t;b.onclick=()=>handle(idx,false);el('options').appendChild(b)});el('score').textContent=score;startTimer()}
-function handle(choice,timeout){if(locked)return;locked=true;clearInterval(timer);const q=questions[i];const opts=[...el('options').children];if(timeout){el('feedback').innerHTML='<span class="cross">✕</span> Time up. Correct answer: <strong>'+q.o[q.a]+'</strong>. '+q.e;opts[q.a].classList.add('correct');sfx(audioBad);confetti(false);el('nextBtn').classList.remove('hidden');return}
-if(choice===q.a){score++;el('score').textContent=score;opts[choice].classList.add('correct');el('feedback').textContent='Correct! '+q.e;sfx(audioOk);confetti(true);el('nextBtn').classList.remove('hidden')}else{opts[choice].classList.add('wrong');sfx(audioBad);confetti(false);if(attempt===1){attempt=2;locked=false;el('attemptTag').textContent='Retry available: 1';el('feedback').innerHTML='Try again. You have one more chance.'}else{opts[q.a].classList.add('correct');el('feedback').innerHTML='<span class="cross">✕</span> Correct answer: <strong>'+q.o[q.a]+'</strong>. '+q.e;el('nextBtn').classList.remove('hidden')}}}
-el('nextBtn').onclick=()=>{i++;if(i>=questions.length){show('resultScreen');clearInterval(timer);el('resultText').textContent='You scored '+score+' out of '+questions.length+'.';el('finalBox').innerHTML='<strong>Final challenge:</strong> You completed all 16 competency-based questions with gradual difficulty and full topic coverage.';return}render()};
-el('startBtn').onclick=()=>{show('gameScreen');i=0;score=0;render()};
-el('practiceBtn').onclick=()=>alert('Read each question carefully. You get one retry after the first wrong attempt. After the second wrong attempt, the correct answer and a short explanation will appear.');
-el('restartBtn').onclick=()=>{show('introScreen')};
-for(let k=0;k<18;k++){const s=document.createElement('div');s.className=k%3===0?'star':'stream';s.style.left=Math.random()*100+'vw';s.style.animationDuration=(8+Math.random()*8)+'s';s.style.animationDelay=(-Math.random()*10)+'s';s.style.top=Math.random()*100+'vh';document.getElementById('bg').appendChild(s)}
-show('introScreen');
+function confetti(ok=true){
+  const fx=el('fx');
+  for(let k=0;k<14;k++){
+    const d=document.createElement('div');
+    d.className=ok?'conf':'xmark';
+    d.textContent=ok?'★':'✕';
+    d.style.left=Math.random()*100+'vw';
+    d.style.top='85vh';
+    d.style.animationDuration=(.7+Math.random()*.6)+'s';
+    d.style.color=ok?'#7acb88':'#e05555';
+    fx.appendChild(d);
+    setTimeout(()=>d.remove(),1300);
+  }
+}
+function startTimer(){
+  clearInterval(timer);
+  time=45;
+  el('timeLeft').textContent=time;
+  timer=setInterval(()=>{
+    time--;
+    el('timeLeft').textContent=time;
+    if(time<=0){
+      clearInterval(timer);
+      handle(false,true);
+    }
+  },1000);
+}
+function render(){
+  locked=false;
+  attempt=1;
+  el('attemptTag').textContent='Attempt 1 / 2';
+  el('nextBtn').classList.add('hidden');
+  el('feedback').textContent='';
+  el('passageBox').classList.toggle('hidden',!questions[i].p);
+  el('passageBox').textContent=questions[i].p||'';
+  el('questionText').textContent=questions[i].q;
+  el('qTag').textContent='Question '+(i+1);
+  el('options').innerHTML='';
+  el('meterFill').style.width=((i)/questions.length*100)+'%';
+  questions[i].o.forEach((t,idx)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML=String.fromCharCode(65+idx)+'. '+t;
+    b.onclick=()=>handle(idx,false);
+    el('options').appendChild(b);
+  });
+  el('score').textContent=score;
+  startTimer();
+}
+function handle(choice,timeout){
+  if(locked)return;
+  locked=true;
+  clearInterval(timer);
+  const q=questions[i];
+  const opts=[...el('options').children];
+  if(timeout){
+    el('feedback').innerHTML='<span class="cross">✕</span> Time up. Correct answer: <strong>'+q.o[q.a]+'</strong>. '+q.e;
+    opts[q.a].classList.add('correct');
+    sfx('assets/wrong.mp3');
+    confetti(false);
+    el('nextBtn').classList.remove('hidden');
+    return;
+  }
+  if(choice===q.a){
+    score++;
+    el('score').textContent=score;
+    opts[choice].classList.add('correct');
+    el('feedback').textContent='Correct! '+q.e;
+    sfx('assets/correct.mp3');
+    confetti(true);
+    el('nextBtn').classList.remove('hidden');
+  }else{
+    opts[choice].classList.add('wrong');
+    sfx('assets/wrong.mp3');
+    confetti(false);
+    if(attempt===1){
+      attempt=2;
+      locked=false;
+      el('attemptTag').textContent='Retry available: 1';
+      el('feedback').innerHTML='Try again. You have one more chance.';
+    }else{
+      opts[q.a].classList.add('correct');
+      el('feedback').innerHTML='<span class="cross">✕</span> Correct answer: <strong>'+q.o[q.a]+'</strong>. '+q.e;
+      el('nextBtn').classList.remove('hidden');
+    }
+  }
+}
+el('nextBtn').onclick=()=>{
+  i++;
+  if(i>=questions.length){
+    show('resultScreen');
+    clearInterval(timer);
+    el('resultText').textContent='You scored '+score+' out of '+questions.length+'.';
+    el('finalBox').innerHTML='<strong>Final challenge:</strong> You completed all 16 competency-based questions with gradual difficulty and full topic coverage.';
+    return;
+  }
+  render();
+};
+el('startBtn').onclick=()=>{
+  show('gameScreen');
+  i=0;
+  score=0;
+  render();
+};
+el('restartBtn').onclick=()=>{show('instructionsScreen')};
+
+for(let k=0;k<18;k++){
+  const s=document.createElement('div');
+  s.className=k%3===0?'star':'stream';
+  s.style.left=Math.random()*100+'vw';
+  s.style.animationDuration=(8+Math.random()*8)+'s';
+  s.style.animationDelay=(-Math.random()*10)+'s';
+  s.style.top=Math.random()*100+'vh';
+  document.getElementById('bg').appendChild(s);
+}
+
+setTimeout(()=>{show('instructionsScreen')},3000);
 </script>
 </body>
 </html>
