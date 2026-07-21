@@ -240,7 +240,8 @@
   <div class="container">
     <header>
       <div class="logo-area">
-        <img src="g3/chp17/assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
+        <!-- Local path inside g3/chp17/ directory -->
+        <img src="assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
         <span class="chapter-badge">Grade 3 • Ch 17</span>
       </div>
       <div class="score-badge" id="scoreDisplay">Score: 0 / 16</div>
@@ -278,8 +279,9 @@
   </div>
 
   <script>
-    const audioCorrect = new Audio('g3/chp17/assets/correct.mp3');
-    const audioWrong = new Audio('g3/chp17/assets/wrong.mp3');
+    // Relative paths matching assets folder inside g3/chp17/
+    const audioCorrect = new Audio('assets/correct.mp3');
+    const audioWrong = new Audio('assets/wrong.mp3');
 
     const scenarios = [
       {
