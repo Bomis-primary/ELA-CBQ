@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grade 3: Compound Words Ice Cream Parlor</title>
+  <style>
+    :root {
+      --bg-cream: #FFF5F7;
+      --strawberry: #FF6B8B;
+      --vanilla: #FFF0A5;
+      --mint: #A8E6CF;
+      --chocolate: #6D4C41;
+      --accent: #FF8E53;
+      --card-bg: #FFFFFF;
+      --shadow: 0 8px 24px rgba(109, 76, 65, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', 'Chalkboard SE', 'Fredoka', cursive, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      background-image: radial-gradient(var(--strawberry) 1px, transparent 0);
+      background-size: 24px 24px;
+      color: var(--chocolate);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 10px;
+    }
+
+    /* Header Bar */
+    .header {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      padding: 12px 24px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      border: 3px solid var(--strawberry);
+    }
+
+    .logo-container img {
+      height: 45px;
+      object-fit: contain;
+    }
+
+    .score-badge {
+      background: var(--vanilla);
+      padding: 8px 16px;
+      border-radius: 15px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      border: 2px solid var(--accent);
+    }
+
+    /* Main Container */
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 25px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      border: 4px solid var(--mint);
+      position: relative;
+    }
+
+    .scenario-box {
+      background: #F0FDF4;
+      border-left: 6px solid var(--mint);
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+      font-size: 1.05rem;
+    }
+
+    .scenario-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: var(--chocolate);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .question-box {
+      margin-bottom: 24px;
+    }
+
+    .q-number {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--strawberry);
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .q-text {
+      font-size: 1.2rem;
+      font-weight: bold;
+      line-height: 1.4;
+      color: #333;
+    }
+
+    /* Options */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .option-btn {
+      background: white;
+      border: 2px solid #E0E0E0;
+      padding: 14px 20px;
+      border-radius: 15px;
+      font-size: 1rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      color: var(--chocolate);
+      font-weight: 600;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--strawberry);
+      background: var(--bg-cream);
+      transform: translateY(-2px);
+    }
+
+    .option-btn.selected-correct {
+      background: #D1FAE5 !important;
+      border-color: #10B981 !important;
+      color: #065F46;
+    }
+
+    .option-btn.selected-wrong {
+      background: #FEE2E2 !important;
+      border-color: #EF4444 !important;
+      color: #991B1B;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .progress-bar {
+      flex-grow: 1;
+      height: 12px;
+      background: #E0E0E0;
+      border-radius: 6px;
+      margin-right: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--strawberry);
+      transition: width 0.3s ease;
+    }
+
+    .next-btn {
+      background: var(--strawberry);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 15px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 107, 139, 0.3);
+      transition: all 0.2s;
+    }
+
+    .next-btn:hover:not(:disabled) {
+      background: #FF5277;
+      transform: scale(1.05);
+    }
+
+    .next-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Final Screen */
+    .result-screen {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .result-title {
+      font-size: 2rem;
+      color: var(--strawberry);
+      margin-bottom: 16px;
+    }
+
+    .ice-cream-icon {
+      font-size: 80px;
+      margin: 20px 0;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .restart-btn {
+      background: var(--mint);
+      color: #065F46;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 20px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .restart-btn:hover {
+      background: #82E0BF;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Audio Elements -->
+  <audio id="audio-correct" src="g3/chp20/assets/correct.mp3"></audio>
+  <audio id="audio-wrong" src="g3/chp20/assets/wrong.mp3"></audio>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-container">
+      <img src="g3/chp20/assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
+    </div>
+    <div class="score-badge">🍨 Scoops: <span id="score">0</span> / 16</div>
+  </div>
+
+  <!-- Main Quiz Container -->
+  <div class="container" id="quiz-container">
+    
+    <div class="scenario-box" id="scenario-box">
+      <div class="scenario-title">🍦 <span id="scenario-title">Scenario 1</span></div>
+      <div id="scenario-text">Scenario details will appear here.</div>
+    </div>
+
+    <div class="question-box">
+      <div class="q-number" id="q-number">Question 1 of 16</div>
+      <div class="q-text" id="q-text">Question prompt goes here?</div>
+    </div>
+
+    <div class="options-grid" id="options-grid">
+      <!-- Option buttons dynamically generated -->
+    </div>
+
+    <div class="controls">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()" disabled>Next 🍨</button>
+    </div>
+
+  </div>
+
+  <script>
+    const quizData = [
+      // Scenario 1
+      {
+        scenarioTitle: "Scenario 1: The School Nature Camp",
+        scenarioText: "Class 3 students attended a nature camp in the hills. Early in the morning, they followed a footpath through the forest. Along the way, they spotted colourful butterflies near a sunflower field. After lunch, they gathered in a treehouse where the instructor shared interesting facts about wildlife and conservation.",
+        question: "Which compound word names the path the students followed?",
+        options: ["a) wildlife", "b) sunflower", "c) footpath", "d) treehouse"],
+        answer: 2
+      },
+      {
+        scenarioTitle: "Scenario 1: The School Nature Camp",
+        scenarioText: "Class 3 students attended a nature camp in the hills. Early in the morning, they followed a footpath through the forest. Along the way, they spotted colourful butterflies near a sunflower field. After lunch, they gathered in a treehouse where the instructor shared interesting facts about wildlife and conservation.",
+        question: "Why is footpath called a compound word?",
+        options: ["a) It is made by joining two smaller words with related meanings.", "b) It is a very long word.", "c) It names a place.", "d) It has more than one syllable."],
+        answer: 0
+      },
+      {
+        scenarioTitle: "Scenario 1: The School Nature Camp",
+        scenarioText: "Class 3 students attended a nature camp in the hills. Early in the morning, they followed a footpath through the forest. Along the way, they spotted colourful butterflies near a sunflower field. After lunch, they gathered in a treehouse where the instructor shared interesting facts about wildlife and conservation.",
+        question: "Statement: \"treehouse\" is a compound word.\nReason: It is formed by joining the words \"tree\" and \"house.\"",
+        options: ["a) Both are correct and the reason explains the statement.", "b) Both are correct but not related.", "c) Statement is correct, reason is wrong.", "d) Statement is wrong, reason is correct."],
+        answer: 0
+      },
+      {
+        scenarioTitle: "Scenario 1: The School Nature Camp",
+        scenarioText: "Class 3 students attended a nature camp in the hills. Early in the morning, they followed a footpath through the forest. Along the way, they spotted colourful butterflies near a sunflower field. After lunch, they gathered in a treehouse where the instructor shared interesting facts about wildlife and conservation.",
+        question: "Which word from the passage is formed by joining the names of a plant and a flower?",
+        options: ["a) wildlife", "b) footpath", "c) sunflower", "d) treehouse"],
+        answer: 2
+      },
+
+      // Scenario 2
+      {
+        scenarioTitle: "Scenario 2: The Weekend Beach Visit",
+        scenarioText: "During the holidays, Mehul's family visited a beach along the coast. The children collected seashells and built sandcastles near the shoreline. Later, they sat under a large umbrella and watched the sunset. Before leaving, they bought postcards from a small shop near the parking area.",
+        question: "Which compound word names something the children built?",
+        options: ["a) shoreline", "b) sunset", "c) sandcastle", "d) postcard"],
+        answer: 2
+      },
+      {
+        scenarioTitle: "Scenario 2: The Weekend Beach Visit",
+        scenarioText: "During the holidays, Mehul's family visited a beach along the coast. The children collected seashells and built sandcastles near the shoreline. Later, they sat under a large umbrella and watched the sunset. Before leaving, they bought postcards from a small shop near the parking area.",
+        question: "Why is sunset a compound word?",
+        options: ["a) It joins two smaller words to create a new meaning.", "b) It is used only at the beach.", "c) It describes a feeling.", "d) It is a proper noun."],
+        answer: 0
+      },
+      {
+        scenarioTitle: "Scenario 2: The Weekend Beach Visit",
+        scenarioText: "During the holidays, Mehul's family visited a beach along the coast. The children collected seashells and built sandcastles near the shoreline. Later, they sat under a large umbrella and watched the sunset. Before leaving, they bought postcards from a small shop near the parking area.",
+        question: "Which word is NOT a compound word?",
+        options: ["a) sandcastle", "b) sunset", "c) umbrella", "d) postcard"],
+        answer: 2
+      },
+      {
+        scenarioTitle: "Scenario 2: The Weekend Beach Visit",
+        scenarioText: "During the holidays, Mehul's family visited a beach along the coast. The children collected seashells and built sandcastles near the shoreline. Later, they sat under a large umbrella and watched the sunset. Before leaving, they bought postcards from a small shop near the parking area.",
+        question: "A student says: \"Postcard is not a compound word because it names only one object.\"\nWhich part shows incorrect understanding?",
+        options: ["a) Postcard", "b) compound word", "c) names only one object", "d) Postcard is not a compound word"],
+        answer: 3
+      },
+
+      // Scenario 3
+      {
+        scenarioTitle: "Scenario 3: The School Science Fair",
+        scenarioText: "Students displayed different projects during the science fair. One group demonstrated how rainwater can be collected and stored. Another group explained how windmills generate electricity. Visitors used notebooks to record observations and discussed ideas during lunchtime in the activity hall.",
+        question: "Which word from the passage is a compound word related to water?",
+        options: ["a) visitors", "b) activity", "c) rainwater", "d) electricity"],
+        answer: 2
+      },
+      {
+        scenarioTitle: "Scenario 3: The School Science Fair",
+        scenarioText: "Students displayed different projects during the science fair. One group demonstrated how rainwater can be collected and stored. Another group explained how windmills generate electricity. Visitors used notebooks to record observations and discussed ideas during lunchtime in the activity hall.",
+        question: "Statement: \"lunchtime\" is a compound word.\nReason: It is formed by joining \"lunch\" and \"time.\"",
+        options: ["a) Both are correct and the reason explains the statement.", "b) Both are correct but not related.", "c) Statement is correct, reason is wrong.", "d) Statement is wrong, reason is correct."],
+        answer: 0
+      },
+      {
+        scenarioTitle: "Scenario 3: The School Science Fair",
+        scenarioText: "Students displayed different projects during the science fair. One group demonstrated how rainwater can be collected and stored. Another group explained how windmills generate electricity. Visitors used notebooks to record observations and discussed ideas during lunchtime in the activity hall.",
+        question: "Why can notebook be called a compound word?",
+        options: ["a) It is made from the words \"note\" and \"book.\"", "b) It is used in school.", "c) It contains many pages.", "d) It is useful for writing."],
+        answer: 0
+      },
+      {
+        scenarioTitle: "Scenario 3: The School Science Fair",
+        scenarioText: "Students displayed different projects during the science fair. One group demonstrated how rainwater can be collected and stored. Another group explained how windmills generate electricity. Visitors used notebooks to record observations and discussed ideas during lunchtime in the activity hall.",
+        question: "Which word from the passage is formed by joining a weather-related word and another noun?",
+        options: ["a) notebook", "b) lunchtime", "c) rainwater", "d) visitors"],
+        answer: 2
+      },
+
+      // Scenario 4
+      {
+        scenarioTitle: "Scenario 4: The Community Clean-Up Drive",
+        scenarioText: "Residents of a housing society organised a clean-up drive around a nearby lake. Volunteers collected litter from playgrounds and walking tracks. A group of children helped by carrying newspapers for recycling. After the activity, everyone gathered in the clubhouse for refreshments and a discussion about keeping public spaces clean.",
+        question: "Which compound word names a place where children often play?",
+        options: ["a) newspaper", "b) clubhouse", "c) playground", "d) recycling"],
+        answer: 2
+      },
+      {
+        scenarioTitle: "Scenario 4: The Community Clean-Up Drive",
+        scenarioText: "Residents of a housing society organised a clean-up drive around a nearby lake. Volunteers collected litter from playgrounds and walking tracks. A group of children helped by carrying newspapers for recycling. After the activity, everyone gathered in the clubhouse for refreshments and a discussion about keeping public spaces clean.",
+        question: "Why is newspaper a compound word?",
+        options: ["a) It combines two words to form a new word with its own meaning.", "b) It is read every day.", "c) It contains news.", "d) It is printed on paper."],
+        answer: 0
+      },
+      {
+        scenarioTitle: "Scenario 4: The Community Clean-Up Drive",
+        scenarioText: "Residents of a housing society organised a clean-up drive around a nearby lake. Volunteers collected litter from playgrounds and walking tracks. A group of children helped by carrying newspapers for recycling. After the activity, everyone gathered in the clubhouse for refreshments and a discussion about keeping public spaces clean.",
+        question: "Which word does NOT belong with the others?",
+        options: ["a) playground", "b) newspaper", "c) clubhouse", "d) recycling"],
+        answer: 3
+      },
+      {
+        scenarioTitle: "Scenario 4: The Community Clean-Up Drive",
+        scenarioText: "Residents of a housing society organised a clean-up drive around a nearby lake. Volunteers collected litter from playgrounds and walking tracks. A group of children helped by carrying newspapers for recycling. After the activity, everyone gathered in the clubhouse for refreshments and a discussion about keeping public spaces clean.",
+        question: "Which statement best explains compound words?",
+        options: ["a) Compound words are always the longest words in a sentence.", "b) Compound words are formed by joining two smaller words to create a new meaning.", "c) Compound words are words with opposite meanings.", "d) Compound words are words that rhyme with each other."],
+        answer: 1
+      }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let selectedOption = null;
+
+    const scenarioTitleEl = document.getElementById('scenario-title');
+    const scenarioTextEl = document.getElementById('scenario-text');
+    const qNumberEl = document.getElementById('q-number');
+    const qTextEl = document.getElementById('q-text');
+    const optionsGridEl = document.getElementById('options-grid');
+    const nextBtn = document.getElementById('next-btn');
+    const scoreEl = document.getElementById('score');
+    const progressFill = document.getElementById('progress-fill');
+    const quizContainer = document.getElementById('quiz-container');
+
+    const correctAudio = document.getElementById('audio-correct');
+    const wrongAudio = document.getElementById('audio-wrong');
+
+    function loadQuestion() {
+      const currentQ = quizData[currentIdx];
+      
+      // Update Scenarios & Question Info
+      scenarioTitleEl.textContent = currentQ.scenarioTitle;
+      scenarioTextEl.textContent = currentQ.scenarioText;
+      qNumberEl.textContent = `Question ${currentIdx + 1} of ${quizData.length}`;
+      qTextEl.innerText = currentQ.question;
+      
+      // Reset UI state
+      optionsGridEl.innerHTML = '';
+      nextBtn.disabled = true;
+      selectedOption = null;
+      
+      // Render Options
+      currentQ.options.forEach((optText, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = optText;
+        btn.onclick = () => handleOptionSelect(index, btn);
+        optionsGridEl.appendChild(btn);
+      });
+
+      // Update Progress
+      const progressPercent = ((currentIdx) / quizData.length) * 100;
+      progressFill.style.width = `${progressPercent}%`;
+    }
+
+    function handleOptionSelect(index, button) {
+      if (selectedOption !== null) return; // Prevent double clicking
+      
+      selectedOption = index;
+      const currentQ = quizData[currentIdx];
+      const allButtons = optionsGridEl.querySelectorAll('.option-btn');
+
+      if (index === currentQ.answer) {
+        button.classList.add('selected-correct');
+        score++;
+        scoreEl.textContent = score;
+        playAudio(correctAudio);
+      } else {
+        button.classList.add('selected-wrong');
+        allButtons[currentQ.answer].classList.add('selected-correct');
+        playAudio(wrongAudio);
+      }
+
+      // Disable all options after selection
+      allButtons.forEach(btn => btn.disabled = true);
+      nextBtn.disabled = false;
+    }
+
+    function playAudio(audioEl) {
+      if (audioEl) {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(e => console.log('Audio playback prevented by browser policy'));
+      }
+    }
+
+    function nextQuestion() {
+      currentIdx++;
+      if (currentIdx < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      progressFill.style.width = `100%`;
+      quizContainer.innerHTML = `
+        <div class="result-screen">
+          <div class="ice-cream-icon">🍦🍨🎉</div>
+          <h2 class="result-title">Sweet Job!</h2>
+          <p style="font-size: 1.2rem; margin-bottom: 12px; color: var(--chocolate);">
+            You collected <strong>${score} out of 16</strong> ice cream scoops!
+          </p>
+          <p style="color: #666; font-size: 1rem;">
+            ${score === 16 ? "Mastered all compound words perfectly!" : "Great effort learning about compound words today!"}
+          </p>
+          <button class="restart-btn" onclick="location.reload()">Try Again 🍧</button>
+        </div>
+      `;
+    }
+
+    // Initialize
+    loadQuestion();
+  </script>
+</body>
+</html>
