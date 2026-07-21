@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grade 3 - Chapter 17: Punctuation</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 100%);
+      --card-bg: #ffffff;
+      --primary: #ff4081;
+      --primary-hover: #f50057;
+      --secondary: #7c4dff;
+      --accent: #00e676;
+      --text-dark: #2c3e50;
+      --text-muted: #7f8c8d;
+      --correct: #2ecc71;
+      --wrong: #e74c3c;
+      --shadow: 0 10px 25px rgba(255, 64, 129, 0.15);
+      --font-family: 'Comic Sans MS', 'Bubblegum Sans', cursive, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+    }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border: 4px solid #fff;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 3px dashed #ffcdd2;
+      margin-bottom: 20px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-area img {
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .chapter-badge {
+      background: #f3e5f5;
+      color: var(--secondary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .score-badge {
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 12px;
+      background: #f1f2f6;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff4081, #7c4dff);
+      transition: width 0.3s ease;
+    }
+
+    .scenario-box {
+      background: #fff0f6;
+      border-left: 6px solid var(--primary);
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .scenario-title {
+      color: var(--primary);
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .scenario-text {
+      color: var(--text-dark);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .question-box {
+      margin-bottom: 20px;
+    }
+
+    .question-title {
+      font-size: 1.15rem;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      font-weight: bold;
+    }
+
+    .options-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option-btn {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      padding: 14px 18px;
+      border-radius: 16px;
+      text-align: left;
+      font-size: 1rem;
+      color: var(--text-dark);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #fff5f8;
+      transform: translateY(-2px);
+    }
+
+    .option-btn.selected-correct {
+      background: #d4edda !important;
+      border-color: var(--correct) !important;
+      color: #155724 !important;
+      font-weight: bold;
+    }
+
+    .option-btn.selected-wrong {
+      background: #f8d7da !important;
+      border-color: var(--wrong) !important;
+      color: #721c24 !important;
+    }
+
+    .feedback-box {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .feedback-box.correct {
+      background: #d4edda;
+      color: #155724;
+      display: block;
+    }
+
+    .feedback-box.wrong {
+      background: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    .nav-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .nav-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .summary-card {
+      text-align: center;
+      padding: 30px;
+    }
+
+    .summary-title {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .summary-score {
+      font-size: 3rem;
+      color: var(--secondary);
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="logo-area">
+        <img src="g3/chp17/assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
+        <span class="chapter-badge">Grade 3 • Ch 17</span>
+      </div>
+      <div class="score-badge" id="scoreDisplay">Score: 0 / 16</div>
+    </header>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div id="quizContent">
+      <div class="scenario-box" id="scenarioBox">
+        <div class="scenario-title" id="scenarioTitle">Scenario</div>
+        <div class="scenario-text" id="scenarioText">Scenario description...</div>
+      </div>
+
+      <div class="question-box">
+        <div class="question-title" id="questionTitle">Question text goes here</div>
+        <div class="options-grid" id="optionsGrid"></div>
+      </div>
+
+      <div class="feedback-box" id="feedbackBox"></div>
+
+      <div class="controls">
+        <button class="nav-btn" id="prevBtn" onclick="prevQuestion()">Previous</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextQuestion()">Next</button>
+      </div>
+    </div>
+
+    <div class="summary-card" id="summaryCard" style="display: none;">
+      <div class="summary-title">🎉 Chapter Complete! 🎉</div>
+      <p style="font-size: 1.2rem; color: var(--text-dark);">Great job practicing your punctuation!</p>
+      <div class="summary-score" id="finalScore">0 / 16</div>
+      <button class="nav-btn" onclick="restartQuiz()">Try Again</button>
+    </div>
+  </div>
+
+  <script>
+    const audioCorrect = new Audio('g3/chp17/assets/correct.mp3');
+    const audioWrong = new Audio('g3/chp17/assets/wrong.mp3');
+
+    const scenarios = [
+      {
+        title: "Scenario 1: The Lost Water Bottle",
+        text: "During lunch break, Naina realised that her water bottle was missing. She looked in the classroom, near the playground and beside the library steps. When she could not find it, she asked her friends for help. Later, the school helper found the bottle and returned it to her."
+      },
+      {
+        title: "Scenario 2: The Surprise Assembly",
+        text: "On Monday morning, students gathered in the assembly hall as usual. Suddenly, the principal announced that the school had won a district-level cleanliness award. The students clapped loudly and cheered. Many of them wanted to know how the school had been selected for the honour."
+      },
+      {
+        title: "Scenario 3: Planning a Family Picnic",
+        text: "The Sharma family was planning a picnic at a nature park. Before leaving, they prepared sandwiches, fruits, juice boxes and snacks. Aryan's younger sister kept asking questions about the trip. Their parents reminded everyone to arrive on time so that they could leave together."
+      },
+      {
+        title: "Scenario 4: The Community Art Exhibition",
+        text: "Students from different schools displayed their artwork at a community exhibition. Visitors admired paintings, sketches, clay models and handmade crafts. One visitor exclaimed that the artwork was amazing. Later, the organisers announced the winners and thanked everyone for participating."
+      }
+    ];
+
+    const questions = [
+      // Scenario 1
+      {
+        scenarioIdx: 0,
+        q: "Q1. Naina asks her friend: \"Have you seen my water bottle\" — Which punctuation mark should be used at the end?",
+        options: ["Full stop (.)", "Comma (,)", "Question mark (?)", "Exclamation mark (!)"],
+        answer: 2,
+        exp: "Correct! Since Naina is asking a question, it should end with a Question mark (?)."
+      },
+      {
+        scenarioIdx: 0,
+        q: "Q2. Which sentence correctly lists the places Naina searched?",
+        options: [
+          "Naina looked in the classroom near the playground beside the library steps.",
+          "Naina looked in the classroom, near the playground, and beside the library steps.",
+          "Naina looked in the classroom? near the playground? and beside the library steps.",
+          "Naina looked in the classroom! near the playground! and beside the library steps."
+        ],
+        answer: 1,
+        exp: "Correct! Commas are used to separate items or phrases in a list."
+      },
+      {
+        scenarioIdx: 0,
+        q: "Q3. Statement: Proper punctuation helps readers understand a sentence clearly.\nReason: Different punctuation marks show different purposes, such as asking, telling or expressing strong feelings.",
+        options: [
+          "Both are correct and the reason explains the statement.",
+          "Both are correct but not related.",
+          "Statement is correct, reason is wrong.",
+          "Statement is wrong, reason is correct."
+        ],
+        answer: 0,
+        exp: "Correct! Both statements are true and directly clarify why punctuation is important."
+      },
+      {
+        scenarioIdx: 0,
+        q: "Q4. Error Detection: Which sentence is punctuated incorrectly?",
+        options: [
+          "Naina searched the classroom first.",
+          "Have you seen my bottle?",
+          "My bottle is missing!",
+          "where should I look next?"
+        ],
+        answer: 3,
+        exp: "Correct! 'where should I look next?' is incorrect because sentences must begin with a capital letter ('Where')."
+      },
+
+      // Scenario 2
+      {
+        scenarioIdx: 1,
+        q: "Q5. Exclamation Mark: Which sentence best shows the students' excitement?",
+        options: [
+          "The school won a cleanliness award.",
+          "Did the school win a cleanliness award?",
+          "The school won a cleanliness award!",
+          "The school, won a cleanliness award."
+        ],
+        answer: 2,
+        exp: "Correct! An exclamation mark (!) is used to convey strong feelings or excitement."
+      },
+      {
+        scenarioIdx: 1,
+        q: "Q6. Capital Letter: Which sentence uses capital letters correctly?",
+        options: [
+          "on monday morning, students gathered in the assembly hall.",
+          "On monday morning, students gathered in the assembly hall.",
+          "On Monday morning, students gathered in the assembly hall.",
+          "on Monday morning, students gathered in the assembly hall."
+        ],
+        answer: 2,
+        exp: "Correct! The sentence must start with a capital 'O', and 'Monday' requires a capital 'M' as it is a specific day of the week."
+      },
+      {
+        scenarioIdx: 1,
+        q: "Q7. Reasoning: Why is a capital letter used in the word \"Monday\"?",
+        options: [
+          "It begins a question.",
+          "It is the name of a specific day.",
+          "It shows excitement.",
+          "It separates items in a list."
+        ],
+        answer: 1,
+        exp: "Correct! Proper nouns, such as specific days of the week, always take capital letters."
+      },
+      {
+        scenarioIdx: 1,
+        q: "Q8. A student writes: \"how was the school selected for the award?\" What correction is needed?",
+        options: [
+          "Add a comma after \"how\"",
+          "Begin the sentence with a capital letter",
+          "Add an apostrophe",
+          "Replace the question mark with a full stop"
+        ],
+        answer: 1,
+        exp: "Correct! 'How' needs to start with a capital letter ('H')."
+      },
+
+      // Scenario 3
+      {
+        scenarioIdx: 2,
+        q: "Q9. Apostrophe: Why is an apostrophe used in \"Aryan's younger sister\"?",
+        options: [
+          "To show a question",
+          "To show ownership or belonging",
+          "To separate items in a list",
+          "To show excitement"
+        ],
+        answer: 1,
+        exp: "Correct! An apostrophe + 's' is used to show possession or belonging."
+      },
+      {
+        scenarioIdx: 2,
+        q: "Q10. Comma: Which sentence correctly punctuates the picnic items?",
+        options: [
+          "We packed sandwiches fruits juice boxes and snacks.",
+          "We packed sandwiches, fruits, juice boxes and snacks.",
+          "We packed sandwiches? fruits? juice boxes and snacks.",
+          "We packed sandwiches! fruits! juice boxes and snacks."
+        ],
+        answer: 1,
+        exp: "Correct! Commas are placed between items in a list."
+      },
+      {
+        scenarioIdx: 2,
+        q: "Q11. Odd One Out: Which punctuation mark serves a different purpose from the others?",
+        options: [
+          "Full stop (.)",
+          "Question mark (?)",
+          "Exclamation mark (!)",
+          "Apostrophe (')"
+        ],
+        answer: 3,
+        exp: "Correct! Full stops, question marks, and exclamation marks end sentences, while apostrophes show belonging or contractions inside words."
+      },
+      {
+        scenarioIdx: 2,
+        q: "Q12. Aryan asks: \"Are we leaving after breakfast\" — Which punctuation mark should be added and why?",
+        options: [
+          "Full stop, because the sentence gives information",
+          "Comma, because the sentence lists ideas",
+          "Question mark, because the sentence asks something",
+          "Apostrophe, because the sentence shows ownership"
+        ],
+        answer: 2,
+        exp: "Correct! It is an asking sentence, so it requires a Question mark (?)."
+      },
+
+      // Scenario 4
+      {
+        scenarioIdx: 3,
+        q: "Q13. Full Stop: Which sentence correctly uses a full stop?",
+        options: [
+          "The exhibition was a great success.",
+          "The exhibition was a great success?",
+          "The exhibition was a great success! when the event ended.",
+          "The exhibition was a great success,"
+        ],
+        answer: 0,
+        exp: "Correct! A standard statement ends cleanly with a full stop (.)."
+      },
+      {
+        scenarioIdx: 3,
+        q: "Q14. Statement: Commas are used in the passage to separate items in a list.\nReason: They help readers identify each item more clearly.",
+        options: [
+          "Both are correct and the reason explains the statement.",
+          "Both are correct but not related.",
+          "Statement is correct, reason is wrong.",
+          "Statement is wrong, reason is correct."
+        ],
+        answer: 0,
+        exp: "Correct! Both statements are accurate."
+      },
+      {
+        scenarioIdx: 3,
+        q: "Q15. Error Detection: Which sentence is punctuated incorrectly?",
+        options: [
+          "Visitors admired paintings, sketches, clay models and handmade crafts.",
+          "The organisers thanked everyone for participating.",
+          "What was your favourite artwork?",
+          "This exhibition was amazing"
+        ],
+        answer: 3,
+        exp: "Correct! 'This exhibition was amazing' is missing an ending punctuation mark (full stop or exclamation mark)."
+      },
+      {
+        scenarioIdx: 3,
+        q: "Q16. Integrated Understanding: Which statement best explains the purpose of punctuation in all the passages?",
+        options: [
+          "Punctuation only makes sentences longer.",
+          "Punctuation helps readers understand meaning, questions, lists, ownership and feelings clearly.",
+          "Every sentence needs the same punctuation mark.",
+          "Punctuation is only used in stories."
+        ],
+        answer: 1,
+        exp: "Correct! Punctuation gives sentences clarity, context, and expression."
+      }
+    ];
+
+    let currentQ = 0;
+    let userAnswers = new Array(questions.length).fill(null);
+    let score = 0;
+
+    function renderQuestion() {
+      const qData = questions[currentQ];
+      const scData = scenarios[qData.scenarioIdx];
+
+      document.getElementById('scenarioTitle').innerText = scData.title;
+      document.getElementById('scenarioText').innerText = scData.text;
+      document.getElementById('questionTitle').innerText = qData.q;
+
+      const grid = document.getElementById('optionsGrid');
+      grid.innerHTML = '';
+
+      const feedback = document.getElementById('feedbackBox');
+      feedback.className = 'feedback-box';
+      feedback.style.display = 'none';
+
+      qData.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+
+        if (userAnswers[currentQ] !== null) {
+          btn.disabled = true;
+          if (idx === qData.answer) {
+            btn.classList.add('selected-correct');
+          }
+          if (userAnswers[currentQ] === idx && idx !== qData.answer) {
+            btn.classList.add('selected-wrong');
+          }
+        } else {
+          btn.onclick = () => selectOption(idx);
+        }
+
+        grid.appendChild(btn);
+      });
+
+      if (userAnswers[currentQ] !== null) {
+        showFeedback(userAnswers[currentQ] === qData.answer);
+      }
+
+      updateProgress();
+    }
+
+    function selectOption(selectedIdx) {
+      const qData = questions[currentQ];
+      userAnswers[currentQ] = selectedIdx;
+
+      const isCorrect = selectedIdx === qData.answer;
+      if (isCorrect) {
+        score++;
+        audioCorrect.play().catch(() => {});
+      } else {
+        audioWrong.play().catch(() => {});
+      }
+
+      document.getElementById('scoreDisplay').innerText = `Score: ${score} / ${questions.length}`;
+      renderQuestion();
+    }
+
+    function showFeedback(isCorrect) {
+      const feedback = document.getElementById('feedbackBox');
+      const qData = questions[currentQ];
+
+      feedback.innerText = qData.exp;
+      feedback.className = `feedback-box ${isCorrect ? 'correct' : 'wrong'}`;
+      feedback.style.display = 'block';
+    }
+
+    function updateProgress() {
+      const pct = ((currentQ + 1) / questions.length) * 100;
+      document.getElementById('progressBar').style.width = pct + '%';
+
+      document.getElementById('prevBtn').disabled = currentQ === 0;
+      document.getElementById('nextBtn').innerText = currentQ === questions.length - 1 ? 'Finish' : 'Next';
+    }
+
+    function nextQuestion() {
+      if (currentQ < questions.length - 1) {
+        currentQ++;
+        renderQuestion();
+      } else {
+        showSummary();
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQ > 0) {
+        currentQ--;
+        renderQuestion();
+      }
+    }
+
+    function showSummary() {
+      document.getElementById('quizContent').style.display = 'none';
+      document.getElementById('summaryCard').style.display = 'block';
+      document.getElementById('finalScore').innerText = `${score} / ${questions.length}`;
+    }
+
+    function restartQuiz() {
+      currentQ = 0;
+      score = 0;
+      userAnswers.fill(null);
+      document.getElementById('scoreDisplay').innerText = `Score: 0 / ${questions.length}`;
+      document.getElementById('quizContent').style.display = 'block';
+      document.getElementById('summaryCard').style.display = 'none';
+      renderQuestion();
+    }
+
+    // Initialize
+    renderQuestion();
+  </script>
+</body>
+</html>
