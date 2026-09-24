@@ -35,6 +35,7 @@
             align-items: center;
             min-height: 100vh;
             overflow-x: hidden;
+            padding: 12px;
         }
 
         /* Splash Screen Layout */
@@ -53,12 +54,20 @@
             transition: opacity 0.5s ease;
         }
 
-        .splash-logo {
-            width: 220px;
-            max-height: 80px;
-            object-fit: contain;
+        .splash-logo-container {
+            width: 280px;
+            max-width: 85%;
             margin-bottom: 20px;
             animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .splash-logo-container img,
+        .header-logo-container img {
+            width: 100%;
+            height: auto;
+            max-height: 120px;
+            object-fit: contain;
+            display: block;
         }
 
         @keyframes pulse {
@@ -97,7 +106,7 @@
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             padding: 24px;
-            margin: 16px;
+            margin: 16px auto;
             display: none;
             position: relative;
         }
@@ -110,6 +119,8 @@
             border-bottom: 2px solid #EDF2F7;
             padding-bottom: 12px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .header-brand {
@@ -118,10 +129,9 @@
             gap: 12px;
         }
 
-        .header-logo {
-            height: 36px;
-            width: auto;
-            object-fit: contain;
+        .header-logo-container {
+            width: 160px;
+            height: auto;
         }
 
         .chapter-title {
@@ -305,7 +315,9 @@
 
     <!-- Splash Screen Panel -->
     <div id="splash-screen">
-        <img class="splash-logo" src="g3/ch9/assets/logo.png" alt="INNOVINE Logo">
+        <div class="splash-logo-container">
+            <img src="assets/logo.png" alt="Innovine Solutions Logo" onerror="this.onerror=null; this.src='g3/ch9/assets/logo.png';">
+        </div>
         <div class="loader-bar">
             <div class="loader-progress"></div>
         </div>
@@ -315,424 +327,13 @@
     <div class="app-container" id="challenge-board">
         <div class="interactive-header">
             <div class="header-brand">
-                <img class="header-logo" src="g3/ch9/assets/logo.png" alt="INNOVINE Logo">
+                <div class="header-logo-container">
+                    <img src="assets/logo.png" alt="Innovine Solutions Logo" onerror="this.onerror=null; this.src='g3/ch9/assets/logo.png';">
+                </div>
                 <span class="chapter-title">Chapter 9: Comparison of Adjectives</span>
             </div>
             <span class="tracker-badge" id="score-display">Score: 0</span>
         </div>
 
         <!-- Question View Box -->
-        <div id="question-view">
-            <div class="status-container">
-                <div class="progress-track">
-                    <div class="progress-fill" id="progress-indicator"></div>
-                </div>
-                <div class="timer-box" id="timer-display">60</div>
-            </div>
-
-            <div class="card-context" id="context-box"></div>
-
-            <div class="question-text" id="question-box"></div>
-
-            <div class="options-grid" id="options-container"></div>
-            
-            <div class="feedback-banner" id="feedback-box"></div>
-
-            <div class="action-footer">
-                <button class="action-btn" id="next-submit-btn" disabled>Submit Answer</button>
-            </div>
-        </div>
-
-        <!-- Results Evaluation View Box -->
-        <div class="results-container" id="results-view">
-            <h2>Challenge Evaluation Complete!</h2>
-            <div class="results-score" id="final-score-text">0/14</div>
-            <div class="results-msg" id="final-message-text"></div>
-            <button class="action-btn" onclick="location.reload();">Retry Challenge</button>
-        </div>
-    </div>
-
-    <!-- Audio Feedback Mapping -->
-    <audio id="audio-correct" src="g3/ch9/assets/claps.mp3" preload="auto"></audio>
-    <audio id="audio-wrong" src="g3/ch9/assets/wrong.mp3" preload="auto"></audio>
-
-    <script>
-        const questionsDataset = [
-            {
-                type: "Passage-Based MCQ",
-                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family.",
-                question: "Which word represents the simple positive form of the adjective when no direct comparison is being made?",
-                options: ["tall", "taller", "tallest", "tallish"],
-                answerIndex: 0,
-                hint: "The positive form is the basic describing word used for a single person."
-            },
-            {
-                type: "Passage-Based MCQ",
-                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family.",
-                question: "Which word is the comparative form used to match Seema directly against her brother?",
-                options: ["taller", "tall", "tallest", "more tall"],
-                answerIndex: 0,
-                hint: "Comparative forms comparing two entities usually end with the suffix '-er'."
-            },
-            {
-                type: "Passage-Based MCQ",
-                context: "Seema is a tall girl. Her brother is taller than her. Their father is the tallest person in the family.",
-                question: "Which word is the superlative form that proves the father ranks at the absolute top of the entire family structure?",
-                options: ["tallest", "tall", "taller", "most taller"],
-                answerIndex: 0,
-                hint: "Superlative forms comparing three or more things end with '-est'."
-            },
-            {
-                type: "Form Selection MCQ",
-                context: "You are identifying scale shifts for small objects.",
-                question: "What is the grammatically correct comparative form of 'small'?",
-                options: ["smaller", "smallest", "more small", "most small"],
-                answerIndex: 0,
-                hint: "Add '-er' directly to short, one-syllable adjectives to make them comparative."
-            },
-            {
-                type: "Form Selection MCQ",
-                context: "You are describing a person who has the highest level of kindness in a room.",
-                question: "What is the correct superlative form of the word 'kind'?",
-                options: ["kindest", "kinder", "more kind", "most kind"],
-                answerIndex: 0,
-                hint: "We add the suffix '-est' to short base words to showcase the top superlative level."
-            },
-            {
-                type: "Form Selection MCQ",
-                context: "Some adjectives undergo spelling modifications when their base letters change.",
-                question: "What is the correct comparative form of the word 'happy'?",
-                options: ["happier", "happiest", "more happy", "most happy"],
-                answerIndex: 0,
-                hint: "Swap the ending '-y' with an 'i' before adding your regular comparative suffix."
-            },
-            {
-                type: "Form Selection MCQ",
-                context: "Certain irregular adjectives shift completely between positive, comparative, and superlative states.",
-                question: "What is the correct superlative form of the word 'good'?",
-                options: ["best", "better", "goodest", "more good"],
-                answerIndex: 0,
-                hint: "The word 'good' turns into 'better' when comparing two things, and becomes this word for three or more."
-            },
-            {
-                type: "Sentence Completion MCQ",
-                context: "Scenario: 'My bag weighs more than yours because it contains heavy textbooks.'",
-                question: "Choose the correct spelling variant to complete the statement: 'My bag is ______ than yours.'",
-                options: ["heavier", "heaviest", "heavyest", "more heavy"],
-                answerIndex: 0,
-                hint: "Change the '-y' in heavy to an 'i' and add '-er' to compare two items."
-            },
-            {
-                type: "Sentence Completion MCQ",
-                context: "Scenario: Exploring a whole bakery showcase to find the absolute highest level of sugar flavor.",
-                question: "Complete the sentence logically: 'This is the ______ cake in the shop.'",
-                options: ["sweetest", "sweeter", "more sweet", "sweet"],
-                answerIndex: 0,
-                hint: "The word 'the' positioned right before a blank demands a superlative '-est' form."
-            },
-            {
-                type: "Sentence Completion MCQ",
-                context: "Scenario: Analyzing the strength metrics of two different animal groups.",
-                question: "Complete the sentence structurally: 'A lion is ______ than a cat.'",
-                options: ["stronger", "strongest", "more strong", "strong"],
-                answerIndex: 0,
-                hint: "The word 'than' means we are comparing exactly two animals, which requires an '-er' suffix."
-            },
-            {
-                type: "Real-Life Application MCQ",
-                context: "Imagine sitting down to test and compare exactly two alternative action toys side-by-side.",
-                question: "Which type of describing word should you use when comparing exactly two items?",
-                options: ["taller", "tallest", "tall", "most tall"],
-                answerIndex: 0,
-                hint: "Use a comparative form ending in '-er' when exactly two items are balanced against each other."
-            },
-            {
-                type: "Competency Text MCQ",
-                context: "Scenario: Rohan has a yellow pencil that is 10cm long. Amit has a blue pencil that is 14cm long.",
-                question: "Which sentence accurately compares Amit's pencil to Rohan's pencil?",
-                options: ["Amit's pencil is longer than Rohan's.", "Amit's pencil is long than Rohan's.", "Amit's pencil is longest than Rohan's.", "Amit's pencil is more long than Rohan's."],
-                answerIndex: 0,
-                hint: "Since you are comparing exactly two distinct objects, choose the comparative form ending in '-er'."
-            },
-            {
-                type: "Competency Text MCQ",
-                context: "Scenario: There are three birthday cakes on a shelf. The first is large, the second is larger, and the third one is the biggest of all.",
-                question: "If you want to describe the third cake by comparing it to all the other cakes, which word is correct?",
-                options: ["largest", "large", "larger", "more large"],
-                answerIndex: 0,
-                hint: "Since you are comparing three cakes total to find the one with the biggest size, you need the superlative form ending in '-est'."
-            },
-            {
-                type: "Competency Text MCQ",
-                context: "Scenario: An elephant weighs 4,000 kilograms, while a field mouse weighs only 20 grams.",
-                question: "Which comparative statement accurately describes what we know about these two animals?",
-                options: ["The elephant is bigger than the mouse.", "The elephant is smaller than the mouse.", "The elephant is smallest than the mouse.", "The elephant is bigest than the mouse."],
-                answerIndex: 0,
-                hint: "The elephant is much larger. Double the final consonant 'g' in big before adding '-er'."
-            }
-        ];
-
-        let currentQuestionIndex = 0;
-        let runningScore = 0;
-        let secondsLeft = 60; 
-        let timerInterval = null;
-        let currentAttemptNumber = 1; 
-        let chosenOptionIndex = null;
-        let correctOptionText = ""; 
-
-        const splashScreen = document.getElementById('splash-screen');
-        const challengeBoard = document.getElementById('challenge-board');
-        const questionView = document.getElementById('question-view');
-        const resultsView = document.getElementById('results-view');
-        const timerDisplay = document.getElementById('timer-display');
-        const progressIndicator = document.getElementById('progress-indicator');
-        const contextBox = document.getElementById('context-box');
-        const questionBox = document.getElementById('question-box');
-        const optionsContainer = document.getElementById('options-container');
-        const feedbackBox = document.getElementById('feedback-box');
-        const nextSubmitBtn = document.getElementById('next-submit-btn');
-        const scoreDisplay = document.getElementById('score-display');
-        const finalScoreText = document.getElementById('final-score-text');
-        const finalMessageText = document.getElementById('final-message-text');
-
-        const audioCorrect = document.getElementById('audio-correct');
-        const audioWrong = document.getElementById('audio-wrong');
-
-        function playSound(isCorrect) {
-            const audio = isCorrect ? audioCorrect : audioWrong;
-            audio.currentTime = 0;
-            const playPromise = audio.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.catch(() => {
-                    playSynthesizedAudio(isCorrect);
-                });
-            }
-        }
-
-        function playSynthesizedAudio(isCorrect) {
-            try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
-                const ctx = new AudioContext();
-                if (isCorrect) {
-                    const notes = [523.25, 659.25, 783.99, 1046.50];
-                    notes.forEach((freq, idx) => {
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.type = 'triangle';
-                        osc.frequency.value = freq;
-                        gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.07);
-                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.25);
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
-                        osc.start(ctx.currentTime + idx * 0.07);
-                        osc.stop(ctx.currentTime + idx * 0.07 + 0.25);
-                    });
-                } else {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(160, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.3);
-                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(ctx.currentTime);
-                    osc.stop(ctx.currentTime + 0.3);
-                }
-            } catch(e) {}
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            shuffleArray(questionsDataset);
-            
-            setTimeout(() => {
-                splashScreen.style.opacity = '0';
-                setTimeout(() => {
-                    splashScreen.style.display = 'none';
-                    challengeBoard.style.display = 'block';
-                    loadQuestion();
-                }, 500);
-            }, 3000);
-        });
-
-        function loadQuestion() {
-            clearInterval(timerInterval);
-            secondsLeft = 60;
-            currentAttemptNumber = 1;
-            chosenOptionIndex = null;
-            
-            feedbackBox.style.display = 'none';
-            nextSubmitBtn.disabled = true;
-            nextSubmitBtn.textContent = "Submit Answer";
-
-            const q = questionsDataset[currentQuestionIndex];
-            correctOptionText = q.options[q.answerIndex];
-            
-            shuffleArray(q.options);
-            
-            const progressPercent = ((currentQuestionIndex) / questionsDataset.length) * 100;
-            progressIndicator.style.width = `${progressPercent}%`;
-            
-            contextBox.innerHTML = `<strong>Context:</strong> ${q.context}`;
-            questionBox.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
-
-            optionsContainer.innerHTML = '';
-            q.options.forEach((opt, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = opt;
-                btn.onclick = () => selectOption(idx);
-                optionsContainer.appendChild(btn);
-            });
-
-            timerDisplay.textContent = secondsLeft;
-            timerInterval = setInterval(handleCountdown, 1000);
-        }
-
-        function handleCountdown() {
-            secondsLeft--;
-            timerDisplay.textContent = secondsLeft;
-            if (secondsLeft <= 0) {
-                clearInterval(timerInterval);
-                evaluateAnswer(true);
-            }
-        }
-
-        function selectOption(index) {
-            if (nextSubmitBtn.textContent === "Next Question" || nextSubmitBtn.textContent === "View Results") return;
-            
-            chosenOptionIndex = index;
-            const buttons = optionsContainer.querySelectorAll('.option-btn');
-            buttons.forEach((btn, idx) => {
-                btn.style.borderColor = (idx === index) ? 'var(--primary)' : '#E2E8F0';
-                btn.style.backgroundColor = (idx === index) ? '#F0F4F8' : 'var(--white)';
-            });
-            nextSubmitBtn.disabled = false;
-        }
-
-        nextSubmitBtn.onclick = () => {
-            if (nextSubmitBtn.textContent === "Submit Answer") {
-                evaluateAnswer(false);
-            } else {
-                currentQuestionIndex++;
-                if (currentQuestionIndex < questionsDataset.length) {
-                    loadQuestion();
-                } else {
-                    displayFinalResults();
-                }
-            }
-        };
-
-        function evaluateAnswer(isTimeout) {
-            clearInterval(timerInterval);
-            const buttons = optionsContainer.querySelectorAll('.option-btn');
-
-            if (isTimeout) {
-                playSound(false);
-                buttons.forEach(btn => {
-                    btn.disabled = true;
-                    if (btn.textContent === correctOptionText) {
-                        btn.classList.add('selected-correct');
-                    }
-                });
-                feedbackBox.style.display = 'block';
-                feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
-                feedbackBox.style.color = 'var(--wrong-text)';
-                feedbackBox.innerHTML = `<strong>Time's Up!</strong> The correct answer was: <em>${correctOptionText}</em>.`;
-                prepareNextActionState();
-                return;
-            }
-
-            const isCorrect = (buttons[chosenOptionIndex].textContent === correctOptionText);
-
-            if (isCorrect) {
-                playSound(true);
-                buttons[chosenOptionIndex].classList.add('selected-correct');
-                buttons.forEach(btn => btn.disabled = true);
-                
-                runningScore++;
-                scoreDisplay.textContent = `Score: ${runningScore}`;
-
-                feedbackBox.style.display = 'block';
-                feedbackBox.style.backgroundColor = 'var(--correct-bg)';
-                feedbackBox.style.color = 'var(--correct-text)';
-                feedbackBox.innerHTML = `<strong>Correct!</strong> Perfect comparison evaluation.`;
-                prepareNextActionState();
-            } else {
-                playSound(false);
-                buttons[chosenOptionIndex].classList.add('selected-wrong');
-
-                if (currentAttemptNumber === 1) {
-                    currentAttemptNumber = 2;
-                    feedbackBox.style.display = 'block';
-                    feedbackBox.style.backgroundColor = '#FFFDF5';
-                    feedbackBox.style.color = '#B7791F';
-                    feedbackBox.innerHTML = `<strong>Not quite right!</strong> Hint: ${questionsDataset[currentQuestionIndex].hint} <br><em>Try one more time!</em>`;
-                    
-                    buttons[chosenOptionIndex].style.opacity = '0.6';
-                    nextSubmitBtn.disabled = true;
-                    
-                    secondsLeft = 30; 
-                    timerDisplay.textContent = secondsLeft;
-                    timerInterval = setInterval(handleCountdown, 1000);
-                } else {
-                    buttons.forEach(btn => {
-                        btn.disabled = true;
-                        if (btn.textContent === correctOptionText) {
-                            btn.classList.add('selected-correct');
-                        }
-                    });
-                    
-                    feedbackBox.style.display = 'block';
-                    feedbackBox.style.backgroundColor = 'var(--wrong-bg)';
-                    feedbackBox.style.color = 'var(--wrong-text)';
-                    feedbackBox.innerHTML = `<strong>Incorrect.</strong> The correct answer was: <strong>${correctOptionText}</strong>.`;
-                    prepareNextActionState();
-                }
-            }
-        }
-
-        function prepareNextActionState() {
-            if (currentQuestionIndex < questionsDataset.length - 1) {
-                nextSubmitBtn.textContent = "Next Question";
-            } else {
-                nextSubmitBtn.textContent = "View Results";
-            }
-            nextSubmitBtn.disabled = false;
-        }
-
-        function displayFinalResults() {
-            questionView.style.display = 'none';
-            resultsView.style.display = 'block';
-            
-            const totalQuestions = questionsDataset.length;
-            finalScoreText.textContent = `${runningScore} / ${totalQuestions}`;
-            
-            const successPercentage = (runningScore / totalQuestions) * 100;
-            
-            if (successPercentage >= 75) {
-                finalMessageText.textContent = "Outstanding! You have mastered adjectives and comparison structural mechanics! ⭐";
-                finalMessageText.style.color = 'var(--correct-text)';
-            } else if (successPercentage >= 40) {
-                finalMessageText.textContent = "Review this chapter and try again.";
-                finalMessageText.style.color = '#B7791F';
-            } else {
-                finalMessageText.textContent = "Let's practise more.";
-                finalMessageText.style.color = 'var(--wrong-text)';
-            }
-            
-            progressIndicator.style.width = `100%`;
-        }
-    </script>
-</body>
-</html>
+<!-- ... existing code -->
