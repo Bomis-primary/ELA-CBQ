@@ -50,16 +50,23 @@
 
     #splash-screen img {
       max-width: 250px;
-      max-height: 120px;
+      max-height: 100px;
       object-fit: contain;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       animation: pulse 1.5s infinite alternate;
     }
 
-    .splash-text {
-      font-size: 1.8rem;
-      font-weight: bold;
+    .splash-text, .header-logo-text {
+      font-family: 'Fredoka', 'Comic Sans MS', cursive, sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
       color: var(--strawberry);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .header-logo-text {
+      font-size: 1.4rem;
     }
 
     @keyframes pulse {
@@ -127,6 +134,12 @@
       box-shadow: var(--shadow);
       margin-bottom: 20px;
       border: 3px solid var(--strawberry);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      min-height: 40px;
     }
 
     .logo-container img {
@@ -318,14 +331,14 @@
 </head>
 <body>
 
-  <!-- Audio Elements configured with asset paths -->
+  <!-- Audio Elements with dual path support -->
   <audio id="audio-correct" src="g3/chp20/assets/correct.mp3" preload="auto"></audio>
   <audio id="audio-wrong" src="g3/chp20/assets/wrong.mp3" preload="auto"></audio>
 
   <!-- 1. Splash Screen (3 Seconds) -->
   <div id="splash-screen">
-    <img id="splash-logo" src="g3/chp20/assets/innovine-logo.png" alt="Innovine Logo" onerror="this.style.display='none'">
-    <div class="splash-text">INNOVINE</div>
+    <img id="splash-logo" src="g3/chp20/assets/innovine-logo.png" alt="Innovine Logo" onerror="handleLogoError(this)" onload="handleLogoSuccess(this, 'splash-text-fallback')">
+    <div id="splash-text-fallback" class="splash-text">INNOVINE</div>
   </div>
 
   <!-- 2. Instructions Screen -->
@@ -343,7 +356,8 @@
   <!-- 3. Quiz Interface -->
   <div class="header" id="game-header" style="display: none;">
     <div class="logo-container">
-      <img src="g3/chp20/assets/innovine-logo.png" alt="Innovine" onerror="this.style.display='none'">
+      <img id="header-logo" src="g3/chp20/assets/innovine-logo.png" alt="Innovine" onerror="handleLogoError(this)" onload="handleLogoSuccess(this, 'header-text-fallback')">
+      <span id="header-text-fallback" class="header-logo-text">INNOVINE</span>
     </div>
     <div class="score-badge">🍨 Scoops: <span id="score">0</span> / 16</div>
   </div>
@@ -370,6 +384,24 @@
   </div>
 
   <script>
+    // Smart Image & Asset Path Resolution
+    function handleLogoError(img) {
+      if (!img.dataset.retry) {
+        img.dataset.retry = "1";
+        // Retry alternative path relative to root vs folder
+        img.src = img.src.includes('g3/chp20/assets/') ? 'assets/innovine-logo.png' : 'g3/chp20/assets/innovine-logo.png';
+      } else {
+        // Fallback to stylized text if image is unavailable
+        img.style.display = 'none';
+      }
+    }
+
+    function handleLogoSuccess(img, fallbackId) {
+      const fallback = document.getElementById(fallbackId);
+      if (fallback) fallback.style.display = 'none';
+      img.style.display = 'block';
+    }
+
     // Splash Screen Transition
     window.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => {
@@ -402,8 +434,15 @@
       
       if (playPromise !== undefined) {
         playPromise.catch(() => {
-          // If media file fails to play or load, fall back to synthesized audio
-          playSynthSound(isCorrect);
+          if (!audioEl.dataset.retried) {
+            audioEl.dataset.retried = "1";
+            audioEl.src = audioEl.src.includes('g3/chp20/assets/') ? 
+              (isCorrect ? 'assets/correct.mp3' : 'assets/wrong.mp3') : 
+              (isCorrect ? 'g3/chp20/assets/correct.mp3' : 'g3/chp20/assets/wrong.mp3');
+            audioEl.play().catch(() => playSynthSound(isCorrect));
+          } else {
+            playSynthSound(isCorrect);
+          }
         });
       }
     }
