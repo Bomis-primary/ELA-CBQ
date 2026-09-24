@@ -53,9 +53,10 @@
             transition: opacity 0.5s ease;
         }
 
-        .logo-placeholder {
+        .splash-logo {
             width: 220px;
-            height: auto;
+            max-height: 80px;
+            object-fit: contain;
             margin-bottom: 20px;
             animation: pulse 1.5s infinite ease-in-out;
         }
@@ -81,7 +82,7 @@
             background-color: var(--primary);
             position: absolute;
             left: -100%;
-            animation: load 5s linear forwards;
+            animation: load 3s linear forwards;
         }
 
         @keyframes load {
@@ -109,6 +110,18 @@
             border-bottom: 2px solid #EDF2F7;
             padding-bottom: 12px;
             margin-bottom: 20px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            height: 36px;
+            width: auto;
+            object-fit: contain;
         }
 
         .chapter-title {
@@ -171,6 +184,12 @@
             margin-bottom: 20px;
             font-size: 1rem;
             line-height: 1.5;
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
 
         /* Options Stack Component */
@@ -286,7 +305,7 @@
 
     <!-- Splash Screen Panel -->
     <div id="splash-screen">
-        <img class="logo-placeholder" src="g3/ch9/assets/logo.png" alt="Innovine Logo" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'60\' viewBox=\'0 0 200 60\'><rect width=\'100%\' height=\'100%\' fill=\'%234A6FA5\' rx=\'8\'/><text x=\'50%\' y=\'55%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'white\' font-family=\'sans-serif\' font-size=\'20\' font-weight=\'bold\'>INNOVINE</text></svg>'">
+        <img class="splash-logo" src="g3/ch9/assets/logo.png" alt="INNOVINE Logo">
         <div class="loader-bar">
             <div class="loader-progress"></div>
         </div>
@@ -295,7 +314,10 @@
     <!-- Main Challenge Dashboard Container -->
     <div class="app-container" id="challenge-board">
         <div class="interactive-header">
-            <span class="chapter-title">Chapter 9: Comparison of Adjectives</span>
+            <div class="header-brand">
+                <img class="header-logo" src="g3/ch9/assets/logo.png" alt="INNOVINE Logo">
+                <span class="chapter-title">Chapter 9: Comparison of Adjectives</span>
+            </div>
             <span class="tracker-badge" id="score-display">Score: 0</span>
         </div>
 
@@ -335,7 +357,6 @@
     <audio id="audio-wrong" src="g3/ch9/assets/wrong.mp3" preload="auto"></audio>
 
     <script>
-        // Exactly 14 high-quality structural & text competency items
         const questionsDataset = [
             {
                 type: "Passage-Based MCQ",
@@ -478,13 +499,48 @@
         const audioWrong = document.getElementById('audio-wrong');
 
         function playSound(isCorrect) {
+            const audio = isCorrect ? audioCorrect : audioWrong;
+            audio.currentTime = 0;
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    playSynthesizedAudio(isCorrect);
+                });
+            }
+        }
+
+        function playSynthesizedAudio(isCorrect) {
             try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
                 if (isCorrect) {
-                    audioCorrect.currentTime = 0;
-                    audioCorrect.play().catch(()=>{});
+                    const notes = [523.25, 659.25, 783.99, 1046.50];
+                    notes.forEach((freq, idx) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.07);
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.25);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start(ctx.currentTime + idx * 0.07);
+                        osc.stop(ctx.currentTime + idx * 0.07 + 0.25);
+                    });
                 } else {
-                    audioWrong.currentTime = 0;
-                    audioWrong.play().catch(()=>{});
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(160, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.3);
                 }
             } catch(e) {}
         }
@@ -506,7 +562,7 @@
                     challengeBoard.style.display = 'block';
                     loadQuestion();
                 }, 500);
-            }, 5000);
+            }, 3000);
         });
 
         function loadQuestion() {
